@@ -23,7 +23,7 @@
             "Perfect for remote operations",
             "Excellent condition with fresh annual"
         ],
-        "image": "/src/assets/aircraft/cessna-172.png"
+        "image": "/src/assets/aircraft/cessna-172.svg"
     },
     {
         "name": "Piper PA-18 Super Cub",
@@ -49,7 +49,7 @@
             "Upgraded engine",
             "Float kit available"
         ],
-        "image": "/src/assets/aircraft/piper-pa18.png"
+        "image": "/src/assets/aircraft/piper-pa18.svg"
     },
     {
         "name": "Cessna 182 Skylane",
@@ -75,7 +75,7 @@
             "Excellent maintenance history",
             "Always hangared"
         ],
-        "image": "/src/assets/aircraft/cessna-182.png"
+        "image": "/src/assets/aircraft/cessna-182.svg"
     },
     {
         "name": "Piper PA-28 Cherokee",
@@ -101,7 +101,7 @@
             "GPS and autopilot equipped",
             "Great first aircraft"
         ],
-        "image": "/src/assets/aircraft/piper-pa28.png"
+        "image": "/src/assets/aircraft/piper-pa28.svg"
     },
     {
         "name": "Beechcraft Baron 58",
@@ -127,7 +127,7 @@
             "Garmin avionics suite",
             "Corporate maintained"
         ],
-        "image": "/src/assets/aircraft/beechcraft-baron-58.png"
+        "image": "/src/assets/aircraft/beechcraft-baron-58.svg"
     },
     {
         "name": "Piper PA-44 Seminole",
@@ -153,7 +153,7 @@
             "Flight school maintained",
             "Excellent training platform"
         ],
-        "image": "/src/assets/aircraft/piper-pa44.png"
+        "image": "/src/assets/aircraft/piper-pa44.svg"
     },
     {
         "name": "Cessna 208 Caravan",
@@ -303,7 +303,8 @@
             "Heavy duty landing gear",
             "Wheels and skis available",
             "Excellent short field performance"
-        ]
+        ],
+        "image": "/src/assets/aircraft/maule-m7.svg"
     },
     {
         "name": "Cessna 152",
@@ -329,7 +330,7 @@
             "Great training platform",
             "Recently overhauled engine"
         ],
-        "image": "/src/assets/aircraft/cessna-152.png"
+        "image": "/src/assets/aircraft/cessna-152.svg"
     },
     {
         "name": "Beechcraft Duke B60",
@@ -355,7 +356,7 @@
             "Luxury leather interior",
             "Serious cross-country machine"
         ],
-        "image": "/src/assets/aircraft/beechcraft-duke.png"
+        "image": "/src/assets/aircraft/beechcraft-duke.svg"
     },
     {
         "name": "Piper PA-28R Arrow",
@@ -381,7 +382,7 @@
             "Garmin 430W equipped",
             "Efficient cross-country machine"
         ],
-        "image": "/src/assets/aircraft/piper-arrow.png"
+        "image": "/src/assets/aircraft/piper-arrow.svg"
     },
     {
         "name": "Beechcraft Bonanza A36",
@@ -407,7 +408,7 @@
             "Glass panel avionics",
             "Best in class handling"
         ],
-        "image": "/src/assets/aircraft/beechcraft-bonanza.png"
+        "image": "/src/assets/aircraft/beechcraft-bonanza.svg"
     },
     {
         "name": "Cessna 310R",
@@ -433,7 +434,7 @@
             "Stable instrument platform",
             "Iconic design"
         ],
-        "image": "/src/assets/aircraft/cessna-310.png"
+        "image": "/src/assets/aircraft/cessna-310.svg"
     },
     {
         "name": "Diamond DA40 NG",
@@ -459,6 +460,6 @@
             "Superb visibility canopy",
             "Safe and docile handling"
         ],
-        "image": "/src/assets/aircraft/diamond-da40.png"
+        "image": "/src/assets/aircraft/diamond-da40.svg"
     }
 ]

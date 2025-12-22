@@ -1,0 +1,13 @@
+
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#9b59b6" fill-opacity="0.1"/>
+  <rect width="100%" height="100%" stroke="#9b59b6" stroke-width="10" fill="none"/>
+  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#9b59b6" text-anchor="middle" dominant-baseline="middle">
+    Cessna 310R
+  </text>
+  <text x="50%" y="65%" font-family="Arial, sans-serif" font-size="20" fill="#666" text-anchor="middle">
+    Image Placeholder
+  </text>
+  <!-- Simple aircraft icon -->
+  <path d="M150 150 L450 150 L450 160 L320 160 L320 250 L380 250 L380 260 L220 260 L220 250 L280 250 L280 160 L150 160 Z" fill="#9b59b6" opacity="0.2" transform="translate(0, -80)"/>
+</svg>
