@@ -1,27 +1,12 @@
 import React, { useState } from 'react';
 import { User, Award, TrendingUp, Clock, Plane, MapPin, Star, Trophy, Edit2, Save, X } from 'lucide-react';
 
-function PilotProfile() {
-  const [hasPilot, setHasPilot] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+import { useAppContext } from './AppContext';
 
-  // Pilot data - starts at zero
-  const [pilot, setPilot] = useState({
-    name: '',
-    callsign: '',
-    rank: 'Junior Pilot',
-    license: '',
-    joinDate: new Date().toISOString().split('T')[0],
-    totalFlights: 0,
-    totalHours: 0,
-    totalDistance: 0,
-    totalEarnings: 0,
-    rating: 0,
-    onTimePercentage: 0,
-    safetyRating: 100,
-    experience: 0,
-    nextRankXP: 1000,
-  });
+function PilotProfile() {
+  const { pilot, updatePilot } = useAppContext();
+  const [isEditing, setIsEditing] = useState(false);
+  const hasPilot = !!pilot.name;
 
   const [editForm, setEditForm] = useState(pilot);
 
@@ -40,45 +25,45 @@ function PilotProfile() {
   ];
 
   const achievements = [
-    { 
-      name: 'First Flight', 
-      description: 'Complete your first flight', 
-      icon: '🛫', 
-      earned: false,
+    {
+      name: 'First Flight',
+      description: 'Complete your first flight',
+      icon: '🛫',
+      earned: pilot.totalFlights >= 1,
       requirement: 'Complete 1 flight'
     },
-    { 
-      name: 'Getting Started', 
-      description: 'Complete 10 flights', 
-      icon: '✈️', 
-      earned: false,
+    {
+      name: 'Getting Started',
+      description: 'Complete 10 flights',
+      icon: '✈️',
+      earned: pilot.totalFlights >= 10,
       requirement: 'Complete 10 flights'
     },
-    { 
-      name: 'Century Club', 
-      description: 'Complete 100 flights', 
-      icon: '💯', 
-      earned: false,
+    {
+      name: 'Century Club',
+      description: 'Complete 100 flights',
+      icon: '💯',
+      earned: pilot.totalFlights >= 100,
       requirement: 'Complete 100 flights'
     },
-    { 
-      name: 'Bush Pilot', 
-      description: 'Complete your first bush flight', 
-      icon: '🏔️', 
+    {
+      name: 'Bush Pilot',
+      description: 'Complete your first bush flight',
+      icon: '🏔️',
       earned: false,
       requirement: 'Complete 1 backcountry flight'
     },
-    { 
-      name: 'Night Owl', 
-      description: 'Complete 25 night flights', 
-      icon: '🌙', 
+    {
+      name: 'Night Owl',
+      description: 'Complete 25 night flights',
+      icon: '🌙',
       earned: false,
       requirement: 'Complete 25 night flights'
     },
-    { 
-      name: 'Weather Warrior', 
-      description: 'Complete 10 IFR flights', 
-      icon: '⛈️', 
+    {
+      name: 'Weather Warrior',
+      description: 'Complete 10 IFR flights',
+      icon: '⛈️',
       earned: false,
       requirement: 'Complete 10 IFR flights'
     },
@@ -96,8 +81,7 @@ function PilotProfile() {
 
   const handleSavePilot = () => {
     if (editForm.name && editForm.callsign && editForm.license) {
-      setPilot(editForm);
-      setHasPilot(true);
+      updatePilot(editForm);
       setIsEditing(false);
     } else {
       alert('Please fill in all required fields (Name, Callsign, License Type)');
@@ -128,7 +112,7 @@ function PilotProfile() {
           <User className="w-24 h-24 text-blue-900 mx-auto mb-6" />
           <h3 className="text-2xl font-bold text-gray-900 mb-3">Create Your Pilot Profile</h3>
           <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-            Set up your pilot information to start tracking your flying career. 
+            Set up your pilot information to start tracking your flying career.
             Build experience, earn achievements, and advance your rank.
           </p>
           <button
@@ -265,7 +249,7 @@ function PilotProfile() {
             <div className="bg-white rounded-full p-6">
               <User className="w-20 h-20 text-blue-900" />
             </div>
-            
+
             {/* Pilot Info */}
             <div>
               <h3 className="text-3xl font-bold mb-2">{pilot.name}</h3>
@@ -297,9 +281,9 @@ function PilotProfile() {
           <div className="text-right">
             <p className="text-blue-200 text-sm">Member Since</p>
             <p className="text-xl font-semibold">
-              {new Date(pilot.joinDate).toLocaleDateString('en-US', { 
-                month: 'short', 
-                year: 'numeric' 
+              {new Date(pilot.joinDate).toLocaleDateString('en-US', {
+                month: 'short',
+                year: 'numeric'
               })}
             </p>
           </div>
@@ -312,7 +296,7 @@ function PilotProfile() {
             <span className="text-sm">{pilot.experience} / {pilot.nextRankXP} XP</span>
           </div>
           <div className="w-full bg-blue-800 rounded-full h-3">
-            <div 
+            <div
               className="bg-yellow-400 h-3 rounded-full transition-all duration-500"
               style={{ width: `${getRankProgress()}%` }}
             ></div>
@@ -417,11 +401,10 @@ function PilotProfile() {
                 {[1, 2, 3, 4, 5].map(star => (
                   <Star
                     key={star}
-                    className={`w-8 h-8 ${
-                      star <= Math.floor(pilot.rating)
+                    className={`w-8 h-8 ${star <= Math.floor(pilot.rating)
                         ? 'text-yellow-400 fill-yellow-400'
                         : 'text-gray-300'
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -437,7 +420,7 @@ function PilotProfile() {
           <p className="text-gray-600 mb-4">
             Complete your first flight to start tracking your performance metrics and earning achievements!
           </p>
-          <button 
+          <button
             onClick={() => window.location.hash = '#dispatch'}
             className="bg-blue-900 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition"
           >
@@ -456,11 +439,10 @@ function PilotProfile() {
           {achievements.map((achievement, index) => (
             <div
               key={index}
-              className={`p-4 rounded-lg border-2 transition ${
-                achievement.earned
+              className={`p-4 rounded-lg border-2 transition ${achievement.earned
                   ? 'border-yellow-400 bg-yellow-50'
                   : 'border-gray-200 bg-gray-50 opacity-60'
-              }`}
+                }`}
             >
               <div className="flex items-start gap-3">
                 <span className="text-4xl">{achievement.icon}</span>

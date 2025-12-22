@@ -11,8 +11,19 @@ export const useAppContext = () => {
 };
 
 export const AppProvider = ({ children }) => {
+  // Helper to load from localStorage
+  const loadState = (key, fallback) => {
+    try {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : fallback;
+    } catch (e) {
+      console.warn(`Failed to load ${key} from localStorage`, e);
+      return fallback;
+    }
+  };
+
   // Company State
-  const [company, setCompany] = useState({
+  const [company, setCompany] = useState(() => loadState('vam_company', {
     name: '',
     callsign: '',
     founded: '',
@@ -26,10 +37,28 @@ export const AppProvider = ({ children }) => {
     totalEarnings: 0,
     flightHours: 0,
     established: new Date().toISOString().split('T')[0]
-  });
+  }));
+
+  // Pilot State
+  const [pilot, setPilot] = useState(() => loadState('vam_pilot', {
+    name: '',
+    callsign: '',
+    rank: 'Junior Pilot',
+    license: '',
+    joinDate: new Date().toISOString().split('T')[0],
+    totalFlights: 0,
+    totalHours: 0,
+    totalDistance: 0,
+    totalEarnings: 0,
+    rating: 0,
+    onTimePercentage: 0,
+    safetyRating: 100,
+    experience: 0,
+    nextRankXP: 1000,
+  }));
 
   // Fleet State - Starting aircraft based at regional European airfields
-  const [fleet, setFleet] = useState([
+  const [fleet, setFleet] = useState(() => loadState('vam_fleet', [
     {
       id: 1,
       registration: 'EI-CAR',
@@ -73,13 +102,13 @@ export const AppProvider = ({ children }) => {
       lockedBy: null,
       currentFlight: null
     }
-  ]);
+  ]));
 
   // Active Flights State
-  const [activeFlights, setActiveFlights] = useState([]);
+  const [activeFlights, setActiveFlights] = useState(() => loadState('vam_activeFlights', []));
 
-  // Completed Flights State (Flight Log) - Start empty for fresh gameplay
-  const [completedFlights, setCompletedFlights] = useState([]);
+  // Completed Flights State (Flight Log)
+  const [completedFlights, setCompletedFlights] = useState(() => loadState('vam_completedFlights', []));
 
   // Available Flights State (Dispatch Center) - Regional European routes
   const [availableFlights, setAvailableFlights] = useState([
@@ -274,6 +303,28 @@ export const AppProvider = ({ children }) => {
     }
   ]);
 
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('vam_company', JSON.stringify(company));
+  }, [company]);
+
+  useEffect(() => {
+    localStorage.setItem('vam_pilot', JSON.stringify(pilot));
+  }, [pilot]);
+
+  useEffect(() => {
+    localStorage.setItem('vam_fleet', JSON.stringify(fleet));
+  }, [fleet]);
+
+  useEffect(() => {
+    localStorage.setItem('vam_activeFlights', JSON.stringify(activeFlights));
+  }, [activeFlights]);
+
+  useEffect(() => {
+    localStorage.setItem('vam_completedFlights', JSON.stringify(completedFlights));
+  }, [completedFlights]);
+
+
   // Flight being completed (for post-flight briefing)
   const [flightToComplete, setFlightToComplete] = useState(null);
 
@@ -324,6 +375,50 @@ export const AppProvider = ({ children }) => {
     if (flight) {
       setFlightToComplete(flight);
     }
+  };
+
+  // Update pilot stats after a flight
+  const updatePilotStats = (flight, briefingData) => {
+    const flightHours = parseFloat(briefingData.actualDuration) || 0;
+    const distance = flight.distance || 0;
+    const earnings = briefingData.earnings || 0;
+
+    // XP Calculation: 10xp per flight + 1xp per nm
+    const xpEarned = 10 + distance;
+
+    setPilot(prev => {
+      const newTotalFlights = prev.totalFlights + 1;
+      const newTotalHours = prev.totalHours + flightHours;
+      const newTotalDistance = prev.totalDistance + distance;
+      const newTotalEarnings = prev.totalEarnings + earnings;
+      const newExperience = prev.experience + xpEarned;
+
+      // Simple rating update logic (average of 5.0)
+      // If rating is 0, start with 5.0. Otherwise average it.
+      // Assuming every flight is a 5-star for now unless defects?
+      const currentFlightRating = briefingData.severity === 'major' ? 3.0 : 5.0;
+      const newRating = prev.totalFlights === 0
+        ? currentFlightRating
+        : ((prev.rating * prev.totalFlights) + currentFlightRating) / (prev.totalFlights + 1);
+
+      // On-time: Check if actualDuration <= estimated duration (simplified check)
+      // For now, assume on-time if within +10% of planned
+      // We'll just assume true for this iteration unless briefing says otherwise
+      const isOnTime = briefingData.onTime !== false;
+      const onTimeCount = Math.round((prev.onTimePercentage / 100) * prev.totalFlights) + (isOnTime ? 1 : 0);
+      const newOnTimePercentage = Math.round((onTimeCount / newTotalFlights) * 100);
+
+      return {
+        ...prev,
+        totalFlights: newTotalFlights,
+        totalHours: parseFloat(newTotalHours.toFixed(1)),
+        totalDistance: newTotalDistance,
+        totalEarnings: newTotalEarnings,
+        rating: parseFloat(newRating.toFixed(1)),
+        onTimePercentage: newOnTimePercentage,
+        experience: newExperience
+      };
+    });
   };
 
   // Submit post-flight briefing and complete flight
@@ -394,6 +489,9 @@ export const AppProvider = ({ children }) => {
     // Add to completed flights
     setCompletedFlights(prev => [...prev, completedFlight]);
 
+    // Update Pilot Stats
+    updatePilotStats(flight, briefingData);
+
     // Remove from active flights
     setActiveFlights(prev => prev.filter(f => f.id !== flightId));
 
@@ -419,6 +517,11 @@ export const AppProvider = ({ children }) => {
     setCompany(newCompanyData);
   };
 
+  // Update pilot
+  const updatePilot = (newPilotData) => {
+    setPilot(newPilotData);
+  };
+
   // Add aircraft to fleet
   const addAircraftToFleet = (aircraft) => {
     setFleet(prev => [...prev, { ...aircraft, id: prev.length + 1 }]);
@@ -428,6 +531,7 @@ export const AppProvider = ({ children }) => {
   const value = {
     // State
     company,
+    pilot,
     fleet,
     activeFlights,
     completedFlights,
@@ -436,6 +540,7 @@ export const AppProvider = ({ children }) => {
 
     // Actions
     updateCompany,
+    updatePilot,
     acceptFlight,
     startPostFlightBriefing,
     completeFlightWithBriefing,

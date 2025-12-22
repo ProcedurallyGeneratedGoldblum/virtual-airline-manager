@@ -2,29 +2,18 @@ import React, { useState } from 'react';
 import { Building2, Edit2, Save, X, Plane, Users, MapPin, Calendar } from 'lucide-react';
 import airportsData from '../data/airports.json';
 
+import { useAppContext } from './AppContext';
+
 function Company() {
+  const { company, updateCompany } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
-  const [hasCompany, setHasCompany] = useState(false);
+  // Determine if company is set up based on name presence
+  const hasCompany = !!company.name;
 
   // Format airports from JSON for dropdown display
   const europeanLocations = airportsData.map(
     airport => `${airport.name}, ${airport.country} (${airport.icao})`
   );
-
-  // Company data
-  const [company, setCompany] = useState({
-    name: '',
-    callsign: '',
-    founded: '',
-    headquarters: '',
-    description: '',
-    motto: '',
-    focusArea: 'bush',
-    pilots: 1,
-    aircraft: 0,
-    totalFlights: 0,
-    established: new Date().toISOString().split('T')[0]
-  });
 
   const [editForm, setEditForm] = useState(company);
 
@@ -49,8 +38,7 @@ function Company() {
 
   const handleSaveCompany = () => {
     if (editForm.name && editForm.callsign && editForm.headquarters) {
-      setCompany(editForm);
-      setHasCompany(true);
+      updateCompany(editForm);
       setIsEditing(false);
     } else {
       alert('Please fill in all required fields (Name, Callsign, Headquarters)');
