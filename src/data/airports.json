@@ -1,0 +1,225 @@
+[
+    {
+        "name": "Weston",
+        "icao": "EIWT",
+        "country": "Ireland",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Kilkenny",
+        "icao": "EIKK",
+        "country": "Ireland",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Galway",
+        "icao": "EICM",
+        "country": "Ireland",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Biggin Hill",
+        "icao": "EGKB",
+        "country": "UK",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Shoreham",
+        "icao": "EGKA",
+        "country": "UK",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Elstree",
+        "icao": "EGTR",
+        "country": "UK",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Dundee",
+        "icao": "EGPN",
+        "country": "UK",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Oban",
+        "icao": "EGEO",
+        "country": "UK",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Wycombe Air Park",
+        "icao": "EGTB",
+        "country": "UK",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Toussus-le-Noble",
+        "icao": "LFPN",
+        "country": "France",
+        "region": "France"
+    },
+    {
+        "name": "Lognes-Emerainville",
+        "icao": "LFPL",
+        "country": "France",
+        "region": "France"
+    },
+    {
+        "name": "Cannes-Mandelieu",
+        "icao": "LFMD",
+        "country": "France",
+        "region": "France"
+    },
+    {
+        "name": "Megève",
+        "icao": "LFHM",
+        "country": "France",
+        "region": "France"
+    },
+    {
+        "name": "Courchevel Altiport",
+        "icao": "LFLJ",
+        "country": "France",
+        "region": "France"
+    },
+    {
+        "name": "Hamburg Finkenwerder",
+        "icao": "EDHI",
+        "country": "Germany",
+        "region": "Germany"
+    },
+    {
+        "name": "Egelsbach",
+        "icao": "EDFE",
+        "country": "Germany",
+        "region": "Germany"
+    },
+    {
+        "name": "Augsburg",
+        "icao": "EDMA",
+        "country": "Germany",
+        "region": "Germany"
+    },
+    {
+        "name": "Straubing",
+        "icao": "EDMS",
+        "country": "Germany",
+        "region": "Germany"
+    },
+    {
+        "name": "Samedan (Engadin)",
+        "icao": "LSZS",
+        "country": "Switzerland",
+        "region": "Alps"
+    },
+    {
+        "name": "Sion",
+        "icao": "LSGS",
+        "country": "Switzerland",
+        "region": "Alps"
+    },
+    {
+        "name": "Zell am See",
+        "icao": "LOWZ",
+        "country": "Austria",
+        "region": "Alps"
+    },
+    {
+        "name": "Innsbruck",
+        "icao": "LOWI",
+        "country": "Austria",
+        "region": "Alps"
+    },
+    {
+        "name": "Mo i Rana",
+        "icao": "ENRA",
+        "country": "Norway",
+        "region": "Scandinavia"
+    },
+    {
+        "name": "Stord",
+        "icao": "ENSO",
+        "country": "Norway",
+        "region": "Scandinavia"
+    },
+    {
+        "name": "Mora",
+        "icao": "ESKM",
+        "country": "Sweden",
+        "region": "Scandinavia"
+    },
+    {
+        "name": "Jokkmokk",
+        "icao": "ESNJ",
+        "country": "Sweden",
+        "region": "Scandinavia"
+    },
+    {
+        "name": "Lelystad",
+        "icao": "EHLE",
+        "country": "Netherlands",
+        "region": "Benelux"
+    },
+    {
+        "name": "Teuge",
+        "icao": "EHTE",
+        "country": "Netherlands",
+        "region": "Benelux"
+    },
+    {
+        "name": "Spa La Sauvenière",
+        "icao": "EBSP",
+        "country": "Belgium",
+        "region": "Benelux"
+    },
+    {
+        "name": "Valbrembo",
+        "icao": "LILV",
+        "country": "Italy",
+        "region": "Southern Europe"
+    },
+    {
+        "name": "Thiene",
+        "icao": "LIDH",
+        "country": "Italy",
+        "region": "Southern Europe"
+    },
+    {
+        "name": "Sabadell",
+        "icao": "LELL",
+        "country": "Spain",
+        "region": "Southern Europe"
+    },
+    {
+        "name": "Cuatro Vientos",
+        "icao": "LECU",
+        "country": "Spain",
+        "region": "Southern Europe"
+    },
+    {
+        "name": "Barra",
+        "icao": "EGPR",
+        "country": "UK",
+        "region": "Scottish Highlands",
+        "note": "Beach runway"
+    },
+    {
+        "name": "Islay",
+        "icao": "EGPI",
+        "country": "UK",
+        "region": "Scottish Highlands"
+    },
+    {
+        "name": "Tiree",
+        "icao": "EGPU",
+        "country": "UK",
+        "region": "Scottish Highlands"
+    },
+    {
+        "name": "Campbeltown",
+        "icao": "EGEC",
+        "country": "UK",
+        "region": "Scottish Highlands"
+    }
+]

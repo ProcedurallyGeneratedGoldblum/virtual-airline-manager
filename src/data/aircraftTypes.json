@@ -1,0 +1,464 @@
+[
+    {
+        "name": "Cessna 172 Skyhawk",
+        "manufacturer": "Cessna",
+        "category": "single-piston",
+        "basePrice": 250000,
+        "priceVariance": 100000,
+        "yearRange": [
+            1980,
+            2023
+        ],
+        "specs": {
+            "seats": 4,
+            "range": "640 nm",
+            "cruise": "124 kts",
+            "useful_load": "878 lbs",
+            "fuel_capacity": "56 gal"
+        },
+        "descriptions": [
+            "Well-maintained trainer aircraft",
+            "Recent avionics upgrade",
+            "Low time since overhaul",
+            "Perfect for remote operations",
+            "Excellent condition with fresh annual"
+        ],
+        "image": "/src/assets/aircraft/cessna-172.png"
+    },
+    {
+        "name": "Piper PA-18 Super Cub",
+        "manufacturer": "Piper",
+        "category": "single-piston",
+        "basePrice": 120000,
+        "priceVariance": 80000,
+        "yearRange": [
+            1950,
+            2020
+        ],
+        "specs": {
+            "seats": 2,
+            "range": "460 nm",
+            "cruise": "100 kts",
+            "useful_load": "930 lbs",
+            "fuel_capacity": "36 gal"
+        },
+        "descriptions": [
+            "Tundra tires installed",
+            "Great for backcountry strips",
+            "Classic backcountry configuration",
+            "Upgraded engine",
+            "Float kit available"
+        ],
+        "image": "/src/assets/aircraft/piper-pa18.png"
+    },
+    {
+        "name": "Cessna 182 Skylane",
+        "manufacturer": "Cessna",
+        "category": "single-piston",
+        "basePrice": 350000,
+        "priceVariance": 150000,
+        "yearRange": [
+            1975,
+            2023
+        ],
+        "specs": {
+            "seats": 4,
+            "range": "915 nm",
+            "cruise": "145 kts",
+            "useful_load": "1065 lbs",
+            "fuel_capacity": "88 gal"
+        },
+        "descriptions": [
+            "G1000 glass cockpit",
+            "Perfect cross-country cruiser",
+            "Recent paint and interior",
+            "Excellent maintenance history",
+            "Always hangared"
+        ],
+        "image": "/src/assets/aircraft/cessna-182.png"
+    },
+    {
+        "name": "Piper PA-28 Cherokee",
+        "manufacturer": "Piper",
+        "category": "single-piston",
+        "basePrice": 180000,
+        "priceVariance": 90000,
+        "yearRange": [
+            1970,
+            2015
+        ],
+        "specs": {
+            "seats": 4,
+            "range": "640 nm",
+            "cruise": "122 kts",
+            "useful_load": "965 lbs",
+            "fuel_capacity": "50 gal"
+        },
+        "descriptions": [
+            "Reliable trainer aircraft",
+            "New interior recently installed",
+            "Solid performer",
+            "GPS and autopilot equipped",
+            "Great first aircraft"
+        ],
+        "image": "/src/assets/aircraft/piper-pa28.png"
+    },
+    {
+        "name": "Beechcraft Baron 58",
+        "manufacturer": "Beechcraft",
+        "category": "twin-piston",
+        "basePrice": 650000,
+        "priceVariance": 250000,
+        "yearRange": [
+            1985,
+            2020
+        ],
+        "specs": {
+            "seats": 6,
+            "range": "1480 nm",
+            "cruise": "200 kts",
+            "useful_load": "1670 lbs",
+            "fuel_capacity": "142 gal"
+        },
+        "descriptions": [
+            "Executive twin with full de-ice",
+            "Low time engines",
+            "Known ice certification",
+            "Garmin avionics suite",
+            "Corporate maintained"
+        ],
+        "image": "/src/assets/aircraft/beechcraft-baron-58.png"
+    },
+    {
+        "name": "Piper PA-44 Seminole",
+        "manufacturer": "Piper",
+        "category": "twin-piston",
+        "basePrice": 280000,
+        "priceVariance": 120000,
+        "yearRange": [
+            1980,
+            2020
+        ],
+        "specs": {
+            "seats": 4,
+            "range": "828 nm",
+            "cruise": "160 kts",
+            "useful_load": "1175 lbs",
+            "fuel_capacity": "108 gal"
+        },
+        "descriptions": [
+            "Multi-engine trainer",
+            "Recent engines overhaul",
+            "Well-equipped panel",
+            "Flight school maintained",
+            "Excellent training platform"
+        ],
+        "image": "/src/assets/aircraft/piper-pa44.png"
+    },
+    {
+        "name": "Cessna 208 Caravan",
+        "manufacturer": "Cessna",
+        "category": "turboprop",
+        "basePrice": 2000000,
+        "priceVariance": 800000,
+        "yearRange": [
+            2005,
+            2023
+        ],
+        "specs": {
+            "seats": 9,
+            "range": "1070 nm",
+            "cruise": "186 kts",
+            "useful_load": "4020 lbs",
+            "fuel_capacity": "332 gal"
+        },
+        "descriptions": [
+            "Cargo pod installed",
+            "Perfect for remote operations",
+            "Float capable",
+            "Heavy hauler configuration",
+            "Well maintained workhorse"
+        ]
+    },
+    {
+        "name": "Quest Kodiak 100",
+        "manufacturer": "Quest",
+        "category": "turboprop",
+        "basePrice": 2500000,
+        "priceVariance": 500000,
+        "yearRange": [
+            2010,
+            2023
+        ],
+        "specs": {
+            "seats": 10,
+            "range": "1132 nm",
+            "cruise": "183 kts",
+            "useful_load": "3530 lbs",
+            "fuel_capacity": "320 gal"
+        },
+        "descriptions": [
+            "STOL performance",
+            "Low hours, like new",
+            "Fully loaded avionics",
+            "Backcountry configured",
+            "Amphibious float ready"
+        ]
+    },
+    {
+        "name": "Pilatus PC-6 Porter",
+        "manufacturer": "Pilatus",
+        "category": "turboprop",
+        "basePrice": 1800000,
+        "priceVariance": 700000,
+        "yearRange": [
+            2000,
+            2022
+        ],
+        "specs": {
+            "seats": 10,
+            "range": "794 nm",
+            "cruise": "151 kts",
+            "useful_load": "3197 lbs",
+            "fuel_capacity": "176 gal"
+        },
+        "descriptions": [
+            "Legendary STOL performance",
+            "Mountain operations specialist",
+            "Skydiving configured",
+            "Swiss engineering excellence",
+            "Cargo door installed"
+        ]
+    },
+    {
+        "name": "DHC-6 Twin Otter",
+        "manufacturer": "De Havilland",
+        "category": "turboprop",
+        "basePrice": 5500000,
+        "priceVariance": 1500000,
+        "yearRange": [
+            2008,
+            2023
+        ],
+        "specs": {
+            "seats": 19,
+            "range": "806 nm",
+            "cruise": "182 kts",
+            "useful_load": "5625 lbs",
+            "fuel_capacity": "378 gal"
+        },
+        "descriptions": [
+            "Float equipped",
+            "Remote operations configured",
+            "Extended range tanks",
+            "Cargo/passenger combo",
+            "Heavy hauler workhorse"
+        ]
+    },
+    {
+        "name": "DHC-2 Beaver",
+        "manufacturer": "De Havilland",
+        "category": "single-piston",
+        "basePrice": 350000,
+        "priceVariance": 200000,
+        "yearRange": [
+            1950,
+            1968
+        ],
+        "specs": {
+            "seats": 6,
+            "range": "455 nm",
+            "cruise": "130 kts",
+            "useful_load": "2100 lbs",
+            "fuel_capacity": "95 gal"
+        },
+        "descriptions": [
+            "Classic backcountry legend",
+            "Recent restoration",
+            "Tundra tire equipped",
+            "Engine recently overhauled",
+            "Scottish Highlands based aircraft"
+        ]
+    },
+    {
+        "name": "Maule M-7",
+        "manufacturer": "Maule",
+        "category": "single-piston",
+        "basePrice": 250000,
+        "priceVariance": 100000,
+        "yearRange": [
+            1990,
+            2020
+        ],
+        "specs": {
+            "seats": 4,
+            "range": "550 nm",
+            "cruise": "145 kts",
+            "useful_load": "1350 lbs",
+            "fuel_capacity": "60 gal"
+        },
+        "descriptions": [
+            "STOL kit installed",
+            "Backcountry ready",
+            "Heavy duty landing gear",
+            "Wheels and skis available",
+            "Excellent short field performance"
+        ]
+    },
+    {
+        "name": "Cessna 152",
+        "manufacturer": "Cessna",
+        "category": "single-piston",
+        "basePrice": 85000,
+        "priceVariance": 35000,
+        "yearRange": [
+            1977,
+            1985
+        ],
+        "specs": {
+            "seats": 2,
+            "range": "415 nm",
+            "cruise": "107 kts",
+            "useful_load": "530 lbs",
+            "fuel_capacity": "26 gal"
+        },
+        "descriptions": [
+            "Perfect time builder",
+            "Low operating costs",
+            "Fresh annual inspection",
+            "Great training platform",
+            "Recently overhauled engine"
+        ],
+        "image": "/src/assets/aircraft/cessna-152.png"
+    },
+    {
+        "name": "Beechcraft Duke B60",
+        "manufacturer": "Beechcraft",
+        "category": "twin-piston",
+        "basePrice": 350000,
+        "priceVariance": 150000,
+        "yearRange": [
+            1974,
+            1982
+        ],
+        "specs": {
+            "seats": 6,
+            "range": "1000 nm",
+            "cruise": "230 kts",
+            "useful_load": "1600 lbs",
+            "fuel_capacity": "202 gal"
+        },
+        "descriptions": [
+            "Pressurized cabin comfort",
+            "Fastest owner-flown twin",
+            "Recent de-ice boot replacement",
+            "Luxury leather interior",
+            "Serious cross-country machine"
+        ],
+        "image": "/src/assets/aircraft/beechcraft-duke.png"
+    },
+    {
+        "name": "Piper PA-28R Arrow",
+        "manufacturer": "Piper",
+        "category": "single-piston",
+        "basePrice": 160000,
+        "priceVariance": 60000,
+        "yearRange": [
+            1970,
+            2005
+        ],
+        "specs": {
+            "seats": 4,
+            "range": "850 nm",
+            "cruise": "137 kts",
+            "useful_load": "960 lbs",
+            "fuel_capacity": "72 gal"
+        },
+        "descriptions": [
+            "Retractable gear complex trainer",
+            "Commercial training ready",
+            "Solid IFR platform",
+            "Garmin 430W equipped",
+            "Efficient cross-country machine"
+        ],
+        "image": "/src/assets/aircraft/piper-arrow.png"
+    },
+    {
+        "name": "Beechcraft Bonanza A36",
+        "manufacturer": "Beechcraft",
+        "category": "single-piston",
+        "basePrice": 550000,
+        "priceVariance": 250000,
+        "yearRange": [
+            1985,
+            2015
+        ],
+        "specs": {
+            "seats": 6,
+            "range": "920 nm",
+            "cruise": "170 kts",
+            "useful_load": "1200 lbs",
+            "fuel_capacity": "74 gal"
+        },
+        "descriptions": [
+            "The doctor killer (just kidding, it's safe)",
+            "Club seating configuration",
+            "High performance capability",
+            "Glass panel avionics",
+            "Best in class handling"
+        ],
+        "image": "/src/assets/aircraft/beechcraft-bonanza.png"
+    },
+    {
+        "name": "Cessna 310R",
+        "manufacturer": "Cessna",
+        "category": "twin-piston",
+        "basePrice": 220000,
+        "priceVariance": 100000,
+        "yearRange": [
+            1975,
+            1981
+        ],
+        "specs": {
+            "seats": 6,
+            "range": "1300 nm",
+            "cruise": "190 kts",
+            "useful_load": "1700 lbs",
+            "fuel_capacity": "163 gal"
+        },
+        "descriptions": [
+            "Classic twin engine reliability",
+            "Large baggage capacity",
+            "Wing lockers installed",
+            "Stable instrument platform",
+            "Iconic design"
+        ],
+        "image": "/src/assets/aircraft/cessna-310.png"
+    },
+    {
+        "name": "Diamond DA40 NG",
+        "manufacturer": "Diamond",
+        "category": "single-piston",
+        "basePrice": 450000,
+        "priceVariance": 100000,
+        "yearRange": [
+            2010,
+            2023
+        ],
+        "specs": {
+            "seats": 4,
+            "range": "940 nm",
+            "cruise": "150 kts",
+            "useful_load": "900 lbs",
+            "fuel_capacity": "40 gal"
+        },
+        "descriptions": [
+            "Modern composite construction",
+            "Fuel efficient diesel engine",
+            "G1000 NXi avionics",
+            "Superb visibility canopy",
+            "Safe and docile handling"
+        ],
+        "image": "/src/assets/aircraft/diamond-da40.png"
+    }
+]
