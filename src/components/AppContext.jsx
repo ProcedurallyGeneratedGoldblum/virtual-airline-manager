@@ -544,7 +544,39 @@ export const AppProvider = ({ children }) => {
 
   // Add aircraft to fleet
   const addAircraftToFleet = (aircraft) => {
-    setFleet(prev => [...prev, { ...aircraft, id: prev.length + 1 }]);
+    // Generate registration if not present
+    const generateRegistration = () => {
+      const prefixes = ['N', 'G-', 'D-', 'F-', 'EI-', 'OE-'];
+      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      const numbers = Math.floor(Math.random() * 9000) + 1000;
+      return `${prefix}${numbers}`;
+    };
+
+    // Transform marketplace aircraft to fleet format
+    const fleetAircraft = {
+      id: fleet.length + 1,
+      registration: aircraft.registration || generateRegistration(),
+      type: aircraft.name || aircraft.type || 'Unknown Aircraft',
+      status: aircraft.status || 'available',
+      location: aircraft.location || 'Unknown',
+      totalHours: aircraft.hours || aircraft.conditionDetails?.airframe?.ttaf || 0,
+      hoursSinceInspection: aircraft.hoursSinceInspection || 0,
+      nextInspectionDue: aircraft.nextInspectionDue || 100,
+      lastFlight: aircraft.lastFlight || new Date().toISOString().split('T')[0],
+      condition: aircraft.condition || 'good',
+      conditionDetails: aircraft.conditionDetails || null,
+      melList: aircraft.melList || [],
+      lockedBy: null,
+      currentFlight: null,
+      // Preserve marketplace data
+      name: aircraft.name,
+      manufacturer: aircraft.manufacturer,
+      year: aircraft.year,
+      price: aircraft.price,
+      specs: aircraft.specs
+    };
+
+    setFleet(prev => [...prev, fleetAircraft]);
     setCompany(prev => ({
       ...prev,
       aircraft: prev.aircraft + 1,
