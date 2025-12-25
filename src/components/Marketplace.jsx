@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, DollarSign } from 'lucide-react';
+import { Search, RefreshCw, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
 import { generateAircraft } from '../utils/aircraftGenerator';
 import { useAppContext } from './AppContext';
 
@@ -145,83 +145,15 @@ function Marketplace() {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayAircraft.map(plane => (
-          <div key={plane.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative">
-            {/* MEL Banner if issues exist */}
-            {plane.melList && plane.melList.length > 0 && (
-              <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 absolute top-2 right-2 rounded z-10">
-                {plane.melList.length} MEL ITEM{plane.melList.length > 1 ? 'S' : ''}
-              </div>
-            )}
-
-            <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
-              {plane.image && plane.image.startsWith('/') ? (
-                <img src={plane.image} alt={plane.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <span className="text-6xl">{plane.image || '✈️'}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="p-5">
-              <div className="mb-3">
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="text-xl font-bold text-gray-900">{plane.name}</h3>
-                  {/* Digital Condition */}
-                  {plane.conditionDetails && (
-                    <span className={`px-2 py-1 text-xs font-semibold rounded ${plane.conditionDetails.engine.condition > 80 ? 'bg-green-100 text-green-800' :
-                      plane.conditionDetails.engine.condition > 50 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                      Eng: {plane.conditionDetails.engine.condition}%
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-gray-600">{plane.year} • {plane.manufacturer}</p>
-                {plane.melList && plane.melList.length > 0 && (
-                  <div className="mt-1 text-xs text-red-600">
-                    Includes: {plane.melList.map(m => m.item).join(', ')}
-                  </div>
-                )}
-              </div>
-
-              <div className="mb-3">
-                <div className="flex items-center gap-1 text-2xl font-bold text-blue-900">
-                  <DollarSign className="w-6 h-6" />
-                  {formatPrice(plane.price)}
-                </div>
-                {activeTab === 'sell' && (
-                  <p className="text-xs text-gray-500">Estimated Market Value</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-                <div><span className="text-gray-600">Hours:</span> <span className="font-semibold">{Math.round(plane.hours || 0)}</span></div>
-                <div><span className="text-gray-600">Seats:</span> <span className="font-semibold">{plane.specs?.seats || '-'}</span></div>
-                <div><span className="text-gray-600">Range:</span> <span className="font-semibold">{plane.specs?.range || '-'}</span></div>
-                <div><span className="text-gray-600">Cruise:</span> <span className="font-semibold">{plane.specs?.cruise || '-'}</span></div>
-              </div>
-
-              {activeTab === 'buy' ? (
-                <button
-                  onClick={() => handleBuy(plane)}
-                  disabled={company.balance < plane.price}
-                  className={`w-full py-3 rounded-lg font-semibold transition ${company.balance >= plane.price
-                    ? 'bg-blue-900 text-white hover:bg-blue-800'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                >
-                  {company.balance >= plane.price ? 'Purchase Aircraft' : 'Insufficient Funds'}
-                </button>
-              ) : (
-                <button
-                  onClick={() => handleSell(plane)}
-                  className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition"
-                >
-                  Sell Aircraft
-                </button>
-              )}
-            </div>
-          </div>
+          <AircraftCard
+            key={plane.id}
+            plane={plane}
+            activeTab={activeTab}
+            handleBuy={handleBuy}
+            handleSell={handleSell}
+            company={company}
+            formatPrice={formatPrice}
+          />
         ))}
       </div>
 
@@ -230,6 +162,180 @@ function Marketplace() {
           <p className="text-gray-500 text-lg">No aircraft found.</p>
         </div>
       )}
+    </div>
+  );
+}
+
+// Extracted Card Component for cleaner state management of "expanded"
+function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, formatPrice }) {
+  const [expanded, setExpanded] = useState(false);
+
+  // Helper to color condition
+  const getConditionColor = (cond) => {
+    if (cond >= 80) return 'text-green-600';
+    if (cond >= 50) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative flex flex-col">
+      {/* MEL Banner */}
+      {plane.melList && plane.melList.length > 0 && (
+        <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 absolute top-2 right-2 rounded z-10">
+          {plane.melList.length} MEL ITEM{plane.melList.length > 1 ? 'S' : ''}
+        </div>
+      )}
+
+      <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden relative">
+        {plane.image && plane.image.startsWith('/') ? (
+          <img src={plane.image} alt={plane.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+            <span className="text-6xl">{plane.image || '✈️'}</span>
+          </div>
+        )}
+
+        {/* Quick Stats Overlay */}
+        <div className="absolute bottom-0 inset-x-0 bg-black bg-opacity-50 text-white p-2 flex justify-between text-xs">
+          <span>{plane.year}</span>
+          <span>TTAF: {plane.conditionDetails?.airframe?.ttaf || plane.hours}</span>
+        </div>
+      </div>
+
+      <div className="p-4 flex-grow flex flex-col">
+        {/* Header */}
+        <div className="mb-2">
+          <h3 className="text-xl font-bold text-gray-900 leading-tight">{plane.name}</h3>
+          <p className="text-sm text-gray-600">{plane.manufacturer} • S/N: {plane.serialNumber || 'N/A'}</p>
+        </div>
+
+        {/* Price */}
+        <div className="mb-3 flex justify-between items-center">
+          <div className="flex items-center gap-1 text-2xl font-bold text-blue-900">
+            <DollarSign className="w-6 h-6" />
+            {formatPrice(plane.price)}
+          </div>
+        </div>
+
+        {/* Key Specs Row */}
+        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-sm mb-4 bg-gray-50 p-2 rounded">
+          <div className="flex justify-between">
+            <span className="text-gray-500">TTAF</span>
+            <span className="font-mono font-bold">{plane.conditionDetails?.airframe?.ttaf || plane.hours}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Eng SMOH</span>
+            <span className="font-mono font-bold">{plane.conditionDetails?.engine?.smoh || 'N/A'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Avionics</span>
+            <span className={`font-bold ${getConditionColor(plane.conditionDetails?.avionics?.condition)}`}>
+              {plane.conditionDetails?.avionics?.condition}%
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Interior</span>
+            <span className={`font-bold ${getConditionColor(plane.conditionDetails?.interior?.condition)}`}>
+              {plane.conditionDetails?.interior?.condition}/100
+            </span>
+          </div>
+        </div>
+
+        {/* Expandable Details */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 mb-4 transition-colors p-2 border border-blue-100 rounded"
+        >
+          {expanded ? (
+            <>Hide Details <ChevronUp className="w-4 h-4" /></>
+          ) : (
+            <>View Full Specs <ChevronDown className="w-4 h-4" /></>
+          )}
+        </button>
+
+        {expanded && (
+          <div className="mb-4 text-sm space-y-3 bg-gray-50 p-3 rounded-md border border-gray-100">
+            {/* Engine Section */}
+            <div>
+              <h4 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Engine Details</h4>
+              <div className="grid grid-cols-2 gap-1 text-xs">
+                <span className="text-gray-500">Model:</span>
+                <span className="font-semibold text-right">{plane.conditionDetails?.engine?.model || 'Generic'}</span>
+                <span className="text-gray-500">SMOH:</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.engine?.smoh} hrs</span>
+                <span className="text-gray-500">TBO:</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tbo} hrs</span>
+                <span className="text-gray-500">TSN:</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tsn} hrs</span>
+                <span className="text-gray-500">Condition:</span>
+                <span className={`text-right font-bold ${getConditionColor(plane.conditionDetails?.engine?.condition)}`}>
+                  {plane.conditionDetails?.engine?.condition}%
+                </span>
+              </div>
+            </div>
+
+            {/* Airframe Section */}
+            <div>
+              <h4 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Airframe & Inspection</h4>
+              <div className="grid grid-cols-2 gap-1 text-xs">
+                <span className="text-gray-500">TTAF:</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.airframe?.ttaf} hrs</span>
+                <span className="text-gray-500">Last Annual:</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.airframe?.lastAnnual || 'N/A'}</span>
+              </div>
+            </div>
+
+            {/* Avionics Section */}
+            <div>
+              <h4 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Avionics</h4>
+              <ul className="list-disc list-inside text-xs text-gray-600 space-y-0.5">
+                {plane.conditionDetails?.avionics?.list?.length > 0 ? (
+                  plane.conditionDetails.avionics.list.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))
+                ) : (
+                  <li>Standard Six Pack</li>
+                )}
+              </ul>
+            </div>
+
+            {/* MEL Section */}
+            {plane.melList && plane.melList.length > 0 && (
+              <div>
+                <h4 className="font-bold text-red-600 border-b border-red-200 mb-1">⚠ Known Issues (MEL)</h4>
+                <ul className="list-disc list-inside text-xs text-red-600">
+                  {plane.melList.map((m, i) => (
+                    <li key={i}>{m.item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Action Button */}
+        <div className="mt-auto">
+          {activeTab === 'buy' ? (
+            <button
+              onClick={() => handleBuy(plane)}
+              disabled={company.balance < plane.price}
+              className={`w-full py-3 rounded-lg font-bold transition ${company.balance >= plane.price
+                ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-md'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+            >
+              {company.balance >= plane.price ? 'Purchase Aircraft' : 'Insufficient Funds'}
+            </button>
+          ) : (
+            <button
+              onClick={() => handleSell(plane)}
+              className="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition shadow-md"
+            >
+              Sell Aircraft
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
