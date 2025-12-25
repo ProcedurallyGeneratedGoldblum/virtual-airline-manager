@@ -544,12 +544,69 @@ export const AppProvider = ({ children }) => {
 
   // Add aircraft to fleet
   const addAircraftToFleet = (aircraft) => {
-    // Generate registration if not present
+    // ICAO Registration Prefixes by Country
+    const registrationPrefixes = {
+      'Ireland': 'EI-',
+      'UK': 'G-',
+      'France': 'F-',
+      'Germany': 'D-',
+      'Switzerland': 'HB-',
+      'Austria': 'OE-',
+      'Norway': 'LN-',
+      'Sweden': 'SE-',
+      'Netherlands': 'PH-',
+      'Belgium': 'OO-',
+      'Italy': 'I-',
+      'Spain': 'EC-',
+      'Denmark': 'OY-',
+      'Finland': 'OH-',
+      'Poland': 'SP-',
+      'Czech Republic': 'OK-',
+      'Portugal': 'CS-',
+      'Greece': 'SX-',
+      'Iceland': 'TF-',
+      'Luxembourg': 'LX-'
+    };
+
+    // Generate registration based on aircraft location
     const generateRegistration = () => {
-      const prefixes = ['N', 'G-', 'D-', 'F-', 'EI-', 'OE-'];
-      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-      const numbers = Math.floor(Math.random() * 9000) + 1000;
-      return `${prefix}${numbers}`;
+      // Extract country from location string (format: "City, Country (ICAO)")
+      let country = 'UK'; // Default
+      if (aircraft.location) {
+        const match = aircraft.location.match(/,\s*([^(]+)\s*\(/);
+        if (match) {
+          country = match[1].trim();
+        }
+      }
+
+      const prefix = registrationPrefixes[country] || 'G-';
+
+      // Generate suffix based on country format
+      let suffix = '';
+      if (prefix === 'N') {
+        // US format: N12345
+        suffix = Math.floor(Math.random() * 90000 + 10000).toString();
+      } else if (prefix === 'G-') {
+        // UK format: G-ABCD (4 letters)
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let i = 0; i < 4; i++) {
+          suffix += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+      } else if (prefix === 'EI-') {
+        // Irish format: EI-ABC (3 letters)
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let i = 0; i < 3; i++) {
+          suffix += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+      } else {
+        // European format: XX-ABC (3 letters/numbers)
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let i = 0; i < 3; i++) {
+          suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+      }
+
+      return prefix + suffix;
     };
 
     // Transform marketplace aircraft to fleet format
