@@ -56,8 +56,10 @@ function Marketplace() {
       return matchesCategory && matchesSearch;
     })
       .sort((a, b) => {
-        if (sortOrder === 'price-asc') return a.price - b.price;
-        if (sortOrder === 'price-desc') return b.price - a.price;
+        const priceA = a.price || 0;
+        const priceB = b.price || 0;
+        if (sortOrder === 'price-asc') return priceA - priceB;
+        if (sortOrder === 'price-desc') return priceB - priceA;
         return 0;
       });
   };
@@ -167,15 +169,26 @@ function Marketplace() {
 }
 
 // Extracted Card Component for cleaner state management of "expanded"
+// Extracted Card Component for cleaner state management of "expanded"
 function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, formatPrice }) {
   const [expanded, setExpanded] = useState(false);
 
   // Helper to color condition
   const getConditionColor = (cond) => {
+    if (cond === undefined || cond === null) return 'text-gray-500';
     if (cond >= 80) return 'text-green-600';
     if (cond >= 50) return 'text-yellow-600';
     return 'text-red-600';
   };
+
+  // Safe access helpers for legacy data
+  const ttaf = plane.conditionDetails?.airframe?.ttaf ?? plane.hours ?? 0;
+  const smoh = plane.conditionDetails?.engine?.smoh ?? 'N/A';
+  const avionicsCond = plane.conditionDetails?.avionics?.condition ?? 0;
+  const interiorCond = plane.conditionDetails?.interior?.condition ?? 0;
+
+  // Safe price for legacy fleet (if missing, use arbitrary 50k or calculate)
+  const displayPrice = plane.price || 50000;
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative flex flex-col">
@@ -198,7 +211,7 @@ function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, format
         {/* Quick Stats Overlay */}
         <div className="absolute bottom-0 inset-x-0 bg-black bg-opacity-50 text-white p-2 flex justify-between text-xs">
           <span>{plane.year}</span>
-          <span>TTAF: {plane.conditionDetails?.airframe?.ttaf || plane.hours}</span>
+          <span>TTAF: {ttaf}</span>
         </div>
       </div>
 
@@ -213,7 +226,7 @@ function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, format
         <div className="mb-3 flex justify-between items-center">
           <div className="flex items-center gap-1 text-2xl font-bold text-blue-900">
             <DollarSign className="w-6 h-6" />
-            {formatPrice(plane.price)}
+            {formatPrice(displayPrice)}
           </div>
         </div>
 
@@ -221,22 +234,22 @@ function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, format
         <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-sm mb-4 bg-gray-50 p-2 rounded">
           <div className="flex justify-between">
             <span className="text-gray-500">TTAF</span>
-            <span className="font-mono font-bold">{plane.conditionDetails?.airframe?.ttaf || plane.hours}</span>
+            <span className="font-mono font-bold">{ttaf}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Eng SMOH</span>
-            <span className="font-mono font-bold">{plane.conditionDetails?.engine?.smoh || 'N/A'}</span>
+            <span className="font-mono font-bold">{smoh}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Avionics</span>
-            <span className={`font-bold ${getConditionColor(plane.conditionDetails?.avionics?.condition)}`}>
-              {plane.conditionDetails?.avionics?.condition}%
+            <span className={`font-bold ${getConditionColor(avionicsCond)}`}>
+              {avionicsCond > 0 ? `${avionicsCond}%` : 'N/A'}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Interior</span>
-            <span className={`font-bold ${getConditionColor(plane.conditionDetails?.interior?.condition)}`}>
-              {plane.conditionDetails?.interior?.condition}/100
+            <span className={`font-bold ${getConditionColor(interiorCond)}`}>
+              {interiorCond > 0 ? `${interiorCond}/100` : 'N/A'}
             </span>
           </div>
         </div>
@@ -262,14 +275,14 @@ function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, format
                 <span className="text-gray-500">Model:</span>
                 <span className="font-semibold text-right">{plane.conditionDetails?.engine?.model || 'Generic'}</span>
                 <span className="text-gray-500">SMOH:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.engine?.smoh} hrs</span>
+                <span className="font-mono text-right">{smoh} {typeof smoh === 'number' ? 'hrs' : ''}</span>
                 <span className="text-gray-500">TBO:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tbo} hrs</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tbo || 2000} hrs</span>
                 <span className="text-gray-500">TSN:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tsn} hrs</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tsn || 'Unknown'} {plane.conditionDetails?.engine?.tsn ? 'hrs' : ''}</span>
                 <span className="text-gray-500">Condition:</span>
                 <span className={`text-right font-bold ${getConditionColor(plane.conditionDetails?.engine?.condition)}`}>
-                  {plane.conditionDetails?.engine?.condition}%
+                  {plane.conditionDetails?.engine?.condition ?? 'N/A'}%
                 </span>
               </div>
             </div>
@@ -279,9 +292,9 @@ function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, format
               <h4 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Airframe & Inspection</h4>
               <div className="grid grid-cols-2 gap-1 text-xs">
                 <span className="text-gray-500">TTAF:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.airframe?.ttaf} hrs</span>
+                <span className="font-mono text-right">{ttaf} hrs</span>
                 <span className="text-gray-500">Last Annual:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.airframe?.lastAnnual || 'N/A'}</span>
+                <span className="font-mono text-right">{plane.conditionDetails?.airframe?.lastAnnual || 'Unknown'}</span>
               </div>
             </div>
 
@@ -294,7 +307,7 @@ function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, format
                     <li key={idx}>{item}</li>
                   ))
                 ) : (
-                  <li>Standard Six Pack</li>
+                  <li>Standard Equipment</li>
                 )}
               </ul>
             </div>
@@ -318,13 +331,13 @@ function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, format
           {activeTab === 'buy' ? (
             <button
               onClick={() => handleBuy(plane)}
-              disabled={company.balance < plane.price}
-              className={`w-full py-3 rounded-lg font-bold transition ${company.balance >= plane.price
+              disabled={company.balance < displayPrice}
+              className={`w-full py-3 rounded-lg font-bold transition ${company.balance >= displayPrice
                 ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-md'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
             >
-              {company.balance >= plane.price ? 'Purchase Aircraft' : 'Insufficient Funds'}
+              {company.balance >= displayPrice ? 'Purchase Aircraft' : 'Insufficient Funds'}
             </button>
           ) : (
             <button
