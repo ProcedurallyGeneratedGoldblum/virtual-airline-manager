@@ -49,10 +49,15 @@ function Marketplace() {
   };
 
   const getFilteredAircraft = (sourceList) => {
+    if (!Array.isArray(sourceList)) return [];
+
     return sourceList.filter(plane => {
+      if (!plane) return false;
       const matchesCategory = selectedCategory === 'all' || plane.category === selectedCategory;
-      const matchesSearch = plane.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        plane.manufacturer.toLowerCase().includes(searchTerm.toLowerCase());
+      const name = plane.name || '';
+      const manufacturer = plane.manufacturer || '';
+      const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        manufacturer.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesCategory && matchesSearch;
     })
       .sort((a, b) => {
