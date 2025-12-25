@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import aircraftTypes from '../data/aircraftTypes.json';
+import { calculateFlightFinance } from '../utils/flightCalculations';
 
 const AppContext = createContext();
 
@@ -504,12 +505,22 @@ export const AppProvider = ({ children }) => {
     // Remove from active flights
     setActiveFlights(prev => prev.filter(f => f.id !== flightId));
 
+    // Calculate final financials
+    const finance = calculateFlightFinance(flight, aircraft);
+    // If actual duration differed significantly, we might want to adjust expenses (fuel/pilot), 
+    // but calculateFlightFinance uses flight.distance mainly. 
+    // Let's stick to the generated finance object for consistency, or ideally recalculate with actual hours.
+    // For now, we'll use the calculated profit as the realized gain.
+    const netProfit = finance ? finance.profit : (briefingData.earnings || 0);
+    const revenue = finance ? finance.revenue : (briefingData.earnings || 0);
+
     // Update company stats
     setCompany(prev => ({
       ...prev,
       totalFlights: prev.totalFlights + 1,
-      totalEarnings: prev.totalEarnings + (briefingData.earnings || 0),
-      flightHours: prev.flightHours + flightHours
+      totalEarnings: prev.totalEarnings + revenue,
+      flightHours: prev.flightHours + flightHours,
+      balance: prev.balance + netProfit
     }));
 
     // Clear flight to complete

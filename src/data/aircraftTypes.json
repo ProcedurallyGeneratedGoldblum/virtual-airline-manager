@@ -14,7 +14,9 @@
             "range": "640 nm",
             "cruise": "124 kts",
             "useful_load": "878 lbs",
-            "fuel_capacity": "56 gal"
+            "fuel_capacity": "56 gal",
+            "fuel_burn": 9,
+            "maintenance_cost_per_hour": 20
         },
         "descriptions": [
             "Well-maintained trainer aircraft",
@@ -40,7 +42,9 @@
             "range": "460 nm",
             "cruise": "100 kts",
             "useful_load": "930 lbs",
-            "fuel_capacity": "36 gal"
+            "fuel_capacity": "36 gal",
+            "fuel_burn": 9,
+            "maintenance_cost_per_hour": 20
         },
         "descriptions": [
             "Tundra tires installed",
@@ -66,7 +70,9 @@
             "range": "915 nm",
             "cruise": "145 kts",
             "useful_load": "1065 lbs",
-            "fuel_capacity": "88 gal"
+            "fuel_capacity": "88 gal",
+            "fuel_burn": 13,
+            "maintenance_cost_per_hour": 30
         },
         "descriptions": [
             "G1000 glass cockpit",
@@ -92,7 +98,9 @@
             "range": "640 nm",
             "cruise": "122 kts",
             "useful_load": "965 lbs",
-            "fuel_capacity": "50 gal"
+            "fuel_capacity": "50 gal",
+            "fuel_burn": 10,
+            "maintenance_cost_per_hour": 25
         },
         "descriptions": [
             "Reliable trainer aircraft",
@@ -118,7 +126,9 @@
             "range": "1480 nm",
             "cruise": "200 kts",
             "useful_load": "1670 lbs",
-            "fuel_capacity": "142 gal"
+            "fuel_capacity": "142 gal",
+            "fuel_burn": 32,
+            "maintenance_cost_per_hour": 60
         },
         "descriptions": [
             "Executive twin with full de-ice",
@@ -144,7 +154,9 @@
             "range": "828 nm",
             "cruise": "160 kts",
             "useful_load": "1175 lbs",
-            "fuel_capacity": "108 gal"
+            "fuel_capacity": "108 gal",
+            "fuel_burn": 22,
+            "maintenance_cost_per_hour": 50
         },
         "descriptions": [
             "Multi-engine trainer",
@@ -170,7 +182,9 @@
             "range": "1070 nm",
             "cruise": "186 kts",
             "useful_load": "4020 lbs",
-            "fuel_capacity": "332 gal"
+            "fuel_capacity": "332 gal",
+            "fuel_burn": 50,
+            "maintenance_cost_per_hour": 150
         },
         "descriptions": [
             "Cargo pod installed",
@@ -195,7 +209,9 @@
             "range": "1132 nm",
             "cruise": "183 kts",
             "useful_load": "3530 lbs",
-            "fuel_capacity": "320 gal"
+            "fuel_capacity": "320 gal",
+            "fuel_burn": 45,
+            "maintenance_cost_per_hour": 140
         },
         "descriptions": [
             "STOL performance",
@@ -220,7 +236,9 @@
             "range": "794 nm",
             "cruise": "151 kts",
             "useful_load": "3197 lbs",
-            "fuel_capacity": "176 gal"
+            "fuel_capacity": "176 gal",
+            "fuel_burn": 42,
+            "maintenance_cost_per_hour": 160
         },
         "descriptions": [
             "Legendary STOL performance",
@@ -245,7 +263,9 @@
             "range": "806 nm",
             "cruise": "182 kts",
             "useful_load": "5625 lbs",
-            "fuel_capacity": "378 gal"
+            "fuel_capacity": "378 gal",
+            "fuel_burn": 80,
+            "maintenance_cost_per_hour": 200
         },
         "descriptions": [
             "Float equipped",
@@ -270,7 +290,9 @@
             "range": "455 nm",
             "cruise": "130 kts",
             "useful_load": "2100 lbs",
-            "fuel_capacity": "95 gal"
+            "fuel_capacity": "95 gal",
+            "fuel_burn": 25,
+            "maintenance_cost_per_hour": 40
         },
         "descriptions": [
             "Classic backcountry legend",
@@ -295,7 +317,9 @@
             "range": "550 nm",
             "cruise": "145 kts",
             "useful_load": "1350 lbs",
-            "fuel_capacity": "60 gal"
+            "fuel_capacity": "60 gal",
+            "fuel_burn": 12,
+            "maintenance_cost_per_hour": 30
         },
         "descriptions": [
             "STOL kit installed",
@@ -321,7 +345,9 @@
             "range": "415 nm",
             "cruise": "107 kts",
             "useful_load": "530 lbs",
-            "fuel_capacity": "26 gal"
+            "fuel_capacity": "26 gal",
+            "fuel_burn": 6,
+            "maintenance_cost_per_hour": 15
         },
         "descriptions": [
             "Perfect time builder",
@@ -347,7 +373,9 @@
             "range": "1000 nm",
             "cruise": "230 kts",
             "useful_load": "1600 lbs",
-            "fuel_capacity": "202 gal"
+            "fuel_capacity": "202 gal",
+            "fuel_burn": 40,
+            "maintenance_cost_per_hour": 100
         },
         "descriptions": [
             "Pressurized cabin comfort",
@@ -373,7 +401,9 @@
             "range": "850 nm",
             "cruise": "137 kts",
             "useful_load": "960 lbs",
-            "fuel_capacity": "72 gal"
+            "fuel_capacity": "72 gal",
+            "fuel_burn": 12,
+            "maintenance_cost_per_hour": 30
         },
         "descriptions": [
             "Retractable gear complex trainer",
@@ -399,7 +429,9 @@
             "range": "920 nm",
             "cruise": "170 kts",
             "useful_load": "1200 lbs",
-            "fuel_capacity": "74 gal"
+            "fuel_capacity": "74 gal",
+            "fuel_burn": 16,
+            "maintenance_cost_per_hour": 40
         },
         "descriptions": [
             "The doctor killer (just kidding, it's safe)",
@@ -425,7 +457,9 @@
             "range": "1300 nm",
             "cruise": "190 kts",
             "useful_load": "1700 lbs",
-            "fuel_capacity": "163 gal"
+            "fuel_capacity": "163 gal",
+            "fuel_burn": 28,
+            "maintenance_cost_per_hour": 55
         },
         "descriptions": [
             "Classic twin engine reliability",
@@ -451,7 +485,9 @@
             "range": "940 nm",
             "cruise": "150 kts",
             "useful_load": "900 lbs",
-            "fuel_capacity": "40 gal"
+            "fuel_capacity": "40 gal",
+            "fuel_burn": 5,
+            "maintenance_cost_per_hour": 25
         },
         "descriptions": [
             "Modern composite construction",
@@ -477,7 +513,9 @@
             "range": "420 nm",
             "cruise": "105 kts",
             "useful_load": "480 lbs",
-            "fuel_capacity": "26 gal"
+            "fuel_capacity": "26 gal",
+            "fuel_burn": 6,
+            "maintenance_cost_per_hour": 15
         },
         "descriptions": [
             "Ideal time builder",
@@ -503,7 +541,9 @@
             "range": "468 nm",
             "cruise": "100 kts",
             "useful_load": "512 lbs",
-            "fuel_capacity": "30 gal"
+            "fuel_capacity": "30 gal",
+            "fuel_burn": 6,
+            "maintenance_cost_per_hour": 15
         },
         "descriptions": [
             " The 'Traumahawk' - spins great!",
@@ -529,7 +569,9 @@
             "range": "250 nm",
             "cruise": "85 kts",
             "useful_load": "450 lbs",
-            "fuel_capacity": "13 gal"
+            "fuel_capacity": "13 gal",
+            "fuel_burn": 5,
+            "maintenance_cost_per_hour": 15
         },
         "descriptions": [
             "Classic taildragger",
@@ -555,7 +597,9 @@
             "range": "300 nm",
             "cruise": "95 kts",
             "useful_load": "500 lbs",
-            "fuel_capacity": "24 gal"
+            "fuel_capacity": "24 gal",
+            "fuel_burn": 5,
+            "maintenance_cost_per_hour": 15
         },
         "descriptions": [
             "Cannot spin (by design)",
@@ -581,7 +625,9 @@
             "range": "350 nm",
             "cruise": "105 kts",
             "useful_load": "550 lbs",
-            "fuel_capacity": "25 gal"
+            "fuel_capacity": "25 gal",
+            "fuel_burn": 5,
+            "maintenance_cost_per_hour": 15
         },
         "descriptions": [
             "All metal construction",
