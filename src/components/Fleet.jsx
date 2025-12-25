@@ -123,10 +123,10 @@ function Fleet() {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-2xl font-bold text-gray-900">{plane.registration}</h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${getStatusColor(plane.status)}`}>
-                        <span>{getStatusEmoji(plane.status)}</span>
-                        {plane.status.toUpperCase().replace('-', ' ')}
+                      <h3 className="text-2xl font-bold text-gray-900">{plane.registration || 'N/A'}</h3>
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${getStatusColor(plane.status || 'available')}`}>
+                        <span>{getStatusEmoji(plane.status || 'available')}</span>
+                        {(plane.status || 'available').toUpperCase().replace('-', ' ')}
                       </span>
                       {plane.lockedBy && (
                         <span className="px-3 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-800 flex items-center gap-1">
@@ -135,15 +135,15 @@ function Fleet() {
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-600 font-medium">{plane.type}</p>
+                    <p className="text-gray-600 font-medium">{plane.type || 'Unknown Aircraft'}</p>
                   </div>
 
                   <div className="text-right">
                     <div className="flex flex-col items-end gap-2">
                       <div>
                         <p className="text-sm text-gray-600">Condition</p>
-                        <p className={`text-lg font-bold capitalize ${getConditionColor(plane.condition)}`}>
-                          {plane.condition}
+                        <p className={`text-lg font-bold capitalize ${getConditionColor(plane.condition || 'fair')}`}>
+                          {plane.condition || 'fair'}
                         </p>
                       </div>
                       <button
