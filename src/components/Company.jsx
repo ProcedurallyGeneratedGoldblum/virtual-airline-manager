@@ -4,9 +4,14 @@ import airportsData from '../data/airports.json';
 
 import { useAppContext } from './AppContext';
 
+// Import Fleet
+import Fleet from './Fleet';
+
 function Company() {
   const { company, updateCompany } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'fleet'
+
   // Determine if company is set up based on name presence
   const hasCompany = !!company.name;
 
@@ -91,6 +96,15 @@ function Company() {
             {hasCompany ? 'Update your company information' : 'Set up your virtual airline'}
           </p>
         </div>
+
+        {/* ... (Edit form code essentially same, just reusing logic implicitly by not changing it) ... */}
+        {/* Note: In full implementation, we'd render the form here. 
+            For brevity in this replacement, I'll trust the existing edit logic works and just wrap it if I could, 
+            but replace_file_content needs the WHOLE block if I touch the surrounding state.
+            
+            Wait, I am overwriting the whole function body essentially to add Tabs.
+            I will re-paste the necessary Edit Form JSX.
+         */}
 
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl mx-auto">
           <div className="space-y-6">
@@ -219,155 +233,189 @@ function Company() {
   // Display Company Profile
   return (
     <div>
-      <div className="mb-6 flex justify-between items-start">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Company Profile</h2>
-          <p className="text-gray-600">Your virtual airline information</p>
-        </div>
+      {/* Navigation Tabs */}
+      <div className="flex gap-4 mb-6 border-b border-gray-200">
         <button
-          onClick={handleStartEditing}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition"
+          onClick={() => setActiveTab('profile')}
+          className={`pb-3 px-2 font-semibold transition relative ${activeTab === 'profile'
+              ? 'text-blue-900'
+              : 'text-gray-500 hover:text-gray-700'
+            }`}
         >
-          <Edit2 className="w-4 h-4" />
-          Edit Company
+          Company Profile
+          {activeTab === 'profile' && (
+            <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-900 rounded-t"></span>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('fleet')}
+          className={`pb-3 px-2 font-semibold transition relative ${activeTab === 'fleet'
+              ? 'text-blue-900'
+              : 'text-gray-500 hover:text-gray-700'
+            }`}
+        >
+          Fleet Management
+          {activeTab === 'fleet' && (
+            <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-900 rounded-t"></span>
+          )}
         </button>
       </div>
 
-      {/* Company Header Card */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-lg shadow-lg p-8 mb-6 text-white">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-6">
-            <div className="bg-white rounded-lg p-6">
-              <Building2 className="w-16 h-16 text-blue-900" />
-            </div>
+      {activeTab === 'fleet' ? (
+        <Fleet />
+      ) : (
+        <>
+          <div className="mb-6 flex justify-between items-start">
             <div>
-              <h3 className="text-4xl font-bold mb-2">{company.name}</h3>
-              <p className="text-xl text-blue-100 mb-3">Callsign: {company.callsign}</p>
-              {company.motto && (
-                <p className="text-blue-200 italic">"{company.motto}"</p>
-              )}
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Company Information</h2>
+              <p className="text-gray-600">Overview of your airline operations</p>
+            </div>
+            <button
+              onClick={handleStartEditing}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition"
+            >
+              <Edit2 className="w-4 h-4" />
+              Edit Company
+            </button>
+          </div>
+
+          {/* Company Header Card */}
+          <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-lg shadow-lg p-8 mb-6 text-white">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-center gap-6">
+                <div className="bg-white rounded-lg p-6">
+                  <Building2 className="w-16 h-16 text-blue-900" />
+                </div>
+                <div>
+                  <h3 className="text-4xl font-bold mb-2">{company.name}</h3>
+                  <p className="text-xl text-blue-100 mb-3">Callsign: {company.callsign}</p>
+                  {company.motto && (
+                    <p className="text-blue-200 italic">"{company.motto}"</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-blue-600">
+              <div>
+                <p className="text-blue-200 text-sm mb-1">Headquarters</p>
+                <p className="font-semibold flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {company.headquarters}
+                </p>
+              </div>
+              <div>
+                <p className="text-blue-200 text-sm mb-1">Established</p>
+                <p className="font-semibold flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  {new Date(company.established).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                </p>
+              </div>
+              <div>
+                <p className="text-blue-200 text-sm mb-1">Focus Area</p>
+                <p className="font-semibold">
+                  {focusAreas.find(f => f.id === company.focusArea)?.name || 'Mixed Operations'}
+                </p>
+              </div>
+              <div>
+                <p className="text-blue-200 text-sm mb-1">Operations Type</p>
+                <p className="font-semibold">
+                  {focusAreas.find(f => f.id === company.focusArea)?.description || 'Various'}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-blue-600">
-          <div>
-            <p className="text-blue-200 text-sm mb-1">Headquarters</p>
-            <p className="font-semibold flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              {company.headquarters}
-            </p>
-          </div>
-          <div>
-            <p className="text-blue-200 text-sm mb-1">Established</p>
-            <p className="font-semibold flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              {new Date(company.established).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-            </p>
-          </div>
-          <div>
-            <p className="text-blue-200 text-sm mb-1">Focus Area</p>
-            <p className="font-semibold">
-              {focusAreas.find(f => f.id === company.focusArea)?.name || 'Mixed Operations'}
-            </p>
-          </div>
-          <div>
-            <p className="text-blue-200 text-sm mb-1">Operations Type</p>
-            <p className="font-semibold">
-              {focusAreas.find(f => f.id === company.focusArea)?.description || 'Various'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Pilots</p>
-              <p className="text-3xl font-bold text-gray-900">{company.pilots}</p>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Pilots</p>
+                  <p className="text-3xl font-bold text-gray-900">{company.pilots}</p>
+                </div>
+                <Users className="w-12 h-12 text-blue-600" />
+              </div>
             </div>
-            <Users className="w-12 h-12 text-blue-600" />
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Fleet Size</p>
-              <p className="text-3xl font-bold text-gray-900">{company.aircraft}</p>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Fleet Size</p>
+                  <p className="text-3xl font-bold text-gray-900">{company.aircraft}</p>
+                </div>
+                <Plane className="w-12 h-12 text-green-600" />
+              </div>
             </div>
-            <Plane className="w-12 h-12 text-green-600" />
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Flights</p>
-              <p className="text-3xl font-bold text-gray-900">{company.totalFlights}</p>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Flights</p>
+                  <p className="text-3xl font-bold text-gray-900">{company.totalFlights}</p>
+                </div>
+                <Plane className="w-12 h-12 text-purple-600" />
+              </div>
             </div>
-            <Plane className="w-12 h-12 text-purple-600" />
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Company Age</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {Math.floor((new Date() - new Date(company.established)) / (1000 * 60 * 60 * 24))} days
-              </p>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Company Age</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {Math.floor((new Date() - new Date(company.established)) / (1000 * 60 * 60 * 24))} days
+                  </p>
+                </div>
+                <Calendar className="w-12 h-12 text-yellow-600" />
+              </div>
             </div>
-            <Calendar className="w-12 h-12 text-yellow-600" />
           </div>
-        </div>
-      </div>
 
-      {/* Company Description */}
-      {company.description && (
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">About Us</h3>
-          <p className="text-gray-700 leading-relaxed">{company.description}</p>
-        </div>
+          {/* Company Description */}
+          {company.description && (
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">About Us</h3>
+              <p className="text-gray-700 leading-relaxed">{company.description}</p>
+            </div>
+          )}
+
+          {/* Company Achievements */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Company Milestones</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                <span className="text-2xl">🎉</span>
+                <div>
+                  <p className="font-semibold text-gray-900">Company Established</p>
+                  <p className="text-sm text-gray-600">
+                    {new Date(company.established).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-50">
+                <span className="text-2xl">🏆</span>
+                <div>
+                  <p className="font-semibold text-gray-900">First 10 Flights</p>
+                  <p className="text-sm text-gray-600">Complete 10 successful flights</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-50">
+                <span className="text-2xl">✈️</span>
+                <div>
+                  <p className="font-semibold text-gray-900">Fleet Builder</p>
+                  <p className="text-sm text-gray-600">Own 5 aircraft</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
-
-      {/* Company Achievements */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Company Milestones</h3>
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-            <span className="text-2xl">🎉</span>
-            <div>
-              <p className="font-semibold text-gray-900">Company Established</p>
-              <p className="text-sm text-gray-600">
-                {new Date(company.established).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-50">
-            <span className="text-2xl">🏆</span>
-            <div>
-              <p className="font-semibold text-gray-900">First 10 Flights</p>
-              <p className="text-sm text-gray-600">Complete 10 successful flights</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-50">
-            <span className="text-2xl">✈️</span>
-            <div>
-              <p className="font-semibold text-gray-900">Fleet Builder</p>
-              <p className="text-sm text-gray-600">Own 5 aircraft</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
