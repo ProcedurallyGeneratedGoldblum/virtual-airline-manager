@@ -26,11 +26,11 @@ function Fleet() {
 
   const getStatusEmoji = (status) => {
     switch (status) {
-      case 'available': return '✅';
-      case 'in-flight': return '✈️';
-      case 'maintenance': return '🔧';
-      case 'out-of-service': return '⚠️';
-      default: return '⏱️';
+      case 'available': return '✓';
+      case 'in-flight': return '↑';
+      case 'maintenance': return '⚙';
+      case 'out-of-service': return '!';
+      default: return '○';
     }
   };
 
@@ -71,7 +71,7 @@ function Fleet() {
               <p className="text-sm text-gray-600 mb-1">Total Aircraft</p>
               <p className="text-3xl font-bold text-gray-900">{fleet.length}</p>
             </div>
-            <span className="text-5xl">✈️</span>
+            <span className="text-5xl text-blue-600">✈</span>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ function Fleet() {
                 {fleet.filter(a => a.status === 'available').length}
               </p>
             </div>
-            <span className="text-5xl">✅</span>
+            <span className="text-5xl text-green-600">✓</span>
           </div>
         </div>
 
@@ -95,7 +95,7 @@ function Fleet() {
                 {fleet.filter(a => a.status === 'in-flight').length}
               </p>
             </div>
-            <span className="text-5xl">🛫</span>
+            <span className="text-5xl text-blue-600">↑</span>
           </div>
         </div>
 
@@ -107,7 +107,7 @@ function Fleet() {
                 {fleet.filter(a => a.status === 'maintenance').length}
               </p>
             </div>
-            <span className="text-5xl">🔧</span>
+            <span className="text-5xl text-yellow-600">⚙</span>
           </div>
         </div>
       </div>
@@ -130,7 +130,7 @@ function Fleet() {
                       </span>
                       {plane.lockedBy && (
                         <span className="px-3 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-800 flex items-center gap-1">
-                          <span>🔒</span>
+                          <span>●</span>
                           LOCKED
                         </span>
                       )}
@@ -185,7 +185,7 @@ function Fleet() {
                 {/* Status Messages */}
                 {plane.lockedBy && plane.status === 'in-flight' && (
                   <div className="bg-orange-50 border-l-4 border-orange-400 p-3 rounded mb-3">
-                    <p className="text-sm font-semibold text-orange-900">🔒 Aircraft Locked</p>
+                    <p className="text-sm font-semibold text-orange-900">● Aircraft Locked</p>
                     <p className="text-sm text-orange-800">
                       This aircraft is currently assigned to an active flight and cannot be used until the flight is completed.
                     </p>
@@ -194,7 +194,7 @@ function Fleet() {
 
                 {plane.maintenanceNotes && (
                   <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                    <p className="text-sm font-semibold text-yellow-900">🔧 Maintenance:</p>
+                    <p className="text-sm font-semibold text-yellow-900">⚙ Maintenance:</p>
                     <p className="text-sm text-yellow-800">{plane.maintenanceNotes}</p>
                   </div>
                 )}
@@ -204,7 +204,7 @@ function Fleet() {
               {isExpanded && (
                 <div className="bg-gray-50 border-t border-gray-200 p-6">
                   <div className="flex items-center gap-2 mb-6">
-                    <span className="text-2xl">🔧</span>
+                    <span className="text-2xl">⚙</span>
                     <h3 className="text-xl font-bold text-gray-900">Service Center</h3>
                   </div>
 
@@ -212,12 +212,12 @@ function Fleet() {
                     {/* MEL Items */}
                     <div className="bg-white rounded-lg shadow p-4">
                       <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <span className="text-xl">⚠️</span>
+                        <span className="text-xl">!</span>
                         Defect Checklist (MEL)
                       </h4>
                       {!plane.melList || plane.melList.length === 0 ? (
                         <div className="text-center py-8 text-gray-500 bg-gray-50 rounded border border-dashed">
-                          <span className="text-4xl block mb-2">✅</span>
+                          <span className="text-4xl block mb-2">✓</span>
                           <p>No defects reported. Aircraft is clean.</p>
                         </div>
                       ) : (
@@ -234,7 +234,7 @@ function Fleet() {
                                 onClick={() => handleRepair(plane.id, 'MEL', mel)}
                                 className="flex items-center gap-1 bg-white border border-green-600 text-green-700 hover:bg-green-50 px-3 py-1.5 rounded text-sm font-semibold transition"
                               >
-                                <span>🔨</span>
+                                <span>•</span>
                                 Fix (${mel.type === 'major' ? '2,000' : '500'})
                               </button>
                             </div>
@@ -246,7 +246,7 @@ function Fleet() {
                     {/* Component Health */}
                     <div className="bg-white rounded-lg shadow p-4">
                       <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <span className="text-xl">⚙️</span>
+                        <span className="text-xl">⚙</span>
                         Component Health
                       </h4>
 
