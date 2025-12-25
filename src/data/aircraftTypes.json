@@ -461,5 +461,135 @@
             "Safe and docile handling"
         ],
         "image": "/src/assets/aircraft/diamond-da40.svg"
+    },
+    {
+        "name": "Cessna 150",
+        "manufacturer": "Cessna",
+        "category": "single-piston",
+        "basePrice": 35000,
+        "priceVariance": 15000,
+        "yearRange": [
+            1960,
+            1977
+        ],
+        "specs": {
+            "seats": 2,
+            "range": "420 nm",
+            "cruise": "105 kts",
+            "useful_load": "480 lbs",
+            "fuel_capacity": "26 gal"
+        },
+        "descriptions": [
+            "Ideal time builder",
+            "Robust trainer",
+            "Cheap to operate",
+            "Needs some TLC",
+            "Perfect first airplane"
+        ],
+        "image": "🛩️"
+    },
+    {
+        "name": "Piper PA-38 Tomahawk",
+        "manufacturer": "Piper",
+        "category": "single-piston",
+        "basePrice": 30000,
+        "priceVariance": 10000,
+        "yearRange": [
+            1978,
+            1982
+        ],
+        "specs": {
+            "seats": 2,
+            "range": "468 nm",
+            "cruise": "100 kts",
+            "useful_load": "512 lbs",
+            "fuel_capacity": "30 gal"
+        },
+        "descriptions": [
+            " The 'Traumahawk' - spins great!",
+            "High visibility cockpit",
+            "Wide cabin for a trainer",
+            "Recent wing spar AD compliance",
+            "Good commuter"
+        ],
+        "image": "✈️"
+    },
+    {
+        "name": "Aeronca 7AC Champ",
+        "manufacturer": "Aeronca",
+        "category": "single-piston",
+        "basePrice": 40000,
+        "priceVariance": 12000,
+        "yearRange": [
+            1946,
+            1955
+        ],
+        "specs": {
+            "seats": 2,
+            "range": "250 nm",
+            "cruise": "85 kts",
+            "useful_load": "450 lbs",
+            "fuel_capacity": "13 gal"
+        },
+        "descriptions": [
+            "Classic taildragger",
+            "No electrical system",
+            "Hand prop start only",
+            "Pure flying experience",
+            "Fabric in good condition"
+        ],
+        "image": "🛩️"
+    },
+    {
+        "name": "ERCO Ercoupe 415-C",
+        "manufacturer": "ERCO",
+        "category": "single-piston",
+        "basePrice": 32000,
+        "priceVariance": 8000,
+        "yearRange": [
+            1946,
+            1950
+        ],
+        "specs": {
+            "seats": 2,
+            "range": "300 nm",
+            "cruise": "95 kts",
+            "useful_load": "500 lbs",
+            "fuel_capacity": "24 gal"
+        },
+        "descriptions": [
+            "Cannot spin (by design)",
+            "Coupled aileron and rudder",
+            "Fun bubble canopy",
+            "LSA compliant",
+            "Easy to fly"
+        ],
+        "image": "✈️"
+    },
+    {
+        "name": "Luscombe 8A",
+        "manufacturer": "Luscombe",
+        "category": "single-piston",
+        "basePrice": 38000,
+        "priceVariance": 15000,
+        "yearRange": [
+            1940,
+            1950
+        ],
+        "specs": {
+            "seats": 2,
+            "range": "350 nm",
+            "cruise": "105 kts",
+            "useful_load": "550 lbs",
+            "fuel_capacity": "25 gal"
+        },
+        "descriptions": [
+            "All metal construction",
+            "Fast for its horsepower",
+            "Responsive handling",
+            "Classic polished aluminum",
+            "Sporty taildragger"
+        ],
+        "image": "🛩️"
     }
 ]

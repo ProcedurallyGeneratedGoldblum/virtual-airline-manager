@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import aircraftTypes from '../data/aircraftTypes.json';
 
 const AppContext = createContext();
 
@@ -36,8 +37,16 @@ export const AppProvider = ({ children }) => {
     totalFlights: 0,
     totalEarnings: 0,
     flightHours: 0,
+    balance: 5000000, // Initial balance
     established: new Date().toISOString().split('T')[0]
   }));
+
+  // Migration for existing saves
+  useEffect(() => {
+    if (company.balance === undefined) {
+      setCompany(prev => ({ ...prev, balance: 5000000 }));
+    }
+  }, []);
 
   // Pilot State
   const [pilot, setPilot] = useState(() => loadState('vam_pilot', {
@@ -525,7 +534,66 @@ export const AppProvider = ({ children }) => {
   // Add aircraft to fleet
   const addAircraftToFleet = (aircraft) => {
     setFleet(prev => [...prev, { ...aircraft, id: prev.length + 1 }]);
-    setCompany(prev => ({ ...prev, aircraft: prev.aircraft + 1 }));
+    setCompany(prev => ({
+      ...prev,
+      aircraft: prev.aircraft + 1,
+      balance: prev.balance - aircraft.price
+    }));
+  };
+
+  // Sell aircraft
+  const sellAircraft = (aircraftId) => {
+    const aircraft = fleet.find(a => a.id === aircraftId);
+    if (!aircraft) return;
+
+    // Calculate sell price
+    // Find template for base specs
+    const template = aircraftTypes.find(t => t.name === aircraft.name) ||
+      aircraftTypes.find(t => t.category === aircraft.type) || // Fallback
+      { basePrice: 50000 };
+
+    // Simplified depreciation for selling
+    // If it has a price proeprty from generation/purchase, use that as basis
+    // Otherwise calculate from scratch
+    let baseValue = aircraft.price || template.basePrice;
+
+    // If it was just bought, price is mostly retained minus immediate depreciation
+    // For this MVP, we'll just return 70% of current value + condition adjustments
+    // If it's a "fleet" aircraft with no price, we calculate one
+    if (!aircraft.price) {
+      // Estimate for legacy fleet
+      baseValue = template.basePrice * 0.6;
+    }
+
+    // Apply condition degradation
+    let conditionFactor = 1.0;
+    if (aircraft.conditionDetails) {
+      // Advanced logic
+      const engine = aircraft.conditionDetails.engine.condition / 100;
+      const airframe = aircraft.conditionDetails.airframe.condition / 100;
+      const avionics = aircraft.conditionDetails.avionics.condition / 100;
+      conditionFactor = (engine * 0.5) + (airframe * 0.3) + (avionics * 0.2);
+    } else {
+      // Simple logic
+      conditionFactor = {
+        'excellent': 1.0,
+        'good': 0.8,
+        'fair': 0.6,
+        'poor': 0.4,
+        'maintenance': 0.3
+      }[aircraft.condition.toLowerCase()] || 0.6;
+    }
+
+    const sellPrice = Math.floor(baseValue * conditionFactor * 0.8); // 20% dealer margin/fee
+
+    setFleet(prev => prev.filter(a => a.id !== aircraftId));
+    setCompany(prev => ({
+      ...prev,
+      aircraft: prev.aircraft - 1,
+      balance: prev.balance + sellPrice
+    }));
+
+    return sellPrice;
   };
 
   const value = {
@@ -546,6 +614,7 @@ export const AppProvider = ({ children }) => {
     completeFlightWithBriefing,
     cancelFlightBriefing,
     addAircraftToFleet,
+    sellAircraft,
     lockAircraft
   };
 

@@ -6,7 +6,7 @@ function Fleet() {
   const { fleet } = useAppContext();
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'available': return 'bg-green-100 text-green-800';
       case 'in-flight': return 'bg-blue-100 text-blue-800';
       case 'maintenance': return 'bg-yellow-100 text-yellow-800';
@@ -16,7 +16,7 @@ function Fleet() {
   };
 
   const getStatusIcon = (status) => {
-    switch(status) {
+    switch (status) {
       case 'available': return <CheckCircle className="w-5 h-5" />;
       case 'in-flight': return <Plane className="w-5 h-5" />;
       case 'maintenance': return <Wrench className="w-5 h-5" />;
@@ -26,7 +26,7 @@ function Fleet() {
   };
 
   const getConditionColor = (condition) => {
-    switch(condition) {
+    switch (condition) {
       case 'excellent': return 'text-green-600';
       case 'good': return 'text-blue-600';
       case 'fair': return 'text-yellow-600';
@@ -112,12 +112,27 @@ function Fleet() {
                 </div>
                 <p className="text-gray-600 font-medium">{plane.type}</p>
               </div>
-              
+
               <div className="text-right">
                 <p className="text-sm text-gray-600">Condition</p>
                 <p className={`text-lg font-bold capitalize ${getConditionColor(plane.condition)}`}>
                   {plane.condition}
                 </p>
+                {/* Detailed Condition */}
+                {plane.conditionDetails && (
+                  <div className="text-xs mt-1 space-y-1">
+                    <div className="flex justify-between gap-2">
+                      <span>Eng:</span>
+                      <span className={plane.conditionDetails.engine.condition > 80 ? 'text-green-600' : 'text-orange-600'}>
+                        {plane.conditionDetails.engine.condition}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <span>Avionics:</span>
+                      <span>{plane.conditionDetails.avionics.condition}%</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -127,17 +142,17 @@ function Fleet() {
                 <p className="text-xs text-gray-600 uppercase font-semibold mb-1">Location</p>
                 <p className="font-semibold text-gray-900">{plane.location}</p>
               </div>
-              
+
               <div>
                 <p className="text-xs text-gray-600 uppercase font-semibold mb-1">Total Hours</p>
                 <p className="font-semibold text-gray-900">{plane.totalHours.toFixed(1)} hrs</p>
               </div>
-              
+
               <div>
                 <p className="text-xs text-gray-600 uppercase font-semibold mb-1">Since Inspection</p>
                 <p className="font-semibold text-gray-900">{plane.hoursSinceInspection.toFixed(1)} hrs</p>
               </div>
-              
+
               <div>
                 <p className="text-xs text-gray-600 uppercase font-semibold mb-1">Next Inspection</p>
                 <p className={`font-semibold ${plane.nextInspectionDue < 20 ? 'text-red-600' : 'text-gray-900'}`}>
