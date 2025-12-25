@@ -258,6 +258,15 @@ function PilotProfile() {
                   <Award className="w-4 h-4" />
                   {pilot.rank}
                 </span>
+                {pilot.role && (
+                  <>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <User className="w-4 h-4" />
+                      {pilot.role}
+                    </span>
+                  </>
+                )}
                 <span>•</span>
                 <span>Callsign: {pilot.callsign}</span>
                 <span>•</span>
@@ -402,8 +411,8 @@ function PilotProfile() {
                   <Star
                     key={star}
                     className={`w-8 h-8 ${star <= Math.floor(pilot.rating)
-                        ? 'text-yellow-400 fill-yellow-400'
-                        : 'text-gray-300'
+                      ? 'text-yellow-400 fill-yellow-400'
+                      : 'text-gray-300'
                       }`}
                   />
                 ))}
@@ -440,8 +449,8 @@ function PilotProfile() {
             <div
               key={index}
               className={`p-4 rounded-lg border-2 transition ${achievement.earned
-                  ? 'border-yellow-400 bg-yellow-50'
-                  : 'border-gray-200 bg-gray-50 opacity-60'
+                ? 'border-yellow-400 bg-yellow-50'
+                : 'border-gray-200 bg-gray-50 opacity-60'
                 }`}
             >
               <div className="flex items-start gap-3">

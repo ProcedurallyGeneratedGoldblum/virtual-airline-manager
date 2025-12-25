@@ -54,6 +54,7 @@ export const AppProvider = ({ children }) => {
     name: '',
     callsign: '',
     rank: 'Junior Pilot',
+    role: 'Company Owner', // New field
     license: '',
     joinDate: new Date().toISOString().split('T')[0],
     totalFlights: 0,
