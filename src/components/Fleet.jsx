@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import { useAppContext } from './AppContext';
-import { Plane, CheckCircle, Clock, Wrench, AlertTriangle, Lock, ChevronDown, ChevronUp, Hammer } from 'lucide-react';
+import { Plane, CheckCircle, Clock, Wrench, AlertTriangle, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 
 function Fleet() {
   const { fleet, repairAircraft, company } = useAppContext();
   const [expandedAircraft, setExpandedAircraft] = useState(null);
+
+  if (!fleet || !Array.isArray(fleet)) {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-bold text-gray-700">Fleet Data Unavailable</h2>
+        <p className="text-gray-500">No aircraft found in fleet.</p>
+      </div>
+    );
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -43,9 +52,8 @@ function Fleet() {
   };
 
   const handleRepair = (aircraftId, type, itemData) => {
-    const success = repairAircraft(aircraftId, type, itemData);
-    if (success) {
-      // Optional: Sound effect or toast
+    if (repairAircraft) {
+      repairAircraft(aircraftId, type, itemData);
     }
   };
 
@@ -227,7 +235,7 @@ function Fleet() {
                                 onClick={() => handleRepair(plane.id, 'MEL', mel)}
                                 className="flex items-center gap-1 bg-white border border-green-600 text-green-700 hover:bg-green-50 px-3 py-1.5 rounded text-sm font-semibold transition"
                               >
-                                <Hammer className="w-3 h-3" />
+                                <Wrench className="w-3 h-3" />
                                 Fix (${mel.type === 'major' ? '2,000' : '500'})
                               </button>
                             </div>
