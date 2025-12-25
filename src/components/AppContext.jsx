@@ -607,6 +607,95 @@ export const AppProvider = ({ children }) => {
     return sellPrice;
   };
 
+  // Repair Aircraft (MEL or Component)
+  const repairAircraft = (aircraftId, type, itemData) => {
+    const aircraft = fleet.find(a => a.id === aircraftId);
+    if (!aircraft) return;
+
+    let cost = 0;
+    let newAircraft = { ...aircraft };
+    let success = false;
+
+    if (type === 'MEL') {
+      // Fix specific item
+      // Simple cost model: Minor = $500, Major = $2000
+      cost = itemData.type === 'major' ? 2000 : 500;
+
+      if (company.balance < cost) {
+        alert("insufficient funds for repair!");
+        return false;
+      }
+
+      // Remove item
+      newAircraft.melList = newAircraft.melList.filter(i => i.item !== itemData.item);
+      success = true;
+
+    } else if (type === 'COMPONENT') {
+      // Overhaul/Repair component
+      // itemData: { component: 'engine' | 'avionics' | 'interior' | 'airframe', action: 'repair' | 'overhaul' }
+
+      const prices = {
+        engine: { repair: 2000, overhaul: 15000 },
+        avionics: { repair: 1000, overhaul: 5000 },
+        interior: { repair: 500, overhaul: 2000 },
+        airframe: { repair: 1500, overhaul: 8000 } // e.g. Paint
+      };
+
+      cost = prices[itemData.component][itemData.action];
+
+      if (company.balance < cost) {
+        alert("Insufficient funds for this service!");
+        return false;
+      }
+
+      // Logic: Repair adds 20%, Overhaul resets to 100%
+      let current = newAircraft.conditionDetails[itemData.component].condition;
+      let newCondition = itemData.action === 'overhaul' ? 100 : Math.min(100, current + 20);
+
+      // Update nested state
+      newAircraft.conditionDetails = {
+        ...newAircraft.conditionDetails,
+        [itemData.component]: {
+          ...newAircraft.conditionDetails[itemData.component],
+          condition: newCondition
+        }
+      };
+
+      // If overhaul engine, reset SMOH
+      if (itemData.component === 'engine' && itemData.action === 'overhaul') {
+        newAircraft.conditionDetails.engine.smoh = 0;
+        // TBO remains same
+      }
+      success = true;
+    }
+
+    if (success) {
+      // Recalculate global condition (Simplified)
+      // If we had the generator logic here it would be better, but let's approximate
+      // Average of components
+      const cd = newAircraft.conditionDetails;
+      if (cd) {
+        const avg = (cd.engine.condition + cd.avionics.condition + cd.interior.condition + cd.airframe.condition) / 4;
+        if (avg > 90) newAircraft.condition = 'excellent';
+        else if (avg > 75) newAircraft.condition = 'good';
+        else if (avg > 60) newAircraft.condition = 'fair';
+        else if (avg > 40) newAircraft.condition = 'poor';
+        else newAircraft.condition = 'maintenance';
+      }
+
+      // Deduct funds
+      setCompany(prev => ({
+        ...prev,
+        balance: prev.balance - cost
+      }));
+
+      // Update fleet
+      setFleet(prev => prev.map(a => a.id === aircraftId ? newAircraft : a));
+    }
+
+    return success;
+  };
+
   const value = {
     // State
     company,
@@ -626,6 +715,7 @@ export const AppProvider = ({ children }) => {
     cancelFlightBriefing,
     addAircraftToFleet,
     sellAircraft,
+    repairAircraft,
     lockAircraft
   };
 
