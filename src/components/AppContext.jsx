@@ -29,7 +29,7 @@ export const AppProvider = ({ children }) => {
     motto: '',
     focus_area: 'bush',
     pilots: 1,
-    aircraft: 3,
+    aircraft: 0,
     total_flights: 0,
     total_earnings: 0,
     flight_hours: 0,
@@ -64,6 +64,21 @@ export const AppProvider = ({ children }) => {
 
   // Completed Flights State (Flight Log)
   const [completedFlights, setCompletedFlights] = useState([]);
+
+  // Marketplace State
+  const [marketListings, setMarketListings] = useState([]);
+
+  // Refresh Marketplace
+  const refreshMarket = () => {
+    setMarketListings(generateAircraft(30));
+  };
+
+  // Initialize market if empty
+  useEffect(() => {
+    if (marketListings.length === 0 && !loading) {
+      refreshMarket();
+    }
+  }, [loading]);
 
   // Seed starter fleet
   const seedStarterFleet = async () => {
@@ -221,6 +236,21 @@ export const AppProvider = ({ children }) => {
 
         const transformedFleet = transformFleet(fleetData);
         setFleet(transformedFleet);
+
+        // Sync aircraft count if mismatch
+        if (companyData.aircraft !== transformedFleet.length) {
+          console.log(`Syncing aircraft count: ${companyData.aircraft} -> ${transformedFleet.length}`);
+          const syncedCompany = { ...transformCompany(companyData), aircraft: transformedFleet.length };
+          setCompany(syncedCompany);
+          // Persist the sync
+          api.updateCompany({
+            ...syncedCompany,
+            focus_area: syncedCompany.focusArea,
+            total_flights: syncedCompany.totalFlights,
+            total_earnings: syncedCompany.totalEarnings,
+            flight_hours: syncedCompany.flightHours
+          }).catch(err => console.error('Failed to sync aircraft count on backend:', err));
+        }
 
         // Auto-seed starter fleet if company exists but fleet is empty
         if (companyData.name && transformedFleet.length === 0) {
@@ -843,10 +873,15 @@ export const AppProvider = ({ children }) => {
       specs: aircraft.specs
     };
 
-    setFleet(prev => [...prev, fleetAircraft]);
+    const newFleet = [...fleet, fleetAircraft];
+    setFleet(newFleet);
+
+    // Remove from marketplace listings if it exists there
+    setMarketListings(prev => prev.filter(a => a.id !== aircraft.id));
+
     const updatedCompany = {
       ...company,
-      aircraft: company.aircraft + 1,
+      aircraft: newFleet.length,
       balance: company.balance - aircraft.price
     };
     setCompany(updatedCompany);
@@ -1086,7 +1121,9 @@ export const AppProvider = ({ children }) => {
     addAircraftToFleet,
     sellAircraft,
     repairAircraft,
-    lockAircraft
+    lockAircraft,
+    marketListings,
+    refreshMarket
   };
 
   if (loading) {

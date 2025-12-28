@@ -4,17 +4,11 @@ import { generateAircraft } from '../utils/aircraftGenerator';
 import { useAppContext } from './AppContext';
 
 function Marketplace() {
-  const { fleet, company, sellAircraft, addAircraftToFleet } = useAppContext();
+  const { fleet, company, sellAircraft, addAircraftToFleet, marketListings, refreshMarket } = useAppContext();
   const [activeTab, setActiveTab] = useState('buy');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [marketListings, setMarketListings] = useState([]);
   const [sortOrder, setSortOrder] = useState('price-asc');
-
-  // Generate market listings on mount
-  useEffect(() => {
-    setMarketListings(generateAircraft(30));
-  }, []);
 
   const categories = [
     { id: 'all', name: 'All Aircraft' },
@@ -100,7 +94,7 @@ function Marketplace() {
 
         {activeTab === 'buy' && (
           <button
-            onClick={() => setMarketListings(generateAircraft(30))}
+            onClick={refreshMarket}
             className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
           >
             <RefreshCw className="w-4 h-4" />
