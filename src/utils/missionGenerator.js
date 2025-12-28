@@ -46,6 +46,9 @@ export const generateMissions = (fleet, missionsPerAircraft = 10) => {
             let toAirport;
             let distance = 0;
             let missionNote = "";
+            let cargoType = CARGO_TYPES[Math.floor(Math.random() * CARGO_TYPES.length)];
+            let passengers = Math.random() > 0.4 ? Math.floor(Math.random() * 5) + 1 : 0;
+
             const roll = Math.random();
 
             if (fromAirport.region === 'Ireland') {
@@ -101,6 +104,8 @@ export const generateMissions = (fleet, missionsPerAircraft = 10) => {
                     toAirport = airports.find(a => a.icao === 'EIWT');
                     distance = 700; // Realistic distance for duration but we'll cap duration if needed
                     missionNote = "⚠️ Long distance ferry home to Weston";
+                    cargoType = 'Empty (Ferry)';
+                    passengers = 0;
                 }
             } else {
                 // Fallback for any other regions (Benelux, France, etc)
@@ -112,6 +117,8 @@ export const generateMissions = (fleet, missionsPerAircraft = 10) => {
                     toAirport = airports.find(a => a.icao === 'EIWT');
                     distance = 450;
                     missionNote = "Return to base ferry";
+                    cargoType = 'Empty (Ferry)';
+                    passengers = 0;
                 }
             }
 
