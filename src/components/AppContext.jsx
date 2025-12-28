@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import aircraftTypes from '../data/aircraftTypes.json';
 import { calculateFlightFinance } from '../utils/flightCalculations';
 import api from '../lib/api';
+import { generateAircraft } from '../utils/aircraftGenerator';
 
 const AppContext = createContext();
 
@@ -64,6 +65,79 @@ export const AppProvider = ({ children }) => {
   // Completed Flights State (Flight Log)
   const [completedFlights, setCompletedFlights] = useState([]);
 
+  // Seed starter fleet
+  const seedStarterFleet = async () => {
+    try {
+      // Generate 3 starter aircraft
+      const starterAircraft = generateAircraft(3);
+
+      // Add each to backend
+      const promises = starterAircraft.map(aircraft => {
+        const fleetAircraft = {
+          ...aircraft,
+          registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000}`,
+          status: 'available',
+          total_hours: aircraft.hours || aircraft.conditionDetails?.airframe?.ttaf || 0,
+          hours_since_inspection: 0,
+          next_inspection_due: 100,
+          last_flight: new Date().toISOString().split('T')[0],
+          condition_details: aircraft.conditionDetails,
+          mel_list: aircraft.melList || [],
+          maintenance_notes: '',
+          locked_by: null,
+          current_flight: null
+        };
+        return api.addAircraft(fleetAircraft);
+      });
+
+      const results = await Promise.all(promises);
+
+      // Transform results for state
+      const newFleet = results.map(aircraft => ({
+        ...aircraft,
+        id: aircraft.id,
+        registration: aircraft.registration,
+        type: aircraft.type,
+        status: aircraft.status,
+        location: aircraft.location,
+        totalHours: aircraft.total_hours,
+        hoursSinceInspection: aircraft.hours_since_inspection,
+        nextInspectionDue: aircraft.next_inspection_due,
+        lastFlight: aircraft.last_flight,
+        condition: aircraft.condition,
+        conditionDetails: aircraft.condition_details,
+        melList: aircraft.mel_list || [],
+        maintenanceNotes: aircraft.maintenance_notes,
+        lockedBy: aircraft.locked_by,
+        currentFlight: aircraft.current_flight,
+        name: aircraft.name,
+        manufacturer: aircraft.manufacturer,
+        year: aircraft.year,
+        price: aircraft.price,
+        specs: aircraft.specs
+      }));
+
+      setFleet(newFleet);
+
+      // Update company count
+      const updatedCompany = { ...company, aircraft: 3 };
+      setCompany(updatedCompany);
+      await api.updateCompany({
+        ...updatedCompany,
+        focus_area: updatedCompany.focusArea,
+        total_flights: updatedCompany.totalFlights,
+        total_earnings: updatedCompany.totalEarnings,
+        flight_hours: updatedCompany.flightHours
+      });
+
+      console.log('Starter fleet seeded successfully:', newFleet.length, 'aircraft added.');
+      return newFleet;
+    } catch (error) {
+      console.error('Failed to seed starter fleet:', error);
+      return [];
+    }
+  };
+
   // Load initial data from API
   useEffect(() => {
     const loadData = async () => {
@@ -72,13 +146,16 @@ export const AppProvider = ({ children }) => {
         setError(null);
 
         // Load all data in parallel
-        const [companyData, pilotData, fleetData, activeFlightsData, completedFlightsData] = await Promise.all([
+        const results = await Promise.all([
           api.getCompany(),
           api.getPilot(),
           api.getFleet(),
           api.getActiveFlights(),
           api.getCompletedFlights()
         ]);
+
+        const [companyData, pilotData, fleetData, activeFlightsData, completedFlightsData] = results;
+        console.log('API Load Results:', { company: companyData, fleetSize: fleetData.length });
 
         // Transform snake_case from DB to camelCase for frontend
         const transformCompany = (data) => ({
@@ -118,7 +195,7 @@ export const AppProvider = ({ children }) => {
 
         const transformFleet = (data) => data.map(aircraft => ({
           id: aircraft.id,
-          registration: aircraft.registration,
+          registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000}`,
           type: aircraft.type,
           status: aircraft.status,
           location: aircraft.location,
@@ -141,7 +218,16 @@ export const AppProvider = ({ children }) => {
 
         setCompany(transformCompany(companyData));
         setPilot(transformPilot(pilotData));
-        setFleet(transformFleet(fleetData));
+
+        const transformedFleet = transformFleet(fleetData);
+        setFleet(transformedFleet);
+
+        // Auto-seed starter fleet if company exists but fleet is empty
+        if (companyData.name && transformedFleet.length === 0) {
+          console.log('Empty fleet detected for existing company. Seeding starter fleet...');
+          await seedStarterFleet();
+        }
+
         setActiveFlights(activeFlightsData);
         setCompletedFlights(completedFlightsData);
 
