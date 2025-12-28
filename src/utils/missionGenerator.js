@@ -24,12 +24,15 @@ const calculateDuration = (distance, speed) => {
 /**
  * Generates a list of missions for the given fleet
  * @param {Array} fleet - Array of aircraft in the fleet
- * @param {number} missionCountPerAircraft - How many missions to generate per plane
+ * @param {number} missionCountPerAircraft - How many missions to generate per aircraft
  */
-export const generateMissions = (fleet, missionCountPerAircraft = 4) => {
+export const generateMissions = (fleet, missionCountPerAircraft = 10) => {
     if (!fleet || fleet.length === 0) return [];
 
     const missions = [];
+
+    // Total missions requested by user is 20-30. 
+    // If we have 3 aircraft, 10 each gives 30.
 
     fleet.forEach((aircraft, aircraftIdx) => {
         // Find starting airport based on aircraft location
@@ -40,7 +43,7 @@ export const generateMissions = (fleet, missionCountPerAircraft = 4) => {
         }
 
         if (!fromAirport) {
-            // Fallback to random airport
+            // Fallback to random airport IF for some reason location isn't set
             fromAirport = airports[Math.floor(Math.random() * airports.length)];
         }
 
@@ -50,52 +53,67 @@ export const generateMissions = (fleet, missionCountPerAircraft = 4) => {
         for (let i = 0; i < missionCountPerAircraft; i++) {
             let toAirport;
             let missionType = 'Standard cargo delivery';
-            let priority = Math.random() > 0.8 ? 'urgent' : 'normal';
+            let priority = Math.random() > 0.85 ? 'urgent' : 'normal';
             let cargoType = CARGO_TYPES[Math.floor(Math.random() * CARGO_TYPES.length)];
-            let passengers = Math.random() > 0.5 ? Math.floor(Math.random() * 5) + 1 : 0;
+            let passengers = Math.random() > 0.4 ? Math.floor(Math.random() * 5) + 1 : 0;
+            let distance = 0;
 
-            if (isAtHomeBase) {
-                // If at Weston, provide a mix of local and longer regional flights (UK, Wales, Scotland)
-                const roll = Math.random();
-                if (roll < 0.3) {
-                    // Local Irish flight
+            // ZONE LOGIC
+            const roll = Math.random();
+
+            if (fromAirport.country === 'Ireland') {
+                if (roll < 0.5) {
+                    // Local Irish flight (Short haul)
                     const irishDestinations = airports.filter(a => a.country === 'Ireland' && a.icao !== fromAirport.icao);
                     toAirport = irishDestinations[Math.floor(Math.random() * irishDestinations.length)];
                     missionType = 'Local Irish feeder route';
-                } else if (roll < 0.7) {
-                    // Flight to Wales or UK West Coast (Highly likely)
-                    const ukDestinations = airports.filter(a => (a.region === 'Wales' || a.region === 'North West England' || a.region === 'Northern Ireland') && a.icao !== fromAirport.icao);
-                    if (ukDestinations.length > 0) {
-                        toAirport = ukDestinations[Math.floor(Math.random() * ukDestinations.length)];
-                        missionType = 'Cross-channel regional flight';
-                    }
+                    distance = Math.floor(Math.random() * 100) + 40; // 40-140nm
+                } else if (roll < 0.9) {
+                    // Flight to UK/Wales/Scotland
+                    const ukDestinations = airports.filter(a => a.country === 'UK' && a.icao !== fromAirport.icao);
+                    toAirport = ukDestinations[Math.floor(Math.random() * ukDestinations.length)];
+                    missionType = 'Cross-channel regional flight';
+                    distance = Math.floor(Math.random() * 150) + 80; // 80-230nm
                 } else {
-                    // Longer flight to Scotland or deeper UK
-                    const longDestinations = airports.filter(a => (a.region === 'Scottish Highlands' || a.region === 'UK & Ireland') && a.icao !== fromAirport.icao);
-                    if (longDestinations.length > 0) {
-                        toAirport = longDestinations[Math.floor(Math.random() * longDestinations.length)];
-                        missionType = 'Inter-regional hub connection';
-                    }
+                    // Flight to Northern Europe (France, Netherlands, Belgium)
+                    const euroDestinations = airports.filter(a => a.region === 'Northern Europe' && a.icao !== fromAirport.icao);
+                    toAirport = euroDestinations[Math.floor(Math.random() * euroDestinations.length)];
+                    missionType = 'European regional operation';
+                    distance = Math.floor(Math.random() * 200) + 200; // 200-400nm (The "max" for GA)
+                }
+            } else if (fromAirport.country === 'UK') {
+                if (roll < 0.4) {
+                    // Local UK flight
+                    const ukDestinations = airports.filter(a => a.country === 'UK' && a.icao !== fromAirport.icao);
+                    toAirport = ukDestinations[Math.floor(Math.random() * ukDestinations.length)];
+                    missionType = 'Domestic UK flight';
+                    distance = Math.floor(Math.random() * 120) + 50;
+                } else if (roll < 0.7) {
+                    // Flight to Ireland
+                    const irishDestinations = airports.filter(a => a.country === 'Ireland');
+                    toAirport = irishDestinations[Math.floor(Math.random() * irishDestinations.length)];
+                    missionType = 'Channel crossing to Ireland';
+                    distance = Math.floor(Math.random() * 150) + 80;
+                } else {
+                    // To Northern Europe
+                    const euroDestinations = airports.filter(a => a.region === 'Northern Europe');
+                    toAirport = euroDestinations[Math.floor(Math.random() * euroDestinations.length)];
+                    missionType = 'Short-haul Euro connection';
+                    distance = Math.floor(Math.random() * 150) + 150;
                 }
             } else {
-                // If not at Weston, offer a chance to return home (Ferry/Return)
-                if (Math.random() > 0.5) {
-                    toAirport = airports.find(a => a.icao === 'EIWT');
-                    missionType = 'Return flight home';
-                    cargoType = 'Company Materials';
-                    passengers = 0;
-                    priority = 'normal';
+                // If in Europe, mostly local Europe or chance to return to Ireland/UK
+                if (roll < 0.6) {
+                    const localEuro = airports.filter(a => a.region === fromAirport.region && a.icao !== fromAirport.icao);
+                    toAirport = localEuro[Math.floor(Math.random() * localEuro.length)];
+                    missionType = 'Regional Euro ops';
+                    distance = Math.floor(Math.random() * 100) + 50;
                 } else {
-                    // Generic regional operational flight
-                    const sameCountryAirports = airports.filter(a => a.country === fromAirport.country && a.icao !== fromAirport.icao);
-                    if (sameCountryAirports.length > 0 && Math.random() > 0.3) {
-                        toAirport = sameCountryAirports[Math.floor(Math.random() * sameCountryAirports.length)];
-                        missionType = 'Regional operations';
-                    } else {
-                        do {
-                            toAirport = airports[Math.floor(Math.random() * airports.length)];
-                        } while (toAirport.icao === fromAirport.icao);
-                    }
+                    toAirport = airports.find(a => a.icao === 'EIWT'); // Usually return to base
+                    missionType = 'Ferry flight to home base';
+                    cargoType = 'Empty (Ferry)';
+                    passengers = 0;
+                    distance = Math.floor(Math.random() * 200) + 250;
                 }
             }
 
@@ -104,11 +122,10 @@ export const generateMissions = (fleet, missionCountPerAircraft = 4) => {
                 do {
                     toAirport = airports[Math.floor(Math.random() * airports.length)];
                 } while (toAirport.icao === fromAirport.icao);
+                if (distance === 0) distance = Math.floor(Math.random() * 200) + 50;
             }
 
-            // Generate random distance (simulated)
-            const distance = Math.floor(Math.random() * 250) + 40;
-            const speed = 120;
+            const speed = 120; // Default kts for duration estimation
 
             missions.push({
                 id: `M-${Math.random().toString(36).substr(2, 9)}-${aircraftIdx}-${i}`,

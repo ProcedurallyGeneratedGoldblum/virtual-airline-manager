@@ -277,8 +277,8 @@ export const AppProvider = ({ children }) => {
   // Refresh Available Flights
   const refreshAvailableFlights = () => {
     if (fleet.length > 0) {
-      // Generate 5 missions per aircraft for better variety
-      setAvailableFlights(generateMissions(fleet, 5));
+      // Generate 10 missions per aircraft (Total 30+ for a standard fleet)
+      setAvailableFlights(generateMissions(fleet, 10));
     }
   };
 
