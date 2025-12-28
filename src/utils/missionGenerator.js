@@ -7,12 +7,11 @@ const CARGO_TYPES = [
 ];
 
 const WEATHER_TYPES = ['VFR', 'MVFR', 'IFR', 'LIFR'];
-const HOME_BASES = ['EIWT']; // Weston as the main base
 
 /**
  * Generates a random realistic flight duration string based on distance
  */
-const calculateDuration = (distance, speed) => {
+const calculateDuration = (distance, speed = 120) => {
     const hours = distance / speed;
     const h = Math.floor(hours);
     const m = Math.round((hours - h) * 60);
@@ -23,16 +22,11 @@ const calculateDuration = (distance, speed) => {
 
 /**
  * Generates a list of missions for the given fleet
- * @param {Array} fleet - Array of aircraft in the fleet
- * @param {number} missionCountPerAircraft - How many missions to generate per aircraft
  */
-export const generateMissions = (fleet, missionCountPerAircraft = 10) => {
+export const generateMissions = (fleet, missionsPerAircraft = 10) => {
     if (!fleet || fleet.length === 0) return [];
 
     const missions = [];
-
-    // Total missions requested by user is 20-30. 
-    // If we have 3 aircraft, 10 each gives 30.
 
     fleet.forEach((aircraft, aircraftIdx) => {
         // Find starting airport based on aircraft location
@@ -43,110 +37,110 @@ export const generateMissions = (fleet, missionCountPerAircraft = 10) => {
         }
 
         if (!fromAirport) {
-            // Fallback to random airport IF for some reason location isn't set
-            fromAirport = airports[Math.floor(Math.random() * airports.length)];
+            // Default to Weston if unknown
+            fromAirport = airports.find(a => a.icao === 'EIWT') || airports[0];
         }
 
-        const isAtHomeBase = HOME_BASES.includes(fromAirport.icao);
-
-        // Generate missions for each aircraft
-        for (let i = 0; i < missionCountPerAircraft; i++) {
+        // Logic for toAirport selection based on current location
+        for (let i = 0; i < missionsPerAircraft; i++) {
             let toAirport;
-            let missionType = 'Standard cargo delivery';
-            let priority = Math.random() > 0.85 ? 'urgent' : 'normal';
-            let cargoType = CARGO_TYPES[Math.floor(Math.random() * CARGO_TYPES.length)];
-            let passengers = Math.random() > 0.4 ? Math.floor(Math.random() * 5) + 1 : 0;
             let distance = 0;
-
-            // ZONE LOGIC
+            let missionNote = "";
             const roll = Math.random();
 
-            if (fromAirport.country === 'Ireland') {
-                if (roll < 0.5) {
-                    // Local Irish flight (Short haul)
-                    const irishDestinations = airports.filter(a => a.country === 'Ireland' && a.icao !== fromAirport.icao);
-                    toAirport = irishDestinations[Math.floor(Math.random() * irishDestinations.length)];
-                    missionType = 'Local Irish feeder route';
-                    distance = Math.floor(Math.random() * 100) + 40; // 40-140nm
-                } else if (roll < 0.9) {
-                    // Flight to UK/Wales/Scotland
-                    const ukDestinations = airports.filter(a => a.country === 'UK' && a.icao !== fromAirport.icao);
-                    toAirport = ukDestinations[Math.floor(Math.random() * ukDestinations.length)];
-                    missionType = 'Cross-channel regional flight';
-                    distance = Math.floor(Math.random() * 150) + 80; // 80-230nm
+            if (fromAirport.region === 'Ireland') {
+                if (roll < 0.7) {
+                    // Local Ireland (Very short)
+                    const pool = airports.filter(a => a.region === 'Ireland' && a.icao !== fromAirport.icao);
+                    toAirport = pool[Math.floor(Math.random() * pool.length)];
+                    distance = Math.floor(Math.random() * 80) + 20; // 20-100nm
+                    missionNote = "Domestic Ireland operation";
+                } else if (roll < 0.95) {
+                    // UK (Shortish cross-channel)
+                    const pool = airports.filter(a => a.region === 'UK');
+                    toAirport = pool[Math.floor(Math.random() * pool.length)];
+                    distance = Math.floor(Math.random() * 150) + 100; // 100-250nm
+                    missionNote = "Irish Sea crossing";
                 } else {
-                    // Flight to Northern Europe (France, Netherlands, Belgium)
-                    const euroDestinations = airports.filter(a => a.region === 'Northern Europe' && a.icao !== fromAirport.icao);
-                    toAirport = euroDestinations[Math.floor(Math.random() * euroDestinations.length)];
-                    missionType = 'European regional operation';
-                    distance = Math.floor(Math.random() * 200) + 200; // 200-400nm (The "max" for GA)
+                    // Northern France / Benelux (Rare long regional)
+                    const pool = airports.filter(a => a.region === 'North-West Europe' || a.region === 'Benelux');
+                    toAirport = pool[Math.floor(Math.random() * pool.length)];
+                    distance = Math.floor(Math.random() * 100) + 300; // 300-400nm
+                    missionNote = "Regional European connection";
                 }
-            } else if (fromAirport.country === 'UK') {
-                if (roll < 0.4) {
-                    // Local UK flight
-                    const ukDestinations = airports.filter(a => a.country === 'UK' && a.icao !== fromAirport.icao);
-                    toAirport = ukDestinations[Math.floor(Math.random() * ukDestinations.length)];
-                    missionType = 'Domestic UK flight';
-                    distance = Math.floor(Math.random() * 120) + 50;
-                } else if (roll < 0.7) {
-                    // Flight to Ireland
-                    const irishDestinations = airports.filter(a => a.country === 'Ireland');
-                    toAirport = irishDestinations[Math.floor(Math.random() * irishDestinations.length)];
-                    missionType = 'Channel crossing to Ireland';
-                    distance = Math.floor(Math.random() * 150) + 80;
+            } else if (fromAirport.region === 'UK') {
+                if (roll < 0.6) {
+                    // Domestic UK
+                    const pool = airports.filter(a => a.region === 'UK' && a.icao !== fromAirport.icao);
+                    toAirport = pool[Math.floor(Math.random() * pool.length)];
+                    distance = Math.floor(Math.random() * 100) + 40;
+                    missionNote = "Domestic UK flight";
+                } else if (roll < 0.9) {
+                    // To Ireland
+                    const pool = airports.filter(a => a.region === 'Ireland');
+                    toAirport = pool[Math.floor(Math.random() * pool.length)];
+                    distance = Math.floor(Math.random() * 120) + 80;
+                    missionNote = "Return flight to Ireland";
                 } else {
                     // To Northern Europe
-                    const euroDestinations = airports.filter(a => a.region === 'Northern Europe');
-                    toAirport = euroDestinations[Math.floor(Math.random() * euroDestinations.length)];
-                    missionType = 'Short-haul Euro connection';
-                    distance = Math.floor(Math.random() * 150) + 150;
+                    const pool = airports.filter(a => a.region === 'North-West Europe' || a.region === 'Benelux');
+                    toAirport = pool[Math.floor(Math.random() * pool.length)];
+                    distance = Math.floor(Math.random() * 100) + 150;
+                    missionNote = "Channel cross to Europe";
+                }
+            } else if (fromAirport.region === 'Central Europe') {
+                // Plane is stuck in Austria/Switzerland area
+                if (roll < 0.4) {
+                    // Stay there (local alps)
+                    const pool = airports.filter(a => a.region === 'Central Europe' && a.icao !== fromAirport.icao);
+                    toAirport = pool[Math.floor(Math.random() * pool.length)];
+                    distance = Math.floor(Math.random() * 60) + 30;
+                    missionNote = "Alps regional operation";
+                } else {
+                    // FERRY HOME (Very high weight to get them home)
+                    toAirport = airports.find(a => a.icao === 'EIWT');
+                    distance = 700; // Realistic distance for duration but we'll cap duration if needed
+                    missionNote = "⚠️ Long distance ferry home to Weston";
                 }
             } else {
-                // If in Europe, mostly local Europe or chance to return to Ireland/UK
+                // Fallback for any other regions (Benelux, France, etc)
                 if (roll < 0.6) {
-                    const localEuro = airports.filter(a => a.region === fromAirport.region && a.icao !== fromAirport.icao);
-                    toAirport = localEuro[Math.floor(Math.random() * localEuro.length)];
-                    missionType = 'Regional Euro ops';
+                    const pool = airports.filter(a => a.region === fromAirport.region && a.icao !== fromAirport.icao);
+                    toAirport = pool[Math.floor(Math.random() * pool.length)] || airports.find(a => a.icao === 'EIWT');
                     distance = Math.floor(Math.random() * 100) + 50;
                 } else {
-                    toAirport = airports.find(a => a.icao === 'EIWT'); // Usually return to base
-                    missionType = 'Ferry flight to home base';
-                    cargoType = 'Empty (Ferry)';
-                    passengers = 0;
-                    distance = Math.floor(Math.random() * 200) + 250;
+                    toAirport = airports.find(a => a.icao === 'EIWT');
+                    distance = 450;
+                    missionNote = "Return to base ferry";
                 }
             }
 
-            // Fallback for toAirport
-            if (!toAirport) {
-                do {
-                    toAirport = airports[Math.floor(Math.random() * airports.length)];
-                } while (toAirport.icao === fromAirport.icao);
-                if (distance === 0) distance = Math.floor(Math.random() * 200) + 50;
-            }
+            // Final safety catch
+            if (!toAirport) toAirport = airports[0];
+            if (distance === 0) distance = Math.floor(Math.random() * 100) + 50;
 
-            const speed = 120; // Default kts for duration estimation
+            const priority = Math.random() > 0.8 ? 'urgent' : 'normal';
 
             missions.push({
                 id: `M-${Math.random().toString(36).substr(2, 9)}-${aircraftIdx}-${i}`,
-                flightNumber: `FL${Math.floor(Math.random() * 900) + 100}`,
+                flightNumber: `FL${Math.floor(Math.random() * 800) + 100}`,
                 aircraft: aircraft.type || aircraft.name,
                 status: 'available',
-                priority: priority,
+                priority,
                 route: {
                     from: fromAirport.name,
                     fromCode: fromAirport.icao,
                     to: toAirport.name,
                     toCode: toAirport.icao
                 },
-                duration: calculateDuration(distance, speed),
+                duration: calculateDuration(distance),
                 distance: distance,
                 cargo: {
                     type: passengers > 0 ? 'Passengers' : cargoType,
                     passengers: passengers
                 },
                 weather: WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)],
-                notes: missionType + (priority === 'urgent' ? ' - ⚠️ Urgent!' : '')
+                notes: missionNote || "Standard logistics mission"
             });
         }
     });

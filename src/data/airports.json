@@ -48,6 +48,24 @@
         "region": "Ireland"
     },
     {
+        "name": "Shannon",
+        "icao": "EINN",
+        "country": "Ireland",
+        "region": "Ireland"
+    },
+    {
+        "name": "Donegal",
+        "icao": "EIDL",
+        "country": "Ireland",
+        "region": "Ireland"
+    },
+    {
+        "name": "Connemara",
+        "icao": "EICN",
+        "country": "Ireland",
+        "region": "Ireland"
+    },
+    {
         "name": "Belfast City",
         "icao": "EGAC",
         "country": "UK",
@@ -84,7 +102,7 @@
         "region": "UK"
     },
     {
-        "name": "Liverpool John Lennon",
+        "name": "Liverpool",
         "icao": "EGGP",
         "country": "UK",
         "region": "UK"
@@ -138,14 +156,14 @@
         "region": "UK"
     },
     {
-        "name": "Tiree",
-        "icao": "EGPU",
+        "name": "Kirkwall",
+        "icao": "EGPA",
         "country": "UK",
         "region": "UK"
     },
     {
-        "name": "Campbeltown",
-        "icao": "EGEC",
+        "name": "Sumburgh",
+        "icao": "EGPB",
         "country": "UK",
         "region": "UK"
     },
@@ -153,64 +171,76 @@
         "name": "Le Touquet",
         "icao": "LFAT",
         "country": "France",
-        "region": "Northern Europe"
+        "region": "North-West Europe"
     },
     {
         "name": "Calais",
         "icao": "LFAC",
         "country": "France",
-        "region": "Northern Europe"
+        "region": "North-West Europe"
     },
     {
         "name": "Lille",
         "icao": "LFQQ",
         "country": "France",
-        "region": "Northern Europe"
+        "region": "North-West Europe"
     },
     {
         "name": "Toussus-le-Noble",
         "icao": "LFPN",
         "country": "France",
-        "region": "Northern Europe"
+        "region": "North-West Europe"
     },
     {
         "name": "Lelystad",
         "icao": "EHLE",
         "country": "Netherlands",
-        "region": "Northern Europe"
+        "region": "Benelux"
     },
     {
         "name": "Teuge",
         "icao": "EHTE",
         "country": "Netherlands",
-        "region": "Northern Europe"
+        "region": "Benelux"
     },
     {
         "name": "Rotterdam",
         "icao": "EHRD",
         "country": "Netherlands",
-        "region": "Northern Europe"
+        "region": "Benelux"
     },
     {
         "name": "Antwerp",
         "icao": "EBAW",
         "country": "Belgium",
-        "region": "Northern Europe"
+        "region": "Benelux"
     },
     {
-        "name": "Spa La Sauvenière",
-        "icao": "EBSP",
-        "country": "Belgium",
-        "region": "Northern Europe"
-    },
-    {
-        "name": "Ostend-Bruges",
+        "name": "Ostend",
         "icao": "EBOS",
         "country": "Belgium",
-        "region": "Northern Europe"
+        "region": "Benelux"
     },
     {
-        "name": "Hamburg Finkenwerder",
+        "name": "Spa",
+        "icao": "EBSP",
+        "country": "Belgium",
+        "region": "Benelux"
+    },
+    {
+        "name": "Cologne",
+        "icao": "EDDK",
+        "country": "Germany",
+        "region": "Germany"
+    },
+    {
+        "name": "Dusseldorf",
+        "icao": "EDDL",
+        "country": "Germany",
+        "region": "Germany"
+    },
+    {
+        "name": "Hamburg-Finkenwerder",
         "icao": "EDHI",
         "country": "Germany",
         "region": "Germany"
@@ -222,33 +252,45 @@
         "region": "Germany"
     },
     {
-        "name": "Sion",
-        "icao": "LSGS",
-        "country": "Switzerland",
-        "region": "Alps"
-    },
-    {
         "name": "Innsbruck",
         "icao": "LOWI",
         "country": "Austria",
-        "region": "Alps"
+        "region": "Central Europe"
     },
     {
         "name": "Zell am See",
         "icao": "LOWZ",
         "country": "Austria",
-        "region": "Alps"
+        "region": "Central Europe"
+    },
+    {
+        "name": "Salzburg",
+        "icao": "LOWS",
+        "country": "Austria",
+        "region": "Central Europe"
+    },
+    {
+        "name": "Sion",
+        "icao": "LSGS",
+        "country": "Switzerland",
+        "region": "Central Europe"
     },
     {
         "name": "Sabadell",
         "icao": "LELL",
         "country": "Spain",
-        "region": "Southern Europe"
+        "region": "South Europe"
     },
     {
-        "name": "Cannes-Mandelieu",
+        "name": "Cannes",
         "icao": "LFMD",
         "country": "France",
-        "region": "Southern Europe"
+        "region": "South Europe"
+    },
+    {
+        "name": "Thiene",
+        "icao": "LIDH",
+        "country": "Italy",
+        "region": "South Europe"
     }
 ]
