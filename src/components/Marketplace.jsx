@@ -24,9 +24,12 @@ function Marketplace() {
     const counts = { GA: 8, Jet: 3, Turbo: 4 };
 
     Object.entries(counts).forEach(([type, count]) => {
-      for (let i = 0; i < count; i++) {
-        newListings.push(generateAircraft(type));
-      }
+      // generateAircraft returns an array, we need to spread it or pick one
+      const planes = generateAircraft(count);
+      // Assign the requested type to the generated planes if needed, 
+      // but aircraftGenerator already picks random types from across the board.
+      // So we'll just generate the total count and spread them.
+      newListings.push(...planes);
     });
 
     setMarketListings(newListings.sort((a, b) => a.price - b.price));
@@ -315,7 +318,7 @@ const AircraftCard = ({ plane, activeTab, handleBuy, handleSell, refuelAircraft,
                 : 'bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed'
                 }`}
             >
-              Acquire
+              Purchase
             </button>
           ) : (
             <button

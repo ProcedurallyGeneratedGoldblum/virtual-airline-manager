@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Award, TrendingUp, Clock, Plane, MapPin, Star, Trophy, Edit2, Save, X } from 'lucide-react';
+import { User, Award, TrendingUp, Clock, Plane, MapPin, Star, Trophy, Edit2, Save, X, Hash, ShieldCheck, Zap } from 'lucide-react';
 
 import { useAppContext } from './AppContext';
 
@@ -18,55 +18,17 @@ function PilotProfile() {
   ];
 
   const stats = [
-    { label: 'Total Flights', value: pilot.totalFlights, icon: Plane, color: 'text-blue-600' },
-    { label: 'Flight Hours', value: `${pilot.totalHours}h`, icon: Clock, color: 'text-green-600' },
-    { label: 'Distance Flown', value: `${pilot.totalDistance.toLocaleString()} nm`, icon: MapPin, color: 'text-purple-600' },
-    { label: 'Total Earnings', value: `$${pilot.totalEarnings.toLocaleString()}`, icon: TrendingUp, color: 'text-yellow-600' },
+    { label: 'Ops Cycles', value: pilot.totalFlights, icon: Plane },
+    { label: 'Duty Hours', value: `${pilot.totalHours?.toFixed(1) || 0}H`, icon: Clock },
+    { label: 'Log Range', value: `${pilot.totalDistance?.toLocaleString() || 0} NM`, icon: MapPin },
+    { label: 'Gross Yield', value: `$${pilot.totalEarnings?.toLocaleString() || 0}`, icon: TrendingUp },
   ];
 
   const achievements = [
-    {
-      name: 'First Flight',
-      description: 'Complete your first flight',
-      icon: '🛫',
-      earned: pilot.totalFlights >= 1,
-      requirement: 'Complete 1 flight'
-    },
-    {
-      name: 'Getting Started',
-      description: 'Complete 10 flights',
-      icon: '✈️',
-      earned: pilot.totalFlights >= 10,
-      requirement: 'Complete 10 flights'
-    },
-    {
-      name: 'Century Club',
-      description: 'Complete 100 flights',
-      icon: '💯',
-      earned: pilot.totalFlights >= 100,
-      requirement: 'Complete 100 flights'
-    },
-    {
-      name: 'Bush Pilot',
-      description: 'Complete your first bush flight',
-      icon: '🏔️',
-      earned: false,
-      requirement: 'Complete 1 backcountry flight'
-    },
-    {
-      name: 'Night Owl',
-      description: 'Complete 25 night flights',
-      icon: '🌙',
-      earned: false,
-      requirement: 'Complete 25 night flights'
-    },
-    {
-      name: 'Weather Warrior',
-      description: 'Complete 10 IFR flights',
-      icon: '⛈️',
-      earned: false,
-      requirement: 'Complete 10 IFR flights'
-    },
+    { name: 'Commence Ops', description: 'Complete your first flight', icon: <Zap className="w-5 h-5" />, earned: pilot.totalFlights >= 1, req: '1 CYCLE' },
+    { name: 'Standard Rating', description: 'Complete 10 flights', icon: <ShieldCheck className="w-5 h-5" />, earned: pilot.totalFlights >= 10, req: '10 CYCLES' },
+    { name: 'Senior Division', description: 'Complete 100 flights', icon: <Award className="w-5 h-5" />, earned: pilot.totalFlights >= 100, req: '100 CYCLES' },
+    { name: 'Industrial Ace', description: 'Maintain 95% safety rating', icon: <Trophy className="w-5 h-5" />, earned: pilot.safetyRating >= 95 && pilot.totalFlights > 5, req: '95% SAFE' },
   ];
 
   const handleStartEditing = () => {
@@ -84,7 +46,7 @@ function PilotProfile() {
       updatePilot(editForm);
       setIsEditing(false);
     } else {
-      alert('Please fill in all required fields (Name, Callsign, License Type)');
+      alert('REQUIRED FIELDS: Name, Callsign, License Type');
     }
   };
 
@@ -99,122 +61,82 @@ function PilotProfile() {
     return Math.round((pilot.experience / pilot.nextRankXP) * 100);
   };
 
-  // If no pilot exists and not editing, show create form
   if (!hasPilot && !isEditing) {
     return (
-      <div>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Pilot Profile</h2>
-          <p className="text-gray-600">Create your virtual pilot profile</p>
+      <div className="max-w-4xl mx-auto py-20 text-center">
+        <div className="inline-flex p-8 bg-zinc-50 border border-zinc-200 mb-8">
+          <User className="w-16 h-16 text-black" />
         </div>
-
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-3xl mx-auto text-center">
-          <User className="w-24 h-24 text-blue-900 mx-auto mb-6" />
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">Create Your Pilot Profile</h3>
-          <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-            Set up your pilot information to start tracking your flying career.
-            Build experience, earn achievements, and advance your rank.
-          </p>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition text-lg"
-          >
-            Create Pilot Profile
-          </button>
-        </div>
+        <h2 className="text-5xl font-black text-black uppercase tracking-tighter italic mb-4">Initialize Personnel</h2>
+        <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase mb-12 max-w-md mx-auto">
+          No active pilot profile detected in local database. Personnel authorization required to commence Northwestern operations.
+        </p>
+        <button
+          onClick={() => setIsEditing(true)}
+          className="bg-black text-white px-12 py-5 text-sm font-black uppercase tracking-[0.3em] hover:bg-zinc-800 transition-all border-b-4 border-zinc-700"
+        >
+          Begin Initialization
+        </button>
       </div>
     );
   }
 
-  // Edit/Create Form
   if (isEditing) {
     return (
-      <div>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {hasPilot ? 'Edit Pilot Profile' : 'Create Pilot Profile'}
-          </h2>
-          <p className="text-gray-600">
-            {hasPilot ? 'Update your pilot information' : 'Set up your virtual pilot'}
-          </p>
+      <div className="max-w-2xl mx-auto">
+        <div className="border-l-8 border-black pl-6 py-2 mb-12">
+          <h2 className="text-4xl font-black text-black uppercase tracking-tighter italic">Personnel Config</h2>
+          <p className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase mt-1">System Administration • Identity Management</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl mx-auto">
-          <div className="space-y-6">
-            {/* Pilot Name */}
+        <div className="bg-white border border-zinc-200 shadow-sm overflow-hidden">
+          <div className="p-8 space-y-8">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Full Name <span className="text-red-600">*</span>
-              </label>
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 block">Personnel Full Name</label>
               <input
                 type="text"
                 value={editForm.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="e.g., John Anderson"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                className="w-full bg-zinc-50 border border-zinc-200 px-4 py-4 text-sm font-bold focus:border-black outline-none transition-all rounded-none"
               />
             </div>
 
-            {/* Callsign */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Personal Callsign <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="text"
-                value={editForm.callsign}
-                onChange={(e) => handleInputChange('callsign', e.target.value.toUpperCase())}
-                placeholder="e.g., EAGLE1"
-                maxLength="10"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase"
-              />
-              <p className="text-xs text-gray-500 mt-1">Your unique pilot identifier</p>
-            </div>
-
-            {/* License Type */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                License Type <span className="text-red-600">*</span>
-              </label>
-              <select
-                value={editForm.license}
-                onChange={(e) => handleInputChange('license', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select your license type</option>
-                {licenseTypes.map(license => (
-                  <option key={license.id} value={license.id}>{license.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Starting Rank - Display Only */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Starting Rank
-              </label>
-              <div className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg">
-                <p className="font-semibold text-gray-900">Junior Pilot</p>
-                <p className="text-sm text-gray-600">Advance your rank by completing flights and earning experience</p>
+            <div className="grid grid-cols-2 gap-8">
+              <div>
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 block">Callsign Identifier</label>
+                <input
+                  type="text"
+                  value={editForm.callsign}
+                  onChange={(e) => setEditForm({ ...editForm, callsign: e.target.value.toUpperCase() })}
+                  className="w-full bg-zinc-50 border border-zinc-200 px-4 py-4 text-sm font-black uppercase tracking-widest focus:border-black outline-none transition-all rounded-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 block">License Class</label>
+                <select
+                  value={editForm.license}
+                  onChange={(e) => setEditForm({ ...editForm, license: e.target.value })}
+                  className="w-full bg-zinc-50 border border-zinc-200 px-4 py-4 text-sm font-bold focus:border-black outline-none transition-all rounded-none appearance-none"
+                >
+                  <option value="">Select Class</option>
+                  {licenseTypes.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                </select>
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-4 pt-4">
               <button
                 onClick={handleSavePilot}
-                className="flex-1 bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition flex items-center justify-center gap-2"
+                className="flex-1 bg-black text-white py-5 text-[10px] font-black uppercase tracking-[.3em] hover:bg-zinc-800 transition-all border-b-4 border-zinc-700"
               >
-                <Save className="w-5 h-5" />
-                {hasPilot ? 'Save Changes' : 'Create Pilot'}
+                Commit Personnel Data
               </button>
               {hasPilot && (
                 <button
-                  onClick={handleCancelEditing}
-                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition flex items-center gap-2"
+                  onClick={() => setIsEditing(false)}
+                  className="px-8 bg-white border border-zinc-200 text-zinc-400 py-5 text-[10px] font-black uppercase tracking-[.3em] hover:text-black hover:border-black transition-all"
                 >
-                  <X className="w-5 h-5" />
-                  Cancel
+                  Abort
                 </button>
               )}
             </div>
@@ -224,245 +146,101 @@ function PilotProfile() {
     );
   }
 
-  // Display Pilot Profile
   return (
-    <div>
-      <div className="mb-6 flex justify-between items-start">
+    <div className="space-y-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-l-8 border-black pl-6 py-2">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Pilot Profile</h2>
-          <p className="text-gray-600">Your flying career and achievements</p>
+          <h2 className="text-4xl font-black text-black uppercase tracking-tighter italic">Personnel File</h2>
+          <p className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase mt-1">Northwestern Operations • Service Record #{pilot.callsign}</p>
         </div>
         <button
-          onClick={handleStartEditing}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition"
+          onClick={() => setIsEditing(true)}
+          className="flex items-center gap-3 px-6 py-3 bg-zinc-100 text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all border border-zinc-200"
         >
-          <Edit2 className="w-4 h-4" />
-          Edit Profile
+          <Edit2 className="w-3 h-3" /> Update Record
         </button>
       </div>
 
-      {/* Profile Header Card */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-lg shadow-lg p-8 mb-6 text-white">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-6">
-            {/* Avatar */}
-            <div className="bg-white rounded-full p-6">
-              <User className="w-20 h-20 text-blue-900" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-zinc-200 border border-zinc-200 overflow-hidden shadow-md">
+        <div className="lg:col-span-2 bg-white p-12">
+          <div className="flex flex-col md:flex-row gap-12 items-start md:items-center">
+            <div className="bg-zinc-50 border-2 border-zinc-100 p-8">
+              <User className="w-20 h-20 text-black" />
             </div>
-
-            {/* Pilot Info */}
-            <div>
-              <h3 className="text-3xl font-bold mb-2">{pilot.name}</h3>
-              <div className="flex items-center gap-4 text-blue-100 mb-3">
-                <span className="flex items-center gap-1">
-                  <Award className="w-4 h-4" />
-                  {pilot.rank}
-                </span>
-                {pilot.role && (
-                  <>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      {pilot.role}
-                    </span>
-                  </>
-                )}
-                <span>•</span>
-                <span>Callsign: {pilot.callsign}</span>
-                <span>•</span>
-                <span>License: {licenseTypes.find(l => l.id === pilot.license)?.name}</span>
+            <div className="space-y-4">
+              <div className="inline-block bg-black text-white px-3 py-1 text-[9px] font-black uppercase tracking-widest mb-2">
+                {pilot.rank}
               </div>
-              <div className="flex items-center gap-2">
-                {pilot.rating > 0 ? (
-                  <>
-                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                    <span className="text-xl font-semibold">{pilot.rating}</span>
-                    <span className="text-blue-200">/ 5.0 Rating</span>
-                  </>
-                ) : (
-                  <span className="text-blue-200">Complete flights to earn a rating</span>
-                )}
+              <h1 className="text-5xl font-black text-black uppercase tracking-tighter italic">{pilot.name}</h1>
+              <div className="flex flex-wrap gap-6 text-[10px] font-mono text-zinc-400 uppercase tracking-widest border-t border-zinc-100 pt-4">
+                <span className="flex items-center gap-2"><Hash className="w-3 h-3 text-zinc-300" /> {pilot.callsign}</span>
+                <span className="flex items-center gap-2"><Award className="w-3 h-3 text-zinc-300" /> {licenseTypes.find(l => l.id === pilot.license)?.name || 'N/A'}</span>
+                <span className="flex items-center gap-2"><Clock className="w-3 h-3 text-zinc-300" /> SINCE {new Date(pilot.joinDate).getFullYear()}</span>
               </div>
             </div>
           </div>
 
-          {/* Join Date */}
-          <div className="text-right">
-            <p className="text-blue-200 text-sm">Member Since</p>
-            <p className="text-xl font-semibold">
-              {new Date(pilot.joinDate).toLocaleDateString('en-US', {
-                month: 'short',
-                year: 'numeric'
-              })}
+          <div className="mt-12 space-y-3">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">Experience Matrix</span>
+              <span className="text-[10px] font-mono font-black">{pilot.experience} / {pilot.nextRankXP} UNITS</span>
+            </div>
+            <div className="h-4 bg-zinc-100 border border-zinc-200 p-0.5 rounded-none overflow-hidden">
+              <div
+                className="h-full bg-black transition-all duration-1000"
+                style={{ width: `${getRankProgress()}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-zinc-50 p-12 space-y-8 flex flex-col justify-center border-l-4 border-zinc-300">
+          <div>
+            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-1">Safety Rating</p>
+            <p className="text-5xl font-black italic tracking-tighter">{pilot.safetyRating}%</p>
+            <div className="w-full h-1 bg-zinc-200 mt-2">
+              <div className="h-full bg-emerald-500" style={{ width: `${pilot.safetyRating}%` }}></div>
+            </div>
+          </div>
+          <div>
+            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-1">On-Time Performance</p>
+            <p className="text-5xl font-black italic tracking-tighter">{pilot.onTimePercentage}%</p>
+            <div className="w-full h-1 bg-zinc-200 mt-2">
+              <div className="h-full bg-zinc-900" style={{ width: `${pilot.onTimePercentage}%` }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-zinc-200 border border-zinc-200 shadow-sm overflow-hidden">
+        {stats.map((stat, i) => (
+          <div key={i} className="bg-white p-8 group hover:bg-zinc-50 transition-all">
+            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <stat.icon className="w-3 h-3 text-zinc-300 group-hover:text-black transition-colors" /> {stat.label}
             </p>
+            <p className="text-2xl font-black italic tracking-tight">{stat.value}</p>
           </div>
-        </div>
-
-        {/* Experience Progress */}
-        <div className="mt-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold">Experience Progress</span>
-            <span className="text-sm">{pilot.experience} / {pilot.nextRankXP} XP</span>
-          </div>
-          <div className="w-full bg-blue-800 rounded-full h-3">
-            <div
-              className="bg-yellow-400 h-3 rounded-full transition-all duration-500"
-              style={{ width: `${getRankProgress()}%` }}
-            ></div>
-          </div>
-          <p className="text-xs text-blue-200 mt-1">
-            {pilot.nextRankXP - pilot.experience} XP until next rank
-          </p>
-        </div>
+        ))}
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <div key={index} className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+      <div className="space-y-6">
+        <h3 className="text-xl font-black text-black uppercase tracking-widest italic flex items-center gap-3">
+          <Trophy className="w-5 h-5" /> Operational Merit
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-200 border border-zinc-200 overflow-hidden shadow-sm">
+          {achievements.map((a, i) => (
+            <div key={i} className={`p-8 flex gap-6 items-center transition-all ${a.earned ? 'bg-white' : 'bg-zinc-50 grayscale opacity-40'}`}>
+              <div className={`p-4 border-2 ${a.earned ? 'border-black bg-white' : 'border-zinc-200 bg-zinc-100 text-zinc-300'}`}>
+                {a.icon}
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-center mb-1">
+                  <h4 className="text-xs font-black uppercase tracking-widest">{a.name}</h4>
+                  <span className="text-[9px] font-mono text-zinc-400">{a.req}</span>
                 </div>
-                <Icon className={`w-12 h-12 ${stat.color}`} />
+                <p className="text-[10px] text-zinc-500 uppercase leading-tight font-medium tracking-tight">{a.description}</p>
               </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Performance Metrics */}
-      {pilot.totalFlights > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">On-Time Performance</h3>
-            <div className="flex items-center justify-center">
-              <div className="relative w-32 h-32">
-                <svg className="transform -rotate-90 w-32 h-32">
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
-                    stroke="currentColor"
-                    strokeWidth="12"
-                    fill="transparent"
-                    className="text-gray-200"
-                  />
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
-                    stroke="currentColor"
-                    strokeWidth="12"
-                    fill="transparent"
-                    strokeDasharray={`${2 * Math.PI * 56}`}
-                    strokeDashoffset={`${2 * Math.PI * 56 * (1 - pilot.onTimePercentage / 100)}`}
-                    className="text-blue-600"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-3xl font-bold text-gray-900">{pilot.onTimePercentage}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Safety Rating</h3>
-            <div className="flex items-center justify-center">
-              <div className="relative w-32 h-32">
-                <svg className="transform -rotate-90 w-32 h-32">
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
-                    stroke="currentColor"
-                    strokeWidth="12"
-                    fill="transparent"
-                    className="text-gray-200"
-                  />
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
-                    stroke="currentColor"
-                    strokeWidth="12"
-                    fill="transparent"
-                    strokeDasharray={`${2 * Math.PI * 56}`}
-                    strokeDashoffset={`${2 * Math.PI * 56 * (1 - pilot.safetyRating / 100)}`}
-                    className="text-green-600"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-3xl font-bold text-gray-900">{pilot.safetyRating}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Overall Rating</h3>
-            <div className="flex flex-col items-center justify-center h-32">
-              <div className="flex gap-1 mb-2">
-                {[1, 2, 3, 4, 5].map(star => (
-                  <Star
-                    key={star}
-                    className={`w-8 h-8 ${star <= Math.floor(pilot.rating)
-                      ? 'text-yellow-400 fill-yellow-400'
-                      : 'text-gray-300'
-                      }`}
-                  />
-                ))}
-              </div>
-              <p className="text-4xl font-bold text-gray-900">{pilot.rating}</p>
-              <p className="text-sm text-gray-600">out of 5.0</p>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 mb-8 text-center">
-          <Plane className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Ready to Start Flying?</h3>
-          <p className="text-gray-600 mb-4">
-            Complete your first flight to start tracking your performance metrics and earning achievements!
-          </p>
-          <button
-            onClick={() => window.location.hash = '#dispatch'}
-            className="bg-blue-900 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition"
-          >
-            Go to Dispatch Center
-          </button>
-        </div>
-      )}
-
-      {/* Achievements Section */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Trophy className="w-6 h-6 text-yellow-600" />
-          <h3 className="text-xl font-bold text-gray-900">Achievements</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {achievements.map((achievement, index) => (
-            <div
-              key={index}
-              className={`p-4 rounded-lg border-2 transition ${achievement.earned
-                ? 'border-yellow-400 bg-yellow-50'
-                : 'border-gray-200 bg-gray-50 opacity-60'
-                }`}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-4xl">{achievement.icon}</span>
-                <div className="flex-1">
-                  <h4 className="font-bold text-gray-900 mb-1">{achievement.name}</h4>
-                  <p className="text-sm text-gray-600 mb-2">{achievement.description}</p>
-                  <span className="text-xs text-gray-500 font-semibold">
-                    {achievement.requirement}
-                  </span>
-                </div>
-              </div>
+              {a.earned && <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>}
             </div>
           ))}
         </div>
