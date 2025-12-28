@@ -92,6 +92,7 @@ export const AppProvider = ({ children }) => {
         const fleetAircraft = {
           ...aircraft,
           registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000}`,
+          location: "Weston, Ireland (EIWT)", // Base at Weston
           status: 'available',
           total_hours: aircraft.hours || aircraft.conditionDetails?.airframe?.ttaf || 0,
           hours_since_inspection: 0,
@@ -276,7 +277,8 @@ export const AppProvider = ({ children }) => {
   // Refresh Available Flights
   const refreshAvailableFlights = () => {
     if (fleet.length > 0) {
-      setAvailableFlights(generateMissions(fleet, 3));
+      // Generate 5 missions per aircraft for better variety
+      setAvailableFlights(generateMissions(fleet, 5));
     }
   };
 
