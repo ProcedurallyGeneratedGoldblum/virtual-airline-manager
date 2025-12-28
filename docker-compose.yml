@@ -22,8 +22,6 @@ services:
     build: .
     ports:
       - "8090:80"
-    environment:
-      - VITE_API_URL=http://backend:3001
     depends_on:
       - backend
     restart: unless-stopped
