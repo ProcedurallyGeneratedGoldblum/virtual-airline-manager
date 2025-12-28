@@ -340,51 +340,54 @@ const AircraftCard = ({ plane, activeTab, handleBuy, handleSell, refuelAircraft,
         {expanded && (
           <div className="mt-8 pt-8 border-t border-zinc-100 space-y-8 animate-in fade-in slide-in-from-top-2 duration-300">
             {/* Extended Logistics (Fleet Only) */}
-            <div className="col-span-2 bg-zinc-50 p-4 border-t border-zinc-100">
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2">
-                <Wrench className="w-3 h-3" /> Scheduled Maintenance
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(maintenanceSpecs).map(([type, spec]) => {
-                  const hoursUsed = plane.totalHours - (plane[`hoursAtLast${type}`] || 0);
-                  const percent = Math.min(100, (hoursUsed / spec.interval) * 100);
-                  const remains = Math.max(0, spec.interval - hoursUsed);
+            {isFleet && (
+              <div className="col-span-2 bg-zinc-50 p-4 border-t border-zinc-100">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2">
+                  <Wrench className="w-3 h-3" /> Scheduled Maintenance
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  {Object.entries(maintenanceSpecs).map(([type, spec]) => {
+                    const currentHours = plane.totalHours || plane.hours || 0;
+                    const hoursUsed = currentHours - (plane[`hoursAtLast${type}`] || 0);
+                    const percent = Math.min(100, (hoursUsed / spec.interval) * 100);
+                    const remains = Math.max(0, spec.interval - hoursUsed);
 
-                  return (
-                    <div key={type} className="bg-white p-3 border border-zinc-100 relative overflow-hidden group/maint">
-                      <div className="absolute top-0 left-0 w-1 h-full bg-zinc-100 group-hover/maint:bg-black transition-all"></div>
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-tighter italic">{type}-Check</p>
-                          <p className="text-[8px] font-mono text-zinc-400">{remains.toFixed(1)} HRS REMAINING</p>
+                    return (
+                      <div key={type} className="bg-white p-3 border border-zinc-100 relative overflow-hidden group/maint">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-zinc-100 group-hover/maint:bg-black transition-all"></div>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-tighter italic">{type}-Check</p>
+                            <p className="text-[8px] font-mono text-zinc-400">{remains.toFixed(1)} HRS REMAINING</p>
+                          </div>
+                          <span className="text-[9px] font-black text-black">{formatPrice(spec.cost)}</span>
                         </div>
-                        <span className="text-[9px] font-black text-black">{formatPrice(spec.cost)}</span>
+                        <div className="h-1 bg-zinc-50 rounded-full overflow-hidden mb-3">
+                          <div
+                            className={`h-full transition-all duration-1000 ${percent > 90 ? 'bg-red-600' : percent > 70 ? 'bg-amber-500' : 'bg-zinc-900'}`}
+                            style={{ width: `${percent}%` }}
+                          ></div>
+                        </div>
+                        <button
+                          onClick={() => handleMaintenance(type)}
+                          disabled={plane.status === 'in-flight'}
+                          className="w-full py-1 text-[8px] font-black uppercase tracking-widest bg-zinc-50 hover:bg-black hover:text-white transition-all disabled:opacity-20"
+                        >
+                          Authorize Check
+                        </button>
                       </div>
-                      <div className="h-1 bg-zinc-50 rounded-full overflow-hidden mb-3">
-                        <div
-                          className={`h-full transition-all duration-1000 ${percent > 90 ? 'bg-red-600' : percent > 70 ? 'bg-amber-500' : 'bg-zinc-900'}`}
-                          style={{ width: `${percent}%` }}
-                        ></div>
-                      </div>
-                      <button
-                        onClick={() => handleMaintenance(type)}
-                        disabled={plane.status === 'in-flight'}
-                        className="w-full py-1 text-[8px] font-black uppercase tracking-widest bg-zinc-50 hover:bg-black hover:text-white transition-all disabled:opacity-20"
-                      >
-                        Authorize Check
-                      </button>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={handleRefuel}
+                  disabled={fuelPercentage > 95 || plane.status === 'in-flight'}
+                  className="w-full mt-6 py-4 bg-black text-white text-[10px] font-black uppercase tracking-[.3em] hover:bg-zinc-800 transition-all disabled:opacity-20 flex items-center justify-center gap-3"
+                >
+                  <Fuel className="w-4 h-4" /> Execute Refuel Procedure ({formatPrice(FUEL_PRICES[plane.fuelType || 'AVGAS'])}/GAL)
+                </button>
               </div>
-              <button
-                onClick={handleRefuel}
-                disabled={fuelPercentage > 95 || plane.status === 'in-flight'}
-                className="w-full mt-6 py-4 bg-black text-white text-[10px] font-black uppercase tracking-[.3em] hover:bg-zinc-800 transition-all disabled:opacity-20 flex items-center justify-center gap-3"
-              >
-                <Fuel className="w-4 h-4" /> Execute Refuel Procedure ({formatPrice(FUEL_PRICES[plane.fuelType || 'AVGAS'])}/GAL)
-              </button>
-            </div>
+            )}
           </div>
         )}
 
