@@ -21,7 +21,8 @@ import {
   Loader2,
   DollarSign
 } from 'lucide-react';
-import { getFlightWeather, formatMETAR, formatTAF, getFlightRules, getWindInfo, getVisibility } from '../utils/weatherAPI';
+import { getFlightWeather, getFlightRules, getWindInfo, getVisibility, getClouds } from '../utils/weatherAPI';
+import NotamBriefing from './NotamBriefing';
 import { calculateFlightFinance, formatCurrency } from '../utils/flightCalculations';
 
 // Fix for default marker icons in Leaflet with webpack/vite
@@ -107,7 +108,7 @@ function WeatherCard({ title, icao, metar, taf, station, isLoading }) {
           <span className="text-xs font-semibold text-gray-600 uppercase">METAR</span>
         </div>
         <p className="text-xs font-mono bg-gray-50 p-2 rounded border border-gray-200 break-all">
-          {formatMETAR(metar)}
+          {metar?.raw_text || 'N/A'}
         </p>
 
         {/* Parsed METAR Info */}
@@ -138,7 +139,7 @@ function WeatherCard({ title, icao, metar, taf, station, isLoading }) {
           <span className="text-xs font-semibold text-gray-600 uppercase">TAF (Forecast)</span>
         </div>
         <p className="text-xs font-mono bg-gray-50 p-2 rounded border border-gray-200 break-all max-h-24 overflow-y-auto">
-          {formatTAF(taf)}
+          {taf?.raw_text || 'N/A'}
         </p>
       </div>
 
@@ -646,7 +647,7 @@ function DispatchCenter() {
                         </div>
 
                         {/* Weather Cards */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                           <WeatherCard
                             title={`Departure: ${flight.route.fromCode}`}
                             icao={flight.route.fromCode}
@@ -662,6 +663,14 @@ function DispatchCenter() {
                             taf={flightWeather?.arrival?.taf}
                             station={flightWeather?.arrival?.station}
                             isLoading={isLoadingWeather}
+                          />
+                        </div>
+
+                        {/* AI NOTAM Briefing */}
+                        <div className="mt-8">
+                          <NotamBriefing
+                            departureCode={flight.route.fromCode}
+                            arrivalCode={flight.route.toCode}
                           />
                         </div>
                       </div>
