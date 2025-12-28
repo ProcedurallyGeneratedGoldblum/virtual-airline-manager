@@ -1,9 +1,39 @@
 version: '3.8'
 
 services:
+  # Backend API Service
+  backend:
+    container_name: vam-backend
+    build: ./server
+    ports:
+      - "3001:3001"
+    volumes:
+      - vam-data:/app/data
+    environment:
+      - DB_PATH=/app/data/vam.db
+      - PORT=3001
+    restart: unless-stopped
+    networks:
+      - vam-network
+
+  # Frontend Service
   virtual-airline-manager:
     container_name: virtual-airline-manager
     build: .
     ports:
       - "8090:80"
+    environment:
+      - VITE_API_URL=http://backend:3001
+    depends_on:
+      - backend
     restart: unless-stopped
+    networks:
+      - vam-network
+
+volumes:
+  vam-data:
+
+
+networks:
+  vam-network:
+    driver: bridge

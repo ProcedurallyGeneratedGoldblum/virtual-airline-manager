@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import aircraftTypes from '../data/aircraftTypes.json';
 import { calculateFlightFinance } from '../utils/flightCalculations';
+import api from '../lib/api';
 
 const AppContext = createContext();
 
@@ -13,113 +14,147 @@ export const useAppContext = () => {
 };
 
 export const AppProvider = ({ children }) => {
-  // Helper to load from localStorage
-  const loadState = (key, fallback) => {
-    try {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : fallback;
-    } catch (e) {
-      console.warn(`Failed to load ${key} from localStorage`, e);
-      return fallback;
-    }
-  };
+  // Loading state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Company State
-  const [company, setCompany] = useState(() => loadState('vam_company', {
+  const [company, setCompany] = useState({
     name: '',
     callsign: '',
     founded: '',
     headquarters: '',
     description: '',
     motto: '',
-    focusArea: 'bush',
+    focus_area: 'bush',
     pilots: 1,
     aircraft: 3,
-    totalFlights: 0,
-    totalEarnings: 0,
-    flightHours: 0,
-    balance: 5000000, // Initial balance
+    total_flights: 0,
+    total_earnings: 0,
+    flight_hours: 0,
+    balance: 5000000,
     established: new Date().toISOString().split('T')[0]
-  }));
-
-  // Migration for existing saves
-  useEffect(() => {
-    if (company.balance === undefined) {
-      setCompany(prev => ({ ...prev, balance: 5000000 }));
-    }
-  }, []);
+  });
 
   // Pilot State
-  const [pilot, setPilot] = useState(() => loadState('vam_pilot', {
+  const [pilot, setPilot] = useState({
     name: '',
     callsign: '',
     rank: 'Junior Pilot',
-    role: 'Company Owner', // New field
+    role: 'Company Owner',
     license: '',
-    joinDate: new Date().toISOString().split('T')[0],
-    totalFlights: 0,
-    totalHours: 0,
-    totalDistance: 0,
-    totalEarnings: 0,
+    join_date: new Date().toISOString().split('T')[0],
+    total_flights: 0,
+    total_hours: 0,
+    total_distance: 0,
+    total_earnings: 0,
     rating: 0,
-    onTimePercentage: 0,
-    safetyRating: 100,
+    on_time_percentage: 0,
+    safety_rating: 100,
     experience: 0,
-    nextRankXP: 1000,
-  }));
+    next_rank_xp: 1000,
+  });
 
-  // Fleet State - Starting aircraft based at regional European airfields
-  const [fleet, setFleet] = useState(() => loadState('vam_fleet', [
-    {
-      id: 1,
-      registration: 'EI-CAR',
-      type: 'Cessna 208 Caravan',
-      status: 'available',
-      location: 'Weston (EIWT)',
-      totalHours: 1250.5,
-      hoursSinceInspection: 45.2,
-      nextInspectionDue: 54.8,
-      lastFlight: '2024-12-18',
-      condition: 'excellent',
-      lockedBy: null,
-      currentFlight: null
-    },
-    {
-      id: 2,
-      registration: 'G-BUSH',
-      type: 'DHC-2 Beaver',
-      status: 'available',
-      location: 'Oban (EGEO)',
-      totalHours: 8420.3,
-      hoursSinceInspection: 82.1,
-      nextInspectionDue: 17.9,
-      lastFlight: '2024-12-21',
-      condition: 'good',
-      lockedBy: null,
-      currentFlight: null
-    },
-    {
-      id: 3,
-      registration: 'F-GCUB',
-      type: 'Piper PA-18 Super Cub',
-      status: 'maintenance',
-      location: 'Toussus-le-Noble (LFPN)',
-      totalHours: 3200.7,
-      hoursSinceInspection: 5.0,
-      nextInspectionDue: 95.0,
-      lastFlight: '2024-12-15',
-      condition: 'fair',
-      maintenanceNotes: 'Oil change and 100-hour inspection',
-      lockedBy: null,
-      currentFlight: null
-    }
-  ]));
+  // Fleet State
+  const [fleet, setFleet] = useState([]);
 
   // Active Flights State
-  const [activeFlights, setActiveFlights] = useState(() => loadState('vam_activeFlights', []));
+  const [activeFlights, setActiveFlights] = useState([]);
 
   // Completed Flights State (Flight Log)
-  const [completedFlights, setCompletedFlights] = useState(() => loadState('vam_completedFlights', []));
+  const [completedFlights, setCompletedFlights] = useState([]);
+
+  // Load initial data from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Load all data in parallel
+        const [companyData, pilotData, fleetData, activeFlightsData, completedFlightsData] = await Promise.all([
+          api.getCompany(),
+          api.getPilot(),
+          api.getFleet(),
+          api.getActiveFlights(),
+          api.getCompletedFlights()
+        ]);
+
+        // Transform snake_case from DB to camelCase for frontend
+        const transformCompany = (data) => ({
+          name: data.name || '',
+          callsign: data.callsign || '',
+          founded: data.founded || '',
+          headquarters: data.headquarters || '',
+          description: data.description || '',
+          motto: data.motto || '',
+          focusArea: data.focus_area || 'bush',
+          pilots: data.pilots || 1,
+          aircraft: data.aircraft || 3,
+          totalFlights: data.total_flights || 0,
+          totalEarnings: data.total_earnings || 0,
+          flightHours: data.flight_hours || 0,
+          balance: data.balance || 5000000,
+          established: data.established || new Date().toISOString().split('T')[0]
+        });
+
+        const transformPilot = (data) => ({
+          name: data.name || '',
+          callsign: data.callsign || '',
+          rank: data.rank || 'Junior Pilot',
+          role: data.role || 'Company Owner',
+          license: data.license || '',
+          joinDate: data.join_date || new Date().toISOString().split('T')[0],
+          totalFlights: data.total_flights || 0,
+          totalHours: data.total_hours || 0,
+          totalDistance: data.total_distance || 0,
+          totalEarnings: data.total_earnings || 0,
+          rating: data.rating || 0,
+          onTimePercentage: data.on_time_percentage || 0,
+          safetyRating: data.safety_rating || 100,
+          experience: data.experience || 0,
+          nextRankXP: data.next_rank_xp || 1000
+        });
+
+        const transformFleet = (data) => data.map(aircraft => ({
+          id: aircraft.id,
+          registration: aircraft.registration,
+          type: aircraft.type,
+          status: aircraft.status,
+          location: aircraft.location,
+          totalHours: aircraft.total_hours,
+          hoursSinceInspection: aircraft.hours_since_inspection,
+          nextInspectionDue: aircraft.next_inspection_due,
+          lastFlight: aircraft.last_flight,
+          condition: aircraft.condition,
+          conditionDetails: aircraft.condition_details,
+          melList: aircraft.mel_list || [],
+          maintenanceNotes: aircraft.maintenance_notes,
+          lockedBy: aircraft.locked_by,
+          currentFlight: aircraft.current_flight,
+          name: aircraft.name,
+          manufacturer: aircraft.manufacturer,
+          year: aircraft.year,
+          price: aircraft.price,
+          specs: aircraft.specs
+        }));
+
+        setCompany(transformCompany(companyData));
+        setPilot(transformPilot(pilotData));
+        setFleet(transformFleet(fleetData));
+        setActiveFlights(activeFlightsData);
+        setCompletedFlights(completedFlightsData);
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to load data from API:', err);
+        setError('Failed to connect to server. Please ensure the backend is running.');
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   // Available Flights State (Dispatch Center) - Regional European routes
   const [availableFlights, setAvailableFlights] = useState([
@@ -314,49 +349,50 @@ export const AppProvider = ({ children }) => {
     }
   ]);
 
-  // Save state to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('vam_company', JSON.stringify(company));
-  }, [company]);
-
-  useEffect(() => {
-    localStorage.setItem('vam_pilot', JSON.stringify(pilot));
-  }, [pilot]);
-
-  useEffect(() => {
-    localStorage.setItem('vam_fleet', JSON.stringify(fleet));
-  }, [fleet]);
-
-  useEffect(() => {
-    localStorage.setItem('vam_activeFlights', JSON.stringify(activeFlights));
-  }, [activeFlights]);
-
-  useEffect(() => {
-    localStorage.setItem('vam_completedFlights', JSON.stringify(completedFlights));
-  }, [completedFlights]);
-
 
   // Flight being completed (for post-flight briefing)
   const [flightToComplete, setFlightToComplete] = useState(null);
 
   // Lock aircraft for a flight
-  const lockAircraft = (aircraftId, flightId) => {
+  const lockAircraft = async (aircraftId, flightId) => {
+    const aircraft = fleet.find(a => a.id === aircraftId);
+    if (!aircraft) return;
+
+    const updatedAircraft = {
+      ...aircraft,
+      status: 'in-flight',
+      lockedBy: flightId,
+      currentFlight: flightId
+    };
+
+    // Update in state
     setFleet(prevFleet =>
-      prevFleet.map(aircraft =>
-        aircraft.id === aircraftId
-          ? {
-            ...aircraft,
-            status: 'in-flight',
-            lockedBy: flightId,
-            currentFlight: flightId
-          }
-          : aircraft
+      prevFleet.map(a =>
+        a.id === aircraftId ? updatedAircraft : a
       )
     );
+
+    // Persist to API
+    try {
+      await api.updateAircraft(aircraftId, {
+        ...updatedAircraft,
+        total_hours: updatedAircraft.totalHours,
+        hours_since_inspection: updatedAircraft.hoursSinceInspection,
+        next_inspection_due: updatedAircraft.nextInspectionDue,
+        last_flight: updatedAircraft.lastFlight,
+        condition_details: updatedAircraft.conditionDetails,
+        mel_list: updatedAircraft.melList,
+        maintenance_notes: updatedAircraft.maintenanceNotes,
+        locked_by: flightId,
+        current_flight: flightId
+      });
+    } catch (error) {
+      console.error('Failed to lock aircraft:', error);
+    }
   };
 
   // Accept a flight
-  const acceptFlight = (flight, selectedAircraft) => {
+  const acceptFlight = async (flight, selectedAircraft) => {
     const flightId = `FLIGHT-${Date.now()}`;
 
     const newActiveFlight = {
@@ -372,10 +408,17 @@ export const AppProvider = ({ children }) => {
     setActiveFlights(prev => [...prev, newActiveFlight]);
 
     // Lock the aircraft
-    lockAircraft(selectedAircraft.id, flightId);
+    await lockAircraft(selectedAircraft.id, flightId);
 
     // Remove from available flights
     setAvailableFlights(prev => prev.filter(f => f.id !== flight.id));
+
+    // Persist to API
+    try {
+      await api.addActiveFlight(newActiveFlight);
+    } catch (error) {
+      console.error('Failed to save active flight:', error);
+    }
 
     return flightId;
   };
@@ -419,7 +462,7 @@ export const AppProvider = ({ children }) => {
       const onTimeCount = Math.round((prev.onTimePercentage / 100) * prev.totalFlights) + (isOnTime ? 1 : 0);
       const newOnTimePercentage = Math.round((onTimeCount / newTotalFlights) * 100);
 
-      return {
+      const newPilot = {
         ...prev,
         totalFlights: newTotalFlights,
         totalHours: parseFloat(newTotalHours.toFixed(1)),
@@ -429,11 +472,24 @@ export const AppProvider = ({ children }) => {
         onTimePercentage: newOnTimePercentage,
         experience: newExperience
       };
+      return newPilot;
     });
+
+    // Use existing xpEarned for API persistence
+    return {
+      ...pilot,
+      totalFlights: pilot.totalFlights + 1,
+      totalHours: parseFloat((pilot.totalHours + flightHours).toFixed(1)),
+      totalDistance: pilot.totalDistance + distance,
+      totalEarnings: pilot.totalEarnings + earnings,
+      rating: parseFloat((pilot.totalFlights === 0 ? (briefingData.severity === 'major' ? 3.0 : 5.0) : ((pilot.rating * pilot.totalFlights) + (briefingData.severity === 'major' ? 3.0 : 5.0)) / (pilot.totalFlights + 1)).toFixed(1)),
+      onTimePercentage: Math.round(((Math.round((pilot.onTimePercentage / 100) * pilot.totalFlights) + (briefingData.onTime !== false ? 1 : 0)) / (pilot.totalFlights + 1)) * 100),
+      experience: pilot.experience + xpEarned
+    };
   };
 
   // Submit post-flight briefing and complete flight
-  const completeFlightWithBriefing = (flightId, briefingData) => {
+  const completeFlightWithBriefing = async (flightId, briefingData) => {
     const flight = activeFlights.find(f => f.id === flightId);
 
     if (!flight) return;
@@ -500,29 +556,66 @@ export const AppProvider = ({ children }) => {
     // Add to completed flights
     setCompletedFlights(prev => [...prev, completedFlight]);
 
-    // Update Pilot Stats
-    updatePilotStats(flight, briefingData);
+    // Update Pilot Stats and get new data
+    const updatedPilot = updatePilotStats(flight, briefingData);
 
     // Remove from active flights
     setActiveFlights(prev => prev.filter(f => f.id !== flightId));
 
     // Calculate final financials
     const finance = calculateFlightFinance(flight, aircraft);
-    // If actual duration differed significantly, we might want to adjust expenses (fuel/pilot), 
-    // but calculateFlightFinance uses flight.distance mainly. 
-    // Let's stick to the generated finance object for consistency, or ideally recalculate with actual hours.
-    // For now, we'll use the calculated profit as the realized gain.
     const netProfit = finance ? finance.profit : (briefingData.earnings || 0);
     const revenue = finance ? finance.revenue : (briefingData.earnings || 0);
 
     // Update company stats
-    setCompany(prev => ({
-      ...prev,
-      totalFlights: prev.totalFlights + 1,
-      totalEarnings: prev.totalEarnings + revenue,
-      flightHours: prev.flightHours + flightHours,
-      balance: prev.balance + netProfit
-    }));
+    const updatedCompany = {
+      ...company,
+      totalFlights: company.totalFlights + 1,
+      totalEarnings: company.totalEarnings + revenue,
+      flightHours: company.flightHours + flightHours,
+      balance: company.balance + netProfit
+    };
+    setCompany(updatedCompany);
+
+    // Persist to API
+    try {
+      await Promise.all([
+        api.addCompletedFlight({
+          flight_id: completedFlight.flightId,
+          flight_number: completedFlight.flightNumber,
+          route: completedFlight.route,
+          aircraft: completedFlight.aircraft,
+          type: completedFlight.type,
+          date: completedFlight.date,
+          duration: completedFlight.duration,
+          distance: completedFlight.distance,
+          earnings: completedFlight.earnings,
+          status: completedFlight.status,
+          briefing: completedFlight.briefing
+        }),
+        api.deleteActiveFlight(flightId),
+        api.updateCompany({
+          ...updatedCompany,
+          focus_area: updatedCompany.focusArea,
+          total_flights: updatedCompany.totalFlights,
+          total_earnings: updatedCompany.totalEarnings,
+          flight_hours: updatedCompany.flightHours
+        }),
+        api.updatePilot({
+          ...updatedPilot,
+          join_date: updatedPilot.joinDate,
+          total_flights: updatedPilot.totalFlights,
+          total_hours: updatedPilot.totalHours,
+          total_distance: updatedPilot.totalDistance,
+          total_earnings: updatedPilot.totalEarnings,
+          on_time_percentage: updatedPilot.onTimePercentage,
+          safety_rating: updatedPilot.safetyRating,
+          next_rank_xp: updatedPilot.nextRankXP
+        })
+      ]);
+    } catch (error) {
+      console.error('Failed to complete flight:', error);
+    }
 
     // Clear flight to complete
     setFlightToComplete(null);
@@ -534,17 +627,47 @@ export const AppProvider = ({ children }) => {
   };
 
   // Update company
-  const updateCompany = (newCompanyData) => {
+  const updateCompany = async (newCompanyData) => {
     setCompany(newCompanyData);
+
+    // Persist to API
+    try {
+      await api.updateCompany({
+        ...newCompanyData,
+        focus_area: newCompanyData.focusArea,
+        total_flights: newCompanyData.totalFlights,
+        total_earnings: newCompanyData.totalEarnings,
+        flight_hours: newCompanyData.flightHours
+      });
+    } catch (error) {
+      console.error('Failed to update company:', error);
+    }
   };
 
   // Update pilot
-  const updatePilot = (newPilotData) => {
+  const updatePilot = async (newPilotData) => {
     setPilot(newPilotData);
+
+    // Persist to API
+    try {
+      await api.updatePilot({
+        ...newPilotData,
+        join_date: newPilotData.joinDate,
+        total_flights: newPilotData.totalFlights,
+        total_hours: newPilotData.totalHours,
+        total_distance: newPilotData.totalDistance,
+        total_earnings: newPilotData.totalEarnings,
+        on_time_percentage: newPilotData.onTimePercentage,
+        safety_rating: newPilotData.safetyRating,
+        next_rank_xp: newPilotData.nextRankXP
+      });
+    } catch (error) {
+      console.error('Failed to update pilot:', error);
+    }
   };
 
   // Add aircraft to fleet
-  const addAircraftToFleet = (aircraft) => {
+  const addAircraftToFleet = async (aircraft) => {
     // ICAO Registration Prefixes by Country
     const registrationPrefixes = {
       'Ireland': 'EI-',
@@ -635,15 +758,43 @@ export const AppProvider = ({ children }) => {
     };
 
     setFleet(prev => [...prev, fleetAircraft]);
-    setCompany(prev => ({
-      ...prev,
-      aircraft: prev.aircraft + 1,
-      balance: prev.balance - aircraft.price
-    }));
+    const updatedCompany = {
+      ...company,
+      aircraft: company.aircraft + 1,
+      balance: company.balance - aircraft.price
+    };
+    setCompany(updatedCompany);
+
+    // Persist to API
+    try {
+      await Promise.all([
+        api.addAircraft({
+          ...fleetAircraft,
+          total_hours: fleetAircraft.totalHours,
+          hours_since_inspection: fleetAircraft.hoursSinceInspection,
+          next_inspection_due: fleetAircraft.nextInspectionDue,
+          last_flight: fleetAircraft.lastFlight,
+          condition_details: fleetAircraft.conditionDetails,
+          mel_list: fleetAircraft.melList,
+          maintenance_notes: fleetAircraft.maintenanceNotes,
+          locked_by: fleetAircraft.lockedBy,
+          current_flight: fleetAircraft.currentFlight
+        }),
+        api.updateCompany({
+          ...updatedCompany,
+          focus_area: updatedCompany.focusArea,
+          total_flights: updatedCompany.totalFlights,
+          total_earnings: updatedCompany.totalEarnings,
+          flight_hours: updatedCompany.flightHours
+        })
+      ]);
+    } catch (error) {
+      console.error('Failed to add aircraft:', error);
+    }
   };
 
   // Sell aircraft
-  const sellAircraft = (aircraftId) => {
+  const sellAircraft = async (aircraftId) => {
     const aircraft = fleet.find(a => a.id === aircraftId);
     if (!aircraft) return;
 
@@ -688,17 +839,34 @@ export const AppProvider = ({ children }) => {
     const sellPrice = Math.floor(baseValue * conditionFactor * 0.8); // 20% dealer margin/fee
 
     setFleet(prev => prev.filter(a => a.id !== aircraftId));
-    setCompany(prev => ({
-      ...prev,
-      aircraft: prev.aircraft - 1,
-      balance: prev.balance + sellPrice
-    }));
+    const updatedCompany = {
+      ...company,
+      aircraft: company.aircraft - 1,
+      balance: company.balance + sellPrice
+    };
+    setCompany(updatedCompany);
+
+    // Persist to API
+    try {
+      await Promise.all([
+        api.deleteAircraft(aircraftId),
+        api.updateCompany({
+          ...updatedCompany,
+          focus_area: updatedCompany.focusArea,
+          total_flights: updatedCompany.totalFlights,
+          total_earnings: updatedCompany.totalEarnings,
+          flight_hours: updatedCompany.flightHours
+        })
+      ]);
+    } catch (error) {
+      console.error('Failed to sell aircraft:', error);
+    }
 
     return sellPrice;
   };
 
   // Repair Aircraft (MEL or Component)
-  const repairAircraft = (aircraftId, type, itemData) => {
+  const repairAircraft = async (aircraftId, type, itemData) => {
     const aircraft = fleet.find(a => a.id === aircraftId);
     if (!aircraft) return;
 
@@ -761,8 +929,6 @@ export const AppProvider = ({ children }) => {
 
     if (success) {
       // Recalculate global condition (Simplified)
-      // If we had the generator logic here it would be better, but let's approximate
-      // Average of components
       const cd = newAircraft.conditionDetails;
       if (cd) {
         const avg = (cd.engine.condition + cd.avionics.condition + cd.interior.condition + cd.airframe.condition) / 4;
@@ -774,13 +940,41 @@ export const AppProvider = ({ children }) => {
       }
 
       // Deduct funds
-      setCompany(prev => ({
-        ...prev,
-        balance: prev.balance - cost
-      }));
+      const updatedCompany = {
+        ...company,
+        balance: company.balance - cost
+      };
+      setCompany(updatedCompany);
 
       // Update fleet
       setFleet(prev => prev.map(a => a.id === aircraftId ? newAircraft : a));
+
+      // Persist to API
+      try {
+        await Promise.all([
+          api.updateAircraft(aircraftId, {
+            ...newAircraft,
+            total_hours: newAircraft.totalHours,
+            hours_since_inspection: newAircraft.hoursSinceInspection,
+            next_inspection_due: newAircraft.nextInspectionDue,
+            last_flight: newAircraft.lastFlight,
+            condition_details: newAircraft.conditionDetails,
+            mel_list: newAircraft.melList,
+            maintenance_notes: newAircraft.maintenanceNotes,
+            locked_by: newAircraft.lockedBy,
+            current_flight: newAircraft.currentFlight
+          }),
+          api.updateCompany({
+            ...updatedCompany,
+            focus_area: updatedCompany.focusArea,
+            total_flights: updatedCompany.totalFlights,
+            total_earnings: updatedCompany.totalEarnings,
+            flight_hours: updatedCompany.flightHours
+          })
+        ]);
+      } catch (error) {
+        console.error('Failed to persist repair:', error);
+      }
     }
 
     return success;
@@ -808,6 +1002,41 @@ export const AppProvider = ({ children }) => {
     repairAircraft,
     lockAircraft
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-300 font-medium animate-pulse">Initializing Virtual Airline Management Center...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-slate-800 border-2 border-red-500/30 rounded-xl p-8 shadow-2xl">
+          <div className="flex items-center gap-4 text-red-500 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h2 className="text-2xl font-bold">System Error</h2>
+          </div>
+          <p className="text-slate-300 mb-6 leading-relaxed">
+            {error}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg"
+          >
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
