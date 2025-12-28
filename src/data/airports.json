@@ -18,6 +18,30 @@
         "region": "UK & Ireland"
     },
     {
+        "name": "Dublin",
+        "icao": "EIDW",
+        "country": "Ireland",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Cork",
+        "icao": "EICK",
+        "country": "Ireland",
+        "region": "UK & Ireland"
+    },
+    {
+        "name": "Belfast City",
+        "icao": "EGAC",
+        "country": "UK",
+        "region": "Northern Ireland"
+    },
+    {
+        "name": "City of Derry",
+        "icao": "EGAE",
+        "country": "UK",
+        "region": "Northern Ireland"
+    },
+    {
         "name": "Biggin Hill",
         "icao": "EGKB",
         "country": "UK",
@@ -52,6 +76,67 @@
         "icao": "EGTB",
         "country": "UK",
         "region": "UK & Ireland"
+    },
+    {
+        "name": "Caernarfon",
+        "icao": "EGCK",
+        "country": "UK",
+        "region": "Wales"
+    },
+    {
+        "name": "Cardiff",
+        "icao": "EGFF",
+        "country": "UK",
+        "region": "Wales"
+    },
+    {
+        "name": "Haverfordwest",
+        "icao": "EGFE",
+        "country": "UK",
+        "region": "Wales"
+    },
+    {
+        "name": "Hawarden",
+        "icao": "EGNR",
+        "country": "UK",
+        "region": "Wales"
+    },
+    {
+        "name": "Liverpool John Lennon",
+        "icao": "EGGP",
+        "country": "UK",
+        "region": "North West England"
+    },
+    {
+        "name": "Manchester",
+        "icao": "EGCC",
+        "country": "UK",
+        "region": "North West England"
+    },
+    {
+        "name": "Barra",
+        "icao": "EGPR",
+        "country": "UK",
+        "region": "Scottish Highlands",
+        "note": "Beach runway"
+    },
+    {
+        "name": "Islay",
+        "icao": "EGPI",
+        "country": "UK",
+        "region": "Scottish Highlands"
+    },
+    {
+        "name": "Tiree",
+        "icao": "EGPU",
+        "country": "UK",
+        "region": "Scottish Highlands"
+    },
+    {
+        "name": "Campbeltown",
+        "icao": "EGEC",
+        "country": "UK",
+        "region": "Scottish Highlands"
     },
     {
         "name": "Toussus-le-Noble",
@@ -196,30 +281,5 @@
         "icao": "LECU",
         "country": "Spain",
         "region": "Southern Europe"
-    },
-    {
-        "name": "Barra",
-        "icao": "EGPR",
-        "country": "UK",
-        "region": "Scottish Highlands",
-        "note": "Beach runway"
-    },
-    {
-        "name": "Islay",
-        "icao": "EGPI",
-        "country": "UK",
-        "region": "Scottish Highlands"
-    },
-    {
-        "name": "Tiree",
-        "icao": "EGPU",
-        "country": "UK",
-        "region": "Scottish Highlands"
-    },
-    {
-        "name": "Campbeltown",
-        "icao": "EGEC",
-        "country": "UK",
-        "region": "Scottish Highlands"
     }
 ]
