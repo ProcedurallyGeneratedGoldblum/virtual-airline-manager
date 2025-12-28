@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { Building2, Edit2, Save, X, Plane, Users, MapPin, Calendar } from 'lucide-react';
+import { Building2, Edit2, Save, X, Plane, Users, MapPin, Calendar, ShieldCheck, Award } from 'lucide-react';
 import airportsData from '../data/airports.json';
-
 import { useAppContext } from './AppContext';
-
-// Import Fleet
 import Fleet from './Fleet';
 
 function Company() {
@@ -12,10 +9,8 @@ function Company() {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'fleet'
 
-  // Determine if company is set up based on name presence
   const hasCompany = !!company.name;
 
-  // Format airports from JSON for dropdown display
   const europeanLocations = airportsData.map(
     airport => `${airport.name}, ${airport.country} (${airport.icao})`
   );
@@ -23,12 +18,10 @@ function Company() {
   const [editForm, setEditForm] = useState(company);
 
   const focusAreas = [
-    { id: 'bush', name: 'Bush Operations', description: 'Remote and backcountry flying' },
-    { id: 'cargo', name: 'Cargo Transport', description: 'Freight and logistics' },
-    { id: 'passenger', name: 'Passenger Service', description: 'Regional air travel' },
-    { id: 'charter', name: 'Charter Flights', description: 'On-demand aviation services' },
-    { id: 'medical', name: 'Medical Transport', description: 'Emergency and medical flights' },
-    { id: 'mixed', name: 'Mixed Operations', description: 'Diverse flight operations' }
+    { id: 'bush', name: 'Alaskan Bush', description: 'Rugged backcountry operations' },
+    { id: 'cargo', name: 'Industrial Cargo', description: 'Heavy lift and logistics' },
+    { id: 'passenger', name: 'Regional Connect', description: 'Northwestern air travel' },
+    { id: 'charter', name: 'Executive Charter', description: 'High-end on-demand' },
   ];
 
   const handleStartEditing = () => {
@@ -46,380 +39,256 @@ function Company() {
       updateCompany(editForm);
       setIsEditing(false);
     } else {
-      alert('Please fill in all required fields (Name, Callsign, Headquarters)');
+      alert('REQUIRED FIELDS: Name, Callsign, Hub');
     }
   };
 
   const handleInputChange = (field, value) => {
-    setEditForm({
-      ...editForm,
-      [field]: value
-    });
+    setEditForm({ ...editForm, [field]: value });
   };
 
-  // If no company exists and not editing, show create form
   if (!hasCompany && !isEditing) {
     return (
-      <div>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Company Profile</h2>
-          <p className="text-gray-600">Create your virtual airline company</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-3xl mx-auto text-center">
-          <Building2 className="w-24 h-24 text-blue-900 mx-auto mb-6" />
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">Start Your Virtual Airline</h3>
-          <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-            Start your own regional aviation company in Europe. Choose your company name,
-            headquarters, and begin building your fleet and reputation.
+      <div className="space-y-12 py-12">
+        <div className="bg-white border-4 border-black p-16 max-w-4xl mx-auto shadow-[20px_20px_0px_0px_rgba(0,0,0,0.05)] text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-5 italic font-black text-8xl select-none uppercase pointer-events-none">Start</div>
+          <Building2 className="w-24 h-24 text-black mx-auto mb-8" />
+          <h3 className="text-4xl font-black text-black uppercase tracking-tighter mb-4 italic">Commission New Airframe Entity</h3>
+          <p className="text-sm font-mono text-zinc-500 uppercase tracking-widest mb-12 max-w-xl mx-auto leading-relaxed">
+            Begin industrial aviation operations in the Northwest. Establish your identity,
+            secure your hub, and initiate fleet acquisition.
           </p>
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition text-lg"
+            className="bg-black text-white px-12 py-4 font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all border-b-4 border-zinc-700 active:border-b-0 active:translate-y-1"
           >
-            Create Company
+            Create Company Entity
           </button>
         </div>
       </div>
     );
   }
 
-  // Edit/Create Form
   if (isEditing) {
     return (
-      <div>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {hasCompany ? 'Edit Company Profile' : 'Create Your Company'}
-          </h2>
-          <p className="text-gray-600">
-            {hasCompany ? 'Update your company information' : 'Set up your virtual airline'}
-          </p>
+      <div className="space-y-12">
+        <div className="border-l-8 border-black pl-6 py-2">
+          <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter italic">Entity Configuration</h2>
+          <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-1">Modify core operational parameters for the airline entity.</p>
         </div>
 
-        {/* ... (Edit form code essentially same, just reusing logic implicitly by not changing it) ... */}
-        {/* Note: In full implementation, we'd render the form here. 
-            For brevity in this replacement, I'll trust the existing edit logic works and just wrap it if I could, 
-            but replace_file_content needs the WHOLE block if I touch the surrounding state.
-            
-            Wait, I am overwriting the whole function body essentially to add Tabs.
-            I will re-paste the necessary Edit Form JSX.
-         */}
-
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl mx-auto">
-          <div className="space-y-6">
-            {/* Company Name */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Company Name <span className="text-red-600">*</span>
-              </label>
+        <div className="bg-white border border-zinc-200 p-12 max-w-5xl mx-auto space-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Entity Name</label>
               <input
                 type="text"
                 value={editForm.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="e.g., Skyward Air"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="NORTHWESTERN AIRFRAMES"
+                className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 text-xs font-black uppercase tracking-widest focus:bg-white focus:border-black transition-all outline-none"
               />
             </div>
-
-            {/* Callsign */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Company Callsign <span className="text-red-600">*</span>
-              </label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Op Callsign</label>
               <input
                 type="text"
                 value={editForm.callsign}
                 onChange={(e) => handleInputChange('callsign', e.target.value.toUpperCase())}
-                placeholder="e.g., SKYWARD"
-                maxLength="10"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase"
-              />
-              <p className="text-xs text-gray-500 mt-1">Used as radio callsign for flights</p>
-            </div>
-
-            {/* Headquarters */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Headquarters <span className="text-red-600">*</span>
-              </label>
-              <select
-                value={editForm.headquarters}
-                onChange={(e) => handleInputChange('headquarters', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select a location</option>
-                {europeanLocations.map(location => (
-                  <option key={location} value={location}>{location}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Focus Area */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Primary Focus
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {focusAreas.map(focus => (
-                  <button
-                    key={focus.id}
-                    onClick={() => handleInputChange('focusArea', focus.id)}
-                    className={`p-4 rounded-lg border-2 text-left transition ${editForm.focusArea === focus.id
-                      ? 'border-blue-900 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                  >
-                    <p className="font-semibold text-gray-900">{focus.name}</p>
-                    <p className="text-sm text-gray-600">{focus.description}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Company Motto */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Company Motto
-              </label>
-              <input
-                type="text"
-                value={editForm.motto}
-                onChange={(e) => handleInputChange('motto', e.target.value)}
-                placeholder="e.g., Connecting Communities Since 2024"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="NORTHWEST"
+                className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 text-xs font-black uppercase tracking-widest focus:bg-white focus:border-black transition-all outline-none"
               />
             </div>
+          </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Company Description
-              </label>
-              <textarea
-                value={editForm.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Tell us about your company..."
-                rows="4"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Primary Hub (HQ)</label>
+            <select
+              value={editForm.headquarters}
+              onChange={(e) => handleInputChange('headquarters', e.target.value)}
+              className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 text-xs font-black uppercase tracking-widest focus:bg-white focus:border-black transition-all outline-none"
+            >
+              <option value="">SELECT HUB...</option>
+              {europeanLocations.map(location => (
+                <option key={location} value={location}>{location}</option>
+              ))}
+            </select>
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-4 pt-4">
-              <button
-                onClick={handleSaveCompany}
-                className="flex-1 bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition flex items-center justify-center gap-2"
-              >
-                <Save className="w-5 h-5" />
-                {hasCompany ? 'Save Changes' : 'Create Company'}
-              </button>
-              {hasCompany && (
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Operational Focus</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {focusAreas.map(focus => (
                 <button
-                  onClick={handleCancelEditing}
-                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition flex items-center gap-2"
+                  key={focus.id}
+                  onClick={() => handleInputChange('focusArea', focus.id)}
+                  className={`p-6 border-2 text-left transition-all ${editForm.focusArea === focus.id
+                    ? 'border-black bg-zinc-50'
+                    : 'border-zinc-100 opacity-50 hover:opacity-100 hover:border-zinc-300'
+                    }`}
                 >
-                  <X className="w-5 h-5" />
-                  Cancel
+                  <p className="text-[11px] font-black text-black uppercase tracking-widest">{focus.name}</p>
+                  <p className="text-[10px] font-mono text-zinc-400 uppercase mt-1">{focus.description}</p>
                 </button>
-              )}
+              ))}
             </div>
+          </div>
+
+          <div className="flex gap-6 pt-10 border-t border-zinc-100">
+            <button
+              onClick={handleSaveCompany}
+              className="flex-1 bg-black text-white px-8 py-4 font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all"
+            >
+              Commit Entity Changes
+            </button>
+            <button
+              onClick={handleCancelEditing}
+              className="px-8 py-4 border-2 border-zinc-200 text-zinc-400 font-black uppercase tracking-[0.2em] text-xs hover:text-black hover:border-black transition-all"
+            >
+              Abort
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Display Company Profile
   return (
-    <div>
-      {/* Navigation Tabs */}
-      <div className="flex gap-4 mb-6 border-b border-gray-200">
-        <button
-          onClick={() => setActiveTab('profile')}
-          className={`pb-3 px-2 font-semibold transition relative ${activeTab === 'profile'
-              ? 'text-blue-900'
-              : 'text-gray-500 hover:text-gray-700'
-            }`}
-        >
-          Company Profile
-          {activeTab === 'profile' && (
-            <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-900 rounded-t"></span>
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab('fleet')}
-          className={`pb-3 px-2 font-semibold transition relative ${activeTab === 'fleet'
-              ? 'text-blue-900'
-              : 'text-gray-500 hover:text-gray-700'
-            }`}
-        >
-          Fleet Management
-          {activeTab === 'fleet' && (
-            <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-900 rounded-t"></span>
-          )}
-        </button>
+    <div className="space-y-12">
+      <div className="flex flex-col md:flex-row gap-8 items-start justify-between border-b border-zinc-100 pb-10">
+        <div className="flex gap-10">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`text-[11px] font-black uppercase tracking-[0.3em] transition-all relative pb-2 ${activeTab === 'profile' ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+          >
+            Corporate Intel
+            {activeTab === 'profile' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-black"></div>}
+          </button>
+          <button
+            onClick={() => setActiveTab('fleet')}
+            className={`text-[11px] font-black uppercase tracking-[0.3em] transition-all relative pb-2 ${activeTab === 'fleet' ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+          >
+            Fleet Status
+            {activeTab === 'fleet' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-black"></div>}
+          </button>
+        </div>
+        {activeTab === 'profile' && (
+          <button
+            onClick={handleStartEditing}
+            className="flex items-center gap-3 px-6 py-2 bg-zinc-50 border border-zinc-200 text-black hover:bg-black hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
+          >
+            <Edit2 className="w-3 h-3" />
+            <span>Modify Ops</span>
+          </button>
+        )}
       </div>
 
       {activeTab === 'fleet' ? (
         <Fleet />
       ) : (
-        <>
-          <div className="mb-6 flex justify-between items-start">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Company Information</h2>
-              <p className="text-gray-600">Overview of your airline operations</p>
-            </div>
-            <button
-              onClick={handleStartEditing}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition"
-            >
-              <Edit2 className="w-4 h-4" />
-              Edit Company
-            </button>
-          </div>
-
-          {/* Company Header Card */}
-          <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-lg shadow-lg p-8 mb-6 text-white">
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-center gap-6">
-                <div className="bg-white rounded-lg p-6">
-                  <Building2 className="w-16 h-16 text-blue-900" />
+        <div className="space-y-12">
+          {/* Company Header Card - Industrial */}
+          <div className="bg-black text-white p-12 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-12 opacity-10 italic font-black text-9xl select-none uppercase pointer-events-none tracking-tighter group-hover:opacity-20 transition-opacity">Entity</div>
+            <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
+              <div className="p-8 bg-white text-black border-4 border-zinc-800">
+                <Building2 className="w-16 h-16" />
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="text-5xl font-black uppercase tracking-tighter italic mb-2 leading-none">{company.name}</h3>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-6">
+                  <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-500 uppercase border border-zinc-800 px-3 py-1">Callsign: {company.callsign}</span>
+                  <span className="text-[10px] font-mono tracking-[0.2em] text-emerald-500 uppercase bg-emerald-500/10 px-3 py-1 border border-emerald-500/20">Operational Clear</span>
                 </div>
-                <div>
-                  <h3 className="text-4xl font-bold mb-2">{company.name}</h3>
-                  <p className="text-xl text-blue-100 mb-3">Callsign: {company.callsign}</p>
-                  {company.motto && (
-                    <p className="text-blue-200 italic">"{company.motto}"</p>
-                  )}
-                </div>
+                {company.motto && (
+                  <p className="text-sm font-mono text-zinc-400 italic">"// {company.motto}"</p>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-blue-600">
-              <div>
-                <p className="text-blue-200 text-sm mb-1">Headquarters</p>
-                <p className="font-semibold flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  {company.headquarters}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-12 pt-12 border-t border-zinc-800 relative z-10">
+              <div className="space-y-1">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Logistics Hub</p>
+                <p className="text-xs font-black uppercase flex items-center gap-2">
+                  <MapPin className="w-3 h-3 text-emerald-500" /> {company.headquarters}
                 </p>
               </div>
-              <div>
-                <p className="text-blue-200 text-sm mb-1">Established</p>
-                <p className="font-semibold flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(company.established).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              <div className="space-y-1 text-right md:text-left">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">EST Registry</p>
+                <p className="text-xs font-black uppercase flex items-center justify-end md:justify-start gap-2">
+                  <Calendar className="w-3 h-3" /> {new Date(company.established).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </p>
               </div>
-              <div>
-                <p className="text-blue-200 text-sm mb-1">Focus Area</p>
-                <p className="font-semibold">
-                  {focusAreas.find(f => f.id === company.focusArea)?.name || 'Mixed Operations'}
-                </p>
+              <div className="space-y-1">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Strategic Focus</p>
+                <p className="text-xs font-black uppercase">{focusAreas.find(f => f.id === company.focusArea)?.name || 'Mixed Operations'}</p>
               </div>
-              <div>
-                <p className="text-blue-200 text-sm mb-1">Operations Type</p>
-                <p className="font-semibold">
-                  {focusAreas.find(f => f.id === company.focusArea)?.description || 'Various'}
+              <div className="space-y-1 text-right md:text-left">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Security Clearance</p>
+                <p className="text-xs font-black uppercase flex items-center justify-end md:justify-start gap-2">
+                  <ShieldCheck className="w-3 h-3 text-emerald-500" /> Level 4 Alpha
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Pilots</p>
-                  <p className="text-3xl font-bold text-gray-900">{company.pilots}</p>
+          {/* Stats Grid - Industrial */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-px bg-zinc-200 border border-zinc-200 shadow-sm overflow-hidden">
+            {[
+              { label: 'Aircrew Pool', val: company.pilots, icon: Users, color: 'text-zinc-400' },
+              { label: 'Active Fleet', val: company.aircraft, icon: Plane, color: 'text-zinc-400' },
+              { label: 'Total Sorties', val: company.totalFlights, icon: Award, color: 'text-zinc-400' },
+              { label: 'Entity Age', val: `${Math.floor((new Date() - new Date(company.established)) / (1000 * 60 * 60 * 24))} D`, icon: Calendar, color: 'text-zinc-400' }
+            ].map((stat, i) => (
+              <div key={i} className="bg-white p-8 group hover:bg-zinc-50 transition-colors">
+                <p className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase mb-4">{stat.label}</p>
+                <div className="flex items-end justify-between">
+                  <p className="text-4xl font-black text-black leading-none">{stat.val}</p>
+                  <stat.icon className={`w-8 h-8 ${stat.color} group-hover:text-black transition-colors`} />
                 </div>
-                <Users className="w-12 h-12 text-blue-600" />
               </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Fleet Size</p>
-                  <p className="text-3xl font-bold text-gray-900">{company.aircraft}</p>
-                </div>
-                <Plane className="w-12 h-12 text-green-600" />
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Flights</p>
-                  <p className="text-3xl font-bold text-gray-900">{company.totalFlights}</p>
-                </div>
-                <Plane className="w-12 h-12 text-purple-600" />
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Company Age</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {Math.floor((new Date() - new Date(company.established)) / (1000 * 60 * 60 * 24))} days
-                  </p>
-                </div>
-                <Calendar className="w-12 h-12 text-yellow-600" />
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Company Description */}
-          {company.description && (
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">About Us</h3>
-              <p className="text-gray-700 leading-relaxed">{company.description}</p>
+          {/* About Section - Industrial */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="flex items-center gap-4">
+                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Corporate Mandate</h3>
+                <div className="flex-1 h-px bg-zinc-100"></div>
+              </div>
+              <div className="bg-white border border-zinc-100 p-8 leading-relaxed italic text-zinc-600 font-medium">
+                {company.description || "The corporate mandate for Northwestern Airframes follows strict operational guidelines for regional air logistics."}
+              </div>
             </div>
-          )}
 
-          {/* Company Achievements */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Company Milestones</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                <span className="text-2xl">🎉</span>
-                <div>
-                  <p className="font-semibold text-gray-900">Company Established</p>
-                  <p className="text-sm text-gray-600">
-                    {new Date(company.established).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </p>
-                </div>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Entity Status</h3>
+                <div className="flex-1 h-px bg-zinc-100"></div>
               </div>
-
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-50">
-                <span className="text-2xl">🏆</span>
-                <div>
-                  <p className="font-semibold text-gray-900">First 10 Flights</p>
-                  <p className="text-sm text-gray-600">Complete 10 successful flights</p>
+              <div className="bg-zinc-50 border border-zinc-100 p-8 space-y-6">
+                <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+                  <span>Market Index</span>
+                  <span className="text-emerald-500">+12.4%</span>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-50">
-                <span className="text-2xl">✈️</span>
-                <div>
-                  <p className="font-semibold text-gray-900">Fleet Builder</p>
-                  <p className="text-sm text-gray-600">Own 5 aircraft</p>
+                <div className="h-0.5 bg-zinc-100"></div>
+                <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+                  <span>Risk Factor</span>
+                  <span className="text-zinc-900">Nominal 0.02</span>
+                </div>
+                <div className="h-0.5 bg-zinc-100"></div>
+                <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+                  <span>Op Priority</span>
+                  <span className="text-zinc-900">Alpha 1</span>
                 </div>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 }
 
 export default Company;
-
-// Force recompile

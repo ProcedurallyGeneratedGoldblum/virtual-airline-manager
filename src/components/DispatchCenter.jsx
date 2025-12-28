@@ -21,7 +21,7 @@ import {
   Loader2,
   DollarSign
 } from 'lucide-react';
-import { getFlightWeather, getFlightRules, getWindInfo, getVisibility, getClouds } from '../utils/weatherAPI';
+import { getFlightWeather, formatMETAR, formatTAF, getFlightRules, getWindInfo, getVisibility, getClouds } from '../utils/weatherAPI';
 import NotamBriefing from './NotamBriefing';
 import { calculateFlightFinance, formatCurrency } from '../utils/flightCalculations';
 
@@ -80,13 +80,18 @@ function WeatherCard({ title, icao, metar, taf, station, isLoading }) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-blue-600" />
-          <h4 className="font-bold text-gray-900">{title}</h4>
+    <div className="bg-white rounded-none border border-zinc-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-zinc-900 text-white rounded-sm">
+            <MapPin className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400">Station Data</h4>
+            <p className="text-lg font-black text-black leading-none mt-1">{title}</p>
+          </div>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getFlightRulesColor(flightRules)}`}>
+        <span className={`px-4 py-1.5 rounded-sm text-[10px] font-black tracking-widest border-2 ${getFlightRulesColor(flightRules)}`}>
           {flightRules}
         </span>
       </div>
@@ -103,12 +108,12 @@ function WeatherCard({ title, icao, metar, taf, station, isLoading }) {
 
       {/* METAR */}
       <div className="mb-3">
-        <div className="flex items-center gap-1 mb-1">
-          <Cloud className="w-4 h-4 text-gray-600" />
-          <span className="text-xs font-semibold text-gray-600 uppercase">METAR</span>
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-2 h-2 rounded-full bg-zinc-300"></div>
+          <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">METAR / Observed</span>
         </div>
-        <p className="text-xs font-mono bg-gray-50 p-2 rounded border border-gray-200 break-all">
-          {metar?.raw_text || 'N/A'}
+        <p className="text-[11px] font-mono bg-zinc-50 p-3 border border-zinc-100 italic text-zinc-600 leading-relaxed">
+          {formatMETAR(metar)}
         </p>
 
         {/* Parsed METAR Info */}
@@ -134,12 +139,12 @@ function WeatherCard({ title, icao, metar, taf, station, isLoading }) {
 
       {/* TAF */}
       <div className="mb-3">
-        <div className="flex items-center gap-1 mb-1">
-          <Cloud className="w-4 h-4 text-gray-600" />
-          <span className="text-xs font-semibold text-gray-600 uppercase">TAF (Forecast)</span>
+        <div className="flex items-center gap-2 mb-2 mt-4">
+          <div className="w-2 h-2 rounded-full bg-zinc-300"></div>
+          <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">TAF / Forecast</span>
         </div>
-        <p className="text-xs font-mono bg-gray-50 p-2 rounded border border-gray-200 break-all max-h-24 overflow-y-auto">
-          {taf?.raw_text || 'N/A'}
+        <p className="text-[11px] font-mono bg-zinc-50 p-3 border border-zinc-100 italic text-zinc-600 leading-relaxed max-h-24 overflow-y-auto">
+          {formatTAF(taf)}
         </p>
       </div>
 
@@ -467,15 +472,15 @@ function DispatchCenter() {
 
                       <button
                         onClick={() => toggleFlightDetails(flight.id, flight)}
-                        className="flex items-center gap-2 px-4 py-2 text-blue-900 hover:bg-blue-50 rounded-lg transition"
+                        className="flex items-center gap-3 px-6 py-2 bg-zinc-50 border border-zinc-200 text-black hover:bg-black hover:text-white transition-all rounded-sm uppercase text-[10px] font-black tracking-widest"
                       >
-                        <span className="text-sm font-semibold">
-                          {isExpanded ? 'Hide Details' : 'Show Details'}
+                        <span>
+                          {isExpanded ? 'Collapse' : 'Examine flight'}
                         </span>
                         {isExpanded ? (
-                          <ChevronUp className="w-5 h-5" />
+                          <ChevronUp className="w-3 h-3" />
                         ) : (
-                          <ChevronDown className="w-5 h-5" />
+                          <ChevronDown className="w-3 h-3" />
                         )}
                       </button>
                     </div>
@@ -552,12 +557,12 @@ function DispatchCenter() {
                   )}
 
                   {/* Accept Button */}
-                  <div className="flex gap-3">
+                  <div className="flex gap-4">
                     <button
                       onClick={() => toggleAircraftSelection(flight.id)}
-                      className="flex-1 bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition"
+                      className="flex-1 bg-black text-white px-8 py-4 rounded-none font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all border-b-4 border-zinc-700 active:border-b-0 active:translate-y-1"
                     >
-                      {showingAircraftSelection ? 'Hide Aircraft Selection' : 'Accept Flight'}
+                      {showingAircraftSelection ? 'Cancel selection' : 'Assign Airframe'}
                     </button>
                   </div>
 

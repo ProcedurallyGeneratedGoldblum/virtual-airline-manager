@@ -37,163 +37,124 @@ function FlightLog() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Flight Log</h2>
-        <p className="text-gray-600">Complete history of your flight operations</p>
+    <div className="space-y-12">
+      <div className="border-l-8 border-black pl-6 py-2">
+        <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter italic">Mission Logs</h2>
+        <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-1">Registry: Northwestern Archive • Historical Operational Data</p>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Flights</p>
-              <p className="text-3xl font-bold text-gray-900">{totalFlights}</p>
-            </div>
-            <Plane className="w-12 h-12 text-blue-600" />
+      {/* Statistics Cards - Industrial Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 border border-zinc-200 shadow-sm overflow-hidden">
+        <div className="bg-white p-8 group hover:bg-zinc-50 transition-colors text-center md:text-left">
+          <p className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase mb-4">Missions</p>
+          <div className="flex items-end justify-between">
+            <p className="text-4xl font-black text-black">{totalFlights}</p>
+            <Plane className="w-8 h-8 text-zinc-100 group-hover:text-black transition-colors" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Earnings</p>
-              <p className="text-3xl font-bold text-green-600">{formatCurrency(totalEarnings)}</p>
-            </div>
-            <TrendingUp className="w-12 h-12 text-green-600" />
+        <div className="bg-white p-8 group hover:bg-zinc-50 transition-colors text-center md:text-left">
+          <p className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase mb-4">Yield</p>
+          <div className="flex items-end justify-between">
+            <p className="text-4xl font-black text-emerald-600">{formatCurrency(totalEarnings)}</p>
+            <TrendingUp className="w-8 h-8 text-zinc-100 group-hover:text-emerald-600 transition-colors" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Distance Flown</p>
-              <p className="text-3xl font-bold text-gray-900">{Math.round(totalDistance)} nm</p>
-            </div>
-            <MapPin className="w-12 h-12 text-purple-600" />
+        <div className="bg-white p-8 group hover:bg-zinc-50 transition-colors text-center md:text-left">
+          <p className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase mb-4">NM Logged</p>
+          <div className="flex items-end justify-between">
+            <p className="text-4xl font-black text-black">{Math.round(totalDistance)}</p>
+            <MapPin className="w-8 h-8 text-zinc-100 group-hover:text-black transition-colors" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">On-Time Rate</p>
-              <p className="text-3xl font-bold text-gray-900">{onTimePercentage}%</p>
-            </div>
-            <Award className="w-12 h-12 text-yellow-600" />
+        <div className="bg-white p-8 group hover:bg-zinc-50 transition-colors text-center md:text-left">
+          <p className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase mb-4">Reliability</p>
+          <div className="flex items-end justify-between">
+            <p className="text-4xl font-black text-black">{onTimePercentage}%</p>
+            <Award className="w-8 h-8 text-zinc-100 group-hover:text-black transition-colors" />
           </div>
         </div>
       </div>
 
       {/* Empty State */}
       {completedFlights.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-          <Plane className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No Flights Yet</h3>
-          <p className="text-gray-600 mb-4">
-            Your flight history will appear here after you complete your first flight.
-          </p>
+        <div className="bg-white border-2 border-dashed border-zinc-200 p-24 text-center">
+          <Plane className="w-16 h-16 text-zinc-200 mx-auto mb-6" />
+          <h3 className="text-lg font-black uppercase tracking-widest text-zinc-400">Archives Empty</h3>
+          <p className="text-sm text-zinc-500 mt-2 mb-8 uppercase tracking-tight">No historical operation data found in the vault.</p>
           <button
             onClick={() => window.location.hash = '#dispatch'}
-            className="bg-blue-900 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition"
+            className="bg-black text-white px-10 py-4 font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all"
           >
-            Go to Dispatch Center
+            Initiate First Assignment
           </button>
         </div>
       ) : (
-        <>
-          {/* Filter Tabs */}
-          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilterStatus('all')}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${filterStatus === 'all'
-                    ? 'bg-blue-900 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-              >
-                All Flights ({completedFlights.length})
-              </button>
-              <button
-                onClick={() => setFilterStatus('completed')}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${filterStatus === 'completed'
-                    ? 'bg-blue-900 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-              >
-                Completed ({completedFlights.filter(f => f.status === 'completed').length})
-              </button>
-            </div>
+        <div className="space-y-6">
+          {/* Filter Tabs - Minimal */}
+          <div className="flex gap-4 border-b border-zinc-100 pb-4">
+            <button
+              onClick={() => setFilterStatus('all')}
+              className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 transition-all ${filterStatus === 'all' ? 'bg-black text-white' : 'text-zinc-400 hover:text-black'}`}
+            >
+              Master Log ({completedFlights.length})
+            </button>
+            <button
+              onClick={() => setFilterStatus('completed')}
+              className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 transition-all ${filterStatus === 'completed' ? 'bg-black text-white' : 'text-zinc-400 hover:text-black'}`}
+            >
+              Mission Final ({completedFlights.filter(f => f.status === 'completed').length})
+            </button>
           </div>
 
-          {/* Flight Log Table */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Flight Log Table - Industrial */}
+          <div className="bg-white border border-zinc-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b-2 border-gray-200">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Flight
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Route
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Duration
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Distance
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Earnings
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Status
-                    </th>
+                <thead>
+                  <tr className="bg-black text-white">
+                    <th className="px-6 py-4 text-left text-[9px] font-black uppercase tracking-[0.3em]">Timestamp</th>
+                    <th className="px-6 py-4 text-left text-[9px] font-black uppercase tracking-[0.3em]">Identification</th>
+                    <th className="px-6 py-4 text-left text-[9px] font-black uppercase tracking-[0.3em]">Vector</th>
+                    <th className="px-6 py-4 text-left text-[9px] font-black uppercase tracking-[0.3em]">Dur</th>
+                    <th className="px-6 py-4 text-left text-[9px] font-black uppercase tracking-[0.3em]">Range</th>
+                    <th className="px-6 py-4 text-left text-[9px] font-black uppercase tracking-[0.3em]">Yield</th>
+                    <th className="px-6 py-4 text-left text-[9px] font-black uppercase tracking-[0.3em]">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-zinc-100">
                   {filteredFlights.map((flight) => (
-                    <tr key={flight.id} className="hover:bg-gray-50 transition">
+                    <tr key={flight.id} className="hover:bg-zinc-50 transition-colors group">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm font-medium text-gray-900">
-                            {formatDate(flight.date)}
-                          </span>
-                        </div>
+                        <span className="text-[10px] font-mono font-bold text-zinc-400">{formatDate(flight.date)}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <div className="text-sm font-bold text-gray-900">{flight.flightNumber || flight.aircraft}</div>
-                          <div className="text-xs text-gray-600">{flight.type}</div>
+                          <div className="text-xs font-black text-black uppercase tracking-tight">{flight.flightNumber || flight.aircraft}</div>
+                          <div className="text-[9px] font-mono text-zinc-400 uppercase mt-0.5">{flight.type}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-semibold text-gray-900">{flight.route}</div>
+                        <div className="text-[10px] font-black text-black uppercase">{flight.route}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium text-gray-900">{flight.duration}</span>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-zinc-500">
+                          {flight.duration}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">{flight.distance} nm</span>
+                      <td className="px-6 py-4">
+                        <span className="text-[10px] font-mono font-bold text-zinc-500">{flight.distance} NM</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1 text-sm font-bold text-green-600">
-                          <DollarSign className="w-4 h-4" />
-                          {(flight.earnings || 0).toLocaleString()}
-                        </div>
+                      <td className="px-6 py-4">
+                        <span className="text-xs font-black text-emerald-600">
+                          {formatCurrency(flight.earnings || 0)}
+                        </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                          COMPLETED
+                      <td className="px-6 py-4">
+                        <span className="inline-flex px-2 py-0.5 border border-zinc-200 text-[9px] font-black tracking-widest text-zinc-400 uppercase">
+                          ARCHIVED
                         </span>
                       </td>
                     </tr>
@@ -202,7 +163,7 @@ function FlightLog() {
               </table>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -1,44 +1,96 @@
 // AVWX API Integration
-const AVWX_API_KEY = '0yDARwk-2Ri23C1oIlVFOK_-cc-10NBgHDxPCvCB9W4'; // Replace with your actual API key
+const AVWX_API_KEY = '0yDARwk-2Ri23C1oIlVFOK_-cc-10NBgHDxPCvCB9W4';
 const AVWX_BASE_URL = 'https://avwx.rest/api';
 
+// Regional Fallback Mapping
+// Maps smaller airports without METAR/TAF to the nearest major hub
+const FALLBACK_MAPPING = {
+  'EIWT': 'EIDW', // Weston -> Dublin
+  'EIKK': 'EICK', // Kilkenny -> Cork
+  'EICM': 'EINN', // Galway -> Shannon
+  'EIKY': 'EINN', // Kerry -> Shannon
+  'EIWF': 'EICK', // Waterford -> Cork
+  'EISG': 'EIDW', // Sligo -> Dublin
+  'EIDL': 'EIDW', // Donegal -> Dublin
+  'EICN': 'EINN', // Connemara -> Shannon
+  'EGAC': 'EGAA', // Belfast City -> Belfast Intl
+  'EGAE': 'EGAA', // City of Derry -> Belfast Intl
+  'EGCK': 'EGCC', // Caernarfon -> Manchester
+  'EGFH': 'EGFF', // Swansea -> Cardiff
+  'EGKB': 'EGLL', // Biggin Hill -> Heathrow
+  'EGKA': 'EGKK', // Shoreham -> Gatwick
+  'EGPN': 'EGPH', // Dundee -> Edinburgh
+  'EGEO': 'EGPK', // Oban -> Prestwick
+  'EGPR': 'EGPK', // Barra -> Prestwick
+  'EGPB': 'EGPA', // Sumburgh -> Kirkwall
+  'EGPI': 'EGPA', // Islay -> Kirkwall
+  'EHLE': 'EHAM', // Lelystad -> Schiphol
+  'EHTE': 'EHAM', // Teuge -> Schiphol
+  'EBAW': 'EBBR', // Antwerp -> Brussels
+  'EBSP': 'EBBR', // Spa -> Brussels
+  'EBOS': 'EBBR', // Ostend -> Brussels
+  'LFAT': 'LFQQ', // Le Touquet -> Lille
+  'LFAC': 'LFQQ', // Calais -> Lille
+  'LFPN': 'LFPG', // Toussus-le-Noble -> Charles de Gaulle
+  'LOWZ': 'LOWS', // Zell am See -> Salzburg
+  'LSGS': 'LSGG', // Sion -> Geneva
+  'LELL': 'LEBL', // Sabadell -> Barcelona
+  'LFMD': 'LFMN', // Cannes -> Nice
+};
+
 // Fetch METAR for an airport
-export async function getMETAR(icao) {
+export async function getMETAR(icao, useFallback = true) {
   try {
     const response = await fetch(`${AVWX_BASE_URL}/metar/${icao}`, {
-      headers: {
-        'Authorization': AVWX_API_KEY
-      }
+      headers: { 'Authorization': AVWX_API_KEY }
     });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch METAR');
-    }
-    
+
+    if (!response.ok) throw new Error('Failed to fetch METAR');
+
     const data = await response.json();
-    return data;
+
+    // If we have data, return it
+    if (data && data.raw) return data;
+
+    // If no data and fallback exists
+    if (useFallback && FALLBACK_MAPPING[icao]) {
+      console.log(`No METAR for ${icao}, falling back to ${FALLBACK_MAPPING[icao]}`);
+      return getMETAR(FALLBACK_MAPPING[icao], false);
+    }
+
+    return null;
   } catch (error) {
+    if (useFallback && FALLBACK_MAPPING[icao]) {
+      return getMETAR(FALLBACK_MAPPING[icao], false);
+    }
     console.error('Error fetching METAR:', error);
     return null;
   }
 }
 
 // Fetch TAF for an airport
-export async function getTAF(icao) {
+export async function getTAF(icao, useFallback = true) {
   try {
     const response = await fetch(`${AVWX_BASE_URL}/taf/${icao}`, {
-      headers: {
-        'Authorization': AVWX_API_KEY
-      }
+      headers: { 'Authorization': AVWX_API_KEY }
     });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch TAF');
-    }
-    
+
+    if (!response.ok) throw new Error('Failed to fetch TAF');
+
     const data = await response.json();
-    return data;
+
+    if (data && data.raw) return data;
+
+    if (useFallback && FALLBACK_MAPPING[icao]) {
+      console.log(`No TAF for ${icao}, falling back to ${FALLBACK_MAPPING[icao]}`);
+      return getTAF(FALLBACK_MAPPING[icao], false);
+    }
+
+    return null;
   } catch (error) {
+    if (useFallback && FALLBACK_MAPPING[icao]) {
+      return getTAF(FALLBACK_MAPPING[icao], false);
+    }
     console.error('Error fetching TAF:', error);
     return null;
   }
@@ -48,15 +100,11 @@ export async function getTAF(icao) {
 export async function getStationInfo(icao) {
   try {
     const response = await fetch(`${AVWX_BASE_URL}/station/${icao}`, {
-      headers: {
-        'Authorization': AVWX_API_KEY
-      }
+      headers: { 'Authorization': AVWX_API_KEY }
     });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch station info');
-    }
-    
+
+    if (!response.ok) throw new Error('Failed to fetch station info');
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -118,11 +166,11 @@ export function getWindInfo(metar) {
   if (!metar || !metar.wind_direction || !metar.wind_speed) {
     return 'Wind data unavailable';
   }
-  
+
   const direction = metar.wind_direction.repr;
   const speed = metar.wind_speed.repr;
   const gust = metar.wind_gust ? ` G${metar.wind_gust.repr}` : '';
-  
+
   return `${direction}° at ${speed}kt${gust}`;
 }
 
@@ -131,7 +179,7 @@ export function getVisibility(metar) {
   if (!metar || !metar.visibility) {
     return 'Visibility unavailable';
   }
-  
+
   return `${metar.visibility.repr} SM`;
 }
 
@@ -140,10 +188,8 @@ export function getClouds(metar) {
   if (!metar || !metar.clouds || metar.clouds.length === 0) {
     return 'Sky clear';
   }
-  
-  return metar.clouds.map(cloud => 
+
+  return metar.clouds.map(cloud =>
     `${cloud.repr} ${cloud.altitude ? `at ${cloud.altitude}ft` : ''}`
   ).join(', ');
 }
-
-// Force recompile

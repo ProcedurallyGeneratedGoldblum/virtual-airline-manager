@@ -1,37 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, RefreshCw, DollarSign, ChevronDown, ChevronUp, MapPin, Gauge } from 'lucide-react';
 import { generateAircraft } from '../utils/aircraftGenerator';
 import { useAppContext } from './AppContext';
 
 function Marketplace() {
-  const { fleet, company, sellAircraft, addAircraftToFleet, marketListings, refreshMarket } = useAppContext();
-  const [activeTab, setActiveTab] = useState('buy');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const { company, fleet, buyAircraft, sellAircraft } = useAppContext();
+  const [activeTab, setActiveTab] = useState('buy'); // 'buy' or 'sell'
   const [searchTerm, setSearchTerm] = useState('');
+  const [marketListings, setMarketListings] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortOrder, setSortOrder] = useState('price-asc');
 
-  const categories = [
-    { id: 'all', name: 'All Aircraft' },
-    { id: 'single-piston', name: 'Single Piston' },
-    { id: 'twin-piston', name: 'Twin Piston' },
-    { id: 'turboprop', name: 'Turboprop' },
-  ];
+  useEffect(() => {
+    // Generate initial market listings if empty
+    if (marketListings.length === 0) {
+      refreshMarket();
+    }
+  }, []);
+
+  const refreshMarket = () => {
+    const newListings = [];
+    const counts = { GA: 8, Jet: 3, Turbo: 4 };
+
+    Object.entries(counts).forEach(([type, count]) => {
+      for (let i = 0; i < count; i++) {
+        newListings.push(generateAircraft(type));
+      }
+    });
+
+    setMarketListings(newListings.sort((a, b) => a.price - b.price));
+  };
 
   const handleBuy = (aircraft) => {
     if (company.balance >= aircraft.price) {
-      addAircraftToFleet(aircraft);
-      setMarketListings(prev => prev.filter(a => a.id !== aircraft.id));
-      alert(`Purchased ${aircraft.name}!`);
-    } else {
-      alert("Insufficient funds!");
+      buyAircraft(aircraft);
+      setMarketListings(marketListings.filter(a => a.id !== aircraft.id));
     }
   };
 
   const handleSell = (aircraft) => {
-    if (confirm(`Are you sure you want to sell ${aircraft.registration || aircraft.name}?`)) {
-      const price = sellAircraft(aircraft.id);
-      alert(`Sold for ${formatPrice(price)}`);
-    }
+    sellAircraft(aircraft);
   };
 
   const formatPrice = (price) => {
@@ -42,98 +50,98 @@ function Marketplace() {
     }).format(price);
   };
 
-  const getFilteredAircraft = (sourceList) => {
-    if (!Array.isArray(sourceList)) return [];
+  const categories = [
+    { id: 'all', name: 'All Airframes' },
+    { id: 'GA', name: 'General Aviation' },
+    { id: 'Turbo', name: 'Turboprop' },
+    { id: 'Jet', name: 'Business Jet' }
+  ];
 
-    return sourceList.filter(plane => {
-      if (!plane) return false;
-      const matchesCategory = selectedCategory === 'all' || plane.category === selectedCategory;
-      const name = plane.name || '';
-      const manufacturer = plane.manufacturer || '';
-      const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        manufacturer.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesCategory && matchesSearch;
-    })
+  const getFilteredAircraft = (sourceList) => {
+    return sourceList
+      .filter(a => {
+        const matchesSearch = a.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          a.registration.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'all' || a.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+      })
       .sort((a, b) => {
-        const priceA = a.price || 0;
-        const priceB = b.price || 0;
-        if (sortOrder === 'price-asc') return priceA - priceB;
-        if (sortOrder === 'price-desc') return priceB - priceA;
-        return 0;
+        if (sortOrder === 'price-asc') return a.price - b.price;
+        return b.price - a.price;
       });
   };
 
   const displayAircraft = activeTab === 'buy' ? getFilteredAircraft(marketListings) : getFilteredAircraft(fleet);
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-12">
+      <div className="border-l-8 border-black pl-6 py-2 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Aircraft Marketplace</h2>
-          <p className="text-gray-600">
-            Balance: <span className={company.balance < 100000 ? "text-red-600 font-bold" : "text-green-600 font-bold"}>
+          <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter italic">Hangar Ops</h2>
+          <p className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase mt-1">
+            Available Capital: <span className={company.balance < 100000 ? "text-red-600 font-bold" : "text-emerald-600 font-bold"}>
               {formatPrice(company.balance)}
             </span>
           </p>
         </div>
 
-        <div className="flex bg-gray-100 p-1 rounded-lg">
+        <div className="flex bg-zinc-100 p-1 rounded-none border border-zinc-200">
           <button
             onClick={() => setActiveTab('buy')}
-            className={`px-6 py-2 rounded-md font-semibold transition ${activeTab === 'buy' ? 'bg-white shadow text-blue-900' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-8 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'buy' ? 'bg-black text-white' : 'text-zinc-400 hover:text-black'}`}
           >
-            Buy Aircraft
+            Acquisition
           </button>
           <button
             onClick={() => setActiveTab('sell')}
-            className={`px-6 py-2 rounded-md font-semibold transition ${activeTab === 'sell' ? 'bg-white shadow text-blue-900' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`px-8 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'sell' ? 'bg-black text-white' : 'text-zinc-400 hover:text-black'}`}
           >
-            Sell Aircraft
+            Liquidate
           </button>
         </div>
 
         {activeTab === 'buy' && (
           <button
             onClick={refreshMarket}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            className="flex items-center gap-2 px-6 py-2 bg-white border border-black text-black hover:bg-black hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
           >
-            <RefreshCw className="w-4 h-4" />
-            <span className="hidden md:inline">Refresh Market</span>
+            <RefreshCw className="w-3 h-3" />
+            <span>Refeed Market</span>
           </button>
         )}
       </div>
 
-      {/* Search and Filter Bar */}
-      <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      {/* Search and Filter Bar - Industrial */}
+      <div className="bg-white border border-zinc-200 p-6 mb-8">
+        <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-zinc-300 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search aircraft..."
+              placeholder="FILTER BY AIRFRAME..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-12 pr-4 py-3 bg-zinc-50 border border-zinc-100 text-[10px] font-black tracking-widest uppercase focus:bg-white focus:border-black transition-all outline-none"
             />
           </div>
 
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="px-6 py-3 bg-zinc-50 border border-zinc-100 text-[10px] font-black tracking-widest uppercase focus:bg-white focus:border-black transition-all outline-none"
           >
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
+            <option value="price-asc">Price: Ascending</option>
+            <option value="price-desc">Price: Descending</option>
           </select>
 
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
             {categories.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition ${selectedCategory === cat.id
-                  ? 'bg-blue-900 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                className={`px-6 py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedCategory === cat.id
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-zinc-400 border-zinc-100 hover:border-black hover:text-black'
                   }`}
               >
                 {cat.name}
@@ -144,7 +152,7 @@ function Marketplace() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {displayAircraft.map(plane => (
           <AircraftCard
             key={plane.id}
@@ -159,199 +167,107 @@ function Marketplace() {
       </div>
 
       {displayAircraft.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">No aircraft found.</p>
+        <div className="text-center py-24 bg-zinc-50 border border-dashed border-zinc-200">
+          <Plane className="w-16 h-16 mx-auto mb-6 text-zinc-100" />
+          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.3em]">No matching inventory found in registry.</p>
         </div>
       )}
     </div>
   );
 }
 
-// Extracted Card Component for cleaner state management of "expanded"
-// Extracted Card Component for cleaner state management of "expanded"
-function AircraftCard({ plane, activeTab, handleBuy, handleSell, company, formatPrice }) {
+const AircraftCard = ({ plane, activeTab, handleBuy, handleSell, company, formatPrice }) => {
   const [expanded, setExpanded] = useState(false);
 
   // Helper to color condition
   const getConditionColor = (cond) => {
-    if (cond === undefined || cond === null) return 'text-gray-500';
-    if (cond >= 80) return 'text-green-600';
-    if (cond >= 50) return 'text-yellow-600';
+    if (cond >= 90) return 'text-emerald-600';
+    if (cond >= 75) return 'text-zinc-900';
+    if (cond >= 50) return 'text-amber-600';
     return 'text-red-600';
   };
 
-  // Safe access helpers for legacy data
-  const ttaf = plane.conditionDetails?.airframe?.ttaf ?? plane.hours ?? 0;
-  const smoh = plane.conditionDetails?.engine?.smoh ?? 'N/A';
-  const avionicsCond = plane.conditionDetails?.avionics?.condition ?? 0;
-  const interiorCond = plane.conditionDetails?.interior?.condition ?? 0;
-
-  // Safe price for legacy fleet (if missing, use arbitrary 50k or calculate)
-  const displayPrice = plane.price || 50000;
-
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative flex flex-col">
-      {/* MEL Banner */}
-      {plane.melList && plane.melList.length > 0 && (
-        <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 absolute top-2 right-2 rounded z-10">
-          {plane.melList.length} MEL ITEM{plane.melList.length > 1 ? 'S' : ''}
-        </div>
-      )}
-
-      <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden relative">
-        {plane.image && plane.image.startsWith('/') ? (
-          <img src={plane.image} alt={plane.name} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-            <span className="text-6xl">{plane.image || '✈️'}</span>
+    <div className="bg-white border border-zinc-200 overflow-hidden hover:border-black transition-all group relative">
+      <div className="absolute top-0 right-0 p-4 opacity-5 italic font-black text-4xl select-none uppercase pointer-events-none">{plane.category}</div>
+      <div className="p-8">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <span className="text-[9px] font-mono font-black tracking-widest text-zinc-400 uppercase">{plane.registration}</span>
+            <h3 className="text-xl font-black text-black uppercase tracking-tight italic">{plane.model}</h3>
           </div>
-        )}
-
-        {/* Quick Stats Overlay */}
-        <div className="absolute bottom-0 inset-x-0 bg-black bg-opacity-50 text-white p-2 flex justify-between text-xs">
-          <span>{plane.year}</span>
-          <span>TTAF: {ttaf}</span>
-        </div>
-      </div>
-
-      <div className="p-4 flex-grow flex flex-col">
-        {/* Header */}
-        <div className="mb-2">
-          <h3 className="text-xl font-bold text-gray-900 leading-tight">{plane.name}</h3>
-          <p className="text-sm text-gray-600">{plane.manufacturer} • S/N: {plane.serialNumber || 'N/A'}</p>
+          <span className="text-2xl font-black text-black tracking-tighter">{formatPrice(plane.price)}</span>
         </div>
 
-        {/* Price */}
-        <div className="mb-3 flex justify-between items-center">
-          <div className="flex items-center gap-1 text-2xl font-bold text-blue-900">
-            <DollarSign className="w-6 h-6" />
-            {formatPrice(displayPrice)}
+        <div className="grid grid-cols-2 gap-px bg-zinc-100 border border-zinc-100 mb-8">
+          <div className="bg-white p-4">
+            <p className="text-[9px] font-mono text-zinc-400 uppercase mb-1">State</p>
+            <p className={`text-xs font-black uppercase ${getConditionColor(plane.condition)}`}>
+              {plane.condition}% NORM
+            </p>
+          </div>
+          <div className="bg-white p-4 text-right">
+            <p className="text-[9px] font-mono text-zinc-400 uppercase mb-1">Duration</p>
+            <p className="text-xs font-black text-black uppercase">{plane.hours.toLocaleString()} HRS</p>
           </div>
         </div>
 
-        {/* Key Specs Row */}
-        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-sm mb-4 bg-gray-50 p-2 rounded">
-          <div className="flex justify-between">
-            <span className="text-gray-500">TTAF</span>
-            <span className="font-mono font-bold">{ttaf}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Eng SMOH</span>
-            <span className="font-mono font-bold">{smoh}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Avionics</span>
-            <span className={`font-bold ${getConditionColor(avionicsCond)}`}>
-              {avionicsCond > 0 ? `${avionicsCond}%` : 'N/A'}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Interior</span>
-            <span className={`font-bold ${getConditionColor(interiorCond)}`}>
-              {interiorCond > 0 ? `${interiorCond}/100` : 'N/A'}
-            </span>
-          </div>
-        </div>
-
-        {/* Expandable Details */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 mb-4 transition-colors p-2 border border-blue-100 rounded"
-        >
-          {expanded ? (
-            <>Hide Details <ChevronUp className="w-4 h-4" /></>
-          ) : (
-            <>View Full Specs <ChevronDown className="w-4 h-4" /></>
-          )}
-        </button>
-
-        {expanded && (
-          <div className="mb-4 text-sm space-y-3 bg-gray-50 p-3 rounded-md border border-gray-100">
-            {/* Engine Section */}
-            <div>
-              <h4 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Engine Details</h4>
-              <div className="grid grid-cols-2 gap-1 text-xs">
-                <span className="text-gray-500">Model:</span>
-                <span className="font-semibold text-right">{plane.conditionDetails?.engine?.model || 'Generic'}</span>
-                <span className="text-gray-500">SMOH:</span>
-                <span className="font-mono text-right">{smoh} {typeof smoh === 'number' ? 'hrs' : ''}</span>
-                <span className="text-gray-500">TBO:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tbo || 2000} hrs</span>
-                <span className="text-gray-500">TSN:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.engine?.tsn || 'Unknown'} {plane.conditionDetails?.engine?.tsn ? 'hrs' : ''}</span>
-                <span className="text-gray-500">Condition:</span>
-                <span className={`text-right font-bold ${getConditionColor(plane.conditionDetails?.engine?.condition)}`}>
-                  {plane.conditionDetails?.engine?.condition ?? 'N/A'}%
-                </span>
-              </div>
-            </div>
-
-            {/* Airframe Section */}
-            <div>
-              <h4 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Airframe & Inspection</h4>
-              <div className="grid grid-cols-2 gap-1 text-xs">
-                <span className="text-gray-500">TTAF:</span>
-                <span className="font-mono text-right">{ttaf} hrs</span>
-                <span className="text-gray-500">Last Annual:</span>
-                <span className="font-mono text-right">{plane.conditionDetails?.airframe?.lastAnnual || 'Unknown'}</span>
-              </div>
-            </div>
-
-            {/* Avionics Section */}
-            <div>
-              <h4 className="font-bold text-gray-700 border-b border-gray-200 mb-1">Avionics</h4>
-              <ul className="list-disc list-inside text-xs text-gray-600 space-y-0.5">
-                {plane.conditionDetails?.avionics?.list?.length > 0 ? (
-                  plane.conditionDetails.avionics.list.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))
-                ) : (
-                  <li>Standard Equipment</li>
-                )}
-              </ul>
-            </div>
-
-            {/* MEL Section */}
-            {plane.melList && plane.melList.length > 0 && (
-              <div>
-                <h4 className="font-bold text-red-600 border-b border-red-200 mb-1">⚠ Known Issues (MEL)</h4>
-                <ul className="list-disc list-inside text-xs text-red-600">
-                  {plane.melList.map((m, i) => (
-                    <li key={i}>{m.item}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Action Button */}
-        <div className="mt-auto">
+        <div className="flex gap-4">
           {activeTab === 'buy' ? (
             <button
               onClick={() => handleBuy(plane)}
-              disabled={company.balance < displayPrice}
-              className={`w-full py-3 rounded-lg font-bold transition ${company.balance >= displayPrice
-                ? 'bg-blue-900 text-white hover:bg-blue-800 shadow-md'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              disabled={company.balance < plane.price}
+              className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all border-b-4 ${company.balance >= plane.price
+                  ? 'bg-black text-white hover:bg-zinc-800 border-zinc-700 active:border-b-0 active:translate-y-1'
+                  : 'bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed'
                 }`}
             >
-              {company.balance >= displayPrice ? 'Purchase Aircraft' : 'Insufficient Funds'}
+              Acquire
             </button>
           ) : (
             <button
               onClick={() => handleSell(plane)}
-              className="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition shadow-md"
+              className="flex-1 py-4 bg-white border-2 border-black text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all"
             >
-              Sell Aircraft
+              Liquidate
             </button>
           )}
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="p-4 bg-zinc-50 border border-zinc-100 text-black hover:bg-black hover:text-white transition-all"
+          >
+            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
         </div>
+
+        {expanded && (
+          <div className="mt-8 pt-8 border-t border-zinc-100 grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div>
+              <p className="text-[8px] font-mono uppercase tracking-widest text-zinc-400 mb-2 flex items-center gap-2">
+                <Gauge className="w-3 h-3" /> Technical Specs
+              </p>
+              <div className="space-y-2">
+                <div className="flex justify-between border-b border-zinc-50 pb-1">
+                  <span className="text-[9px] text-zinc-500 uppercase">Engine Type</span>
+                  <span className="text-[9px] font-black uppercase">{plane.engineType || 'Piston'}</span>
+                </div>
+                <div className="flex justify-between border-b border-zinc-50 pb-1">
+                  <span className="text-[9px] text-zinc-500 uppercase">Pax Cap</span>
+                  <span className="text-[9px] font-black uppercase">{plane.capacity?.passengers || 4}</span>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[8px] font-mono uppercase tracking-widest text-zinc-400 mb-2 flex items-center justify-end gap-2">
+                Location <MapPin className="w-3 h-3" />
+              </p>
+              <p className="text-[9px] font-black text-black uppercase">{plane.location}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default Marketplace;
-
-// Force recompile
