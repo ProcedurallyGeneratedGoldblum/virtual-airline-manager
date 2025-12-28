@@ -58,7 +58,38 @@ CREATE TABLE IF NOT EXISTS fleet (
   manufacturer TEXT,
   year INTEGER,
   price REAL,
-  specs TEXT
+  specs TEXT,
+  fuel_level REAL DEFAULT 100,
+  fuel_capacity REAL DEFAULT 100,
+  payload_capacity REAL DEFAULT 0,
+  oil_condition REAL DEFAULT 100,
+  tire_condition REAL DEFAULT 100,
+  engine_condition REAL DEFAULT 100,
+  hours_at_last_a REAL DEFAULT 0,
+  hours_at_last_b REAL DEFAULT 0,
+  hours_at_last_c REAL DEFAULT 0,
+  hours_at_last_d REAL DEFAULT 0
+);
+
+-- Missions table (for Dispatch Center persistence)
+CREATE TABLE IF NOT EXISTS missions (
+  id TEXT PRIMARY KEY,
+  flight_number TEXT NOT NULL,
+  type TEXT,
+  priority TEXT,
+  route_from TEXT NOT NULL,
+  route_from_code TEXT NOT NULL,
+  route_to TEXT NOT NULL,
+  route_to_code TEXT NOT NULL,
+  distance REAL,
+  duration TEXT,
+  cargo_type TEXT,
+  cargo_passengers INTEGER,
+  cargo_weight INTEGER,
+  earnings REAL,
+  requirements TEXT,
+  aircraft_id INTEGER,
+  generated_at TEXT NOT NULL
 );
 
 -- Active flights table

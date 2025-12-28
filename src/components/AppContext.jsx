@@ -4,6 +4,7 @@ import { calculateFlightFinance } from '../utils/flightCalculations';
 import api from '../lib/api';
 import { generateAircraft } from '../utils/aircraftGenerator';
 import { generateMissions } from '../utils/missionGenerator';
+import { FUEL_PRICES, FUEL_TYPES, CATEGORY_TO_FUEL } from '../lib/constants';
 
 const AppContext = createContext();
 
@@ -101,8 +102,18 @@ export const AppProvider = ({ children }) => {
           condition_details: aircraft.conditionDetails,
           mel_list: aircraft.melList || [],
           maintenance_notes: '',
-          locked_by: null,
-          current_flight: null
+          current_flight: null,
+          fuel_level: 100,
+          fuel_capacity: 100,
+          fuel_type: CATEGORY_TO_FUEL[aircraft.category] || FUEL_TYPES.AVGAS,
+          payload_capacity: aircraft.specs?.payload || 0,
+          oil_condition: 100,
+          tire_condition: 100,
+          engine_condition: 100,
+          hours_at_last_a: 0,
+          hours_at_last_b: 0,
+          hours_at_last_c: 0,
+          hours_at_last_d: 0
         };
         return api.addAircraft(fleetAircraft);
       });
@@ -127,6 +138,17 @@ export const AppProvider = ({ children }) => {
         maintenanceNotes: aircraft.maintenance_notes,
         lockedBy: aircraft.locked_by,
         currentFlight: aircraft.current_flight,
+        fuelLevel: aircraft.fuel_level || 100,
+        fuelCapacity: aircraft.fuel_capacity || 100,
+        fuelType: aircraft.fuel_type || FUEL_TYPES.AVGAS,
+        payloadCapacity: aircraft.payload_capacity || 0,
+        oilCondition: aircraft.oil_condition || 100,
+        tireCondition: aircraft.tire_condition || 100,
+        engineCondition: aircraft.engine_condition || 100,
+        hoursAtLastA: aircraft.hours_at_last_a || 0,
+        hoursAtLastB: aircraft.hours_at_last_b || 0,
+        hoursAtLastC: aircraft.hours_at_last_c || 0,
+        hoursAtLastD: aircraft.hours_at_last_d || 0,
         name: aircraft.name,
         manufacturer: aircraft.manufacturer,
         year: aircraft.year,
@@ -168,10 +190,11 @@ export const AppProvider = ({ children }) => {
           api.getPilot(),
           api.getFleet(),
           api.getActiveFlights(),
-          api.getCompletedFlights()
+          api.getCompletedFlights(),
+          api.getMissions()
         ]);
 
-        const [companyData, pilotData, fleetData, activeFlightsData, completedFlightsData] = results;
+        const [companyData, pilotData, fleetData, activeFlightsData, completedFlightsData, missionsData] = results;
         console.log('API Load Results:', { company: companyData, fleetSize: fleetData.length });
 
         // Transform snake_case from DB to camelCase for frontend
@@ -226,6 +249,17 @@ export const AppProvider = ({ children }) => {
           maintenanceNotes: aircraft.maintenance_notes,
           lockedBy: aircraft.locked_by,
           currentFlight: aircraft.current_flight,
+          fuelLevel: aircraft.fuel_level || 100,
+          fuelCapacity: aircraft.fuel_capacity || 100,
+          fuelType: aircraft.fuel_type || FUEL_TYPES.AVGAS,
+          payloadCapacity: aircraft.payload_capacity || 0,
+          oilCondition: aircraft.oil_condition || 100,
+          tireCondition: aircraft.tire_condition || 100,
+          engineCondition: aircraft.engine_condition || 100,
+          hoursAtLastA: aircraft.hours_at_last_a || 0,
+          hoursAtLastB: aircraft.hours_at_last_b || 0,
+          hoursAtLastC: aircraft.hours_at_last_c || 0,
+          hoursAtLastD: aircraft.hours_at_last_d || 0,
           name: aircraft.name,
           manufacturer: aircraft.manufacturer,
           year: aircraft.year,
@@ -262,6 +296,7 @@ export const AppProvider = ({ children }) => {
 
         setActiveFlights(activeFlightsData);
         setCompletedFlights(completedFlightsData);
+        setAvailableFlights(missionsData);
 
         setLoading(false);
       } catch (err) {
@@ -275,10 +310,18 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   // Refresh Available Flights
-  const refreshAvailableFlights = () => {
+  const refreshAvailableFlights = async () => {
     if (fleet.length > 0) {
-      // Generate 10 missions per aircraft (Total 30+ for a standard fleet)
-      setAvailableFlights(generateMissions(fleet, 10));
+      // Generate 10 missions per aircraft
+      const newMissions = generateMissions(fleet, 10);
+      setAvailableFlights(newMissions);
+
+      // Persist to API
+      try {
+        await api.refreshMissions(newMissions);
+      } catch (error) {
+        console.error('Failed to persist missions to API:', error);
+      }
     }
   };
 
@@ -327,6 +370,17 @@ export const AppProvider = ({ children }) => {
         condition_details: updatedAircraft.conditionDetails,
         mel_list: updatedAircraft.melList,
         maintenance_notes: updatedAircraft.maintenanceNotes,
+        fuel_level: updatedAircraft.fuelLevel,
+        fuel_capacity: updatedAircraft.fuelCapacity,
+        fuel_type: updatedAircraft.fuelType,
+        payload_capacity: updatedAircraft.payloadCapacity,
+        oil_condition: updatedAircraft.oilCondition,
+        tire_condition: updatedAircraft.tireCondition,
+        engine_condition: updatedAircraft.engineCondition,
+        hours_at_last_a: updatedAircraft.hoursAtLastA || 0,
+        hours_at_last_b: updatedAircraft.hoursAtLastB || 0,
+        hours_at_last_c: updatedAircraft.hoursAtLastC || 0,
+        hours_at_last_d: updatedAircraft.hoursAtLastD || 0,
         locked_by: flightId,
         current_flight: flightId
       });
@@ -460,6 +514,16 @@ export const AppProvider = ({ children }) => {
       }
     }
 
+    // Calculate fuel consumption: Assume 0.15 gal per nm for standard fleet, adjust based on specs if available
+    const fuelConsumption = flight.distance * 0.15;
+    const newFuelLevel = Math.max(0, aircraft.fuelLevel - fuelConsumption);
+
+    // Wear and Tear calculations (randomized but consistent)
+    const wearTear = (flight.distance / 100) * 2; // ~2% wear per 100nm
+    const newOilCondition = Math.max(0, aircraft.oilCondition - (wearTear * 0.5));
+    const newTireCondition = Math.max(0, aircraft.tireCondition - (wearTear * 0.8));
+    const newEngineCondition = Math.max(0, aircraft.engineCondition - wearTear);
+
     // Update aircraft in fleet
     setFleet(prevFleet =>
       prevFleet.map(a =>
@@ -475,7 +539,16 @@ export const AppProvider = ({ children }) => {
             condition: newCondition,
             maintenanceNotes: maintenanceNotes,
             lockedBy: null,
-            currentFlight: null
+            currentFlight: null,
+            fuelLevel: newFuelLevel,
+            fuelType: a.fuelType || FUEL_TYPES.AVGAS,
+            oilCondition: newOilCondition,
+            tireCondition: newTireCondition,
+            engineCondition: newEngineCondition,
+            hoursAtLastA: a.hoursAtLastA || 0,
+            hoursAtLastB: a.hoursAtLastB || 0,
+            hoursAtLastC: a.hoursAtLastC || 0,
+            hoursAtLastD: a.hoursAtLastD || 0
           }
           : a
       )
@@ -555,6 +628,24 @@ export const AppProvider = ({ children }) => {
           on_time_percentage: updatedPilot.onTimePercentage,
           safety_rating: updatedPilot.safetyRating,
           next_rank_xp: updatedPilot.nextRankXP
+        }),
+        api.updateAircraft(aircraft.id, {
+          ...aircraft,
+          status: newAircraftStatus,
+          location: `${flight.route.to} (${flight.route.toCode})`,
+          total_hours: aircraft.totalHours + flightHours,
+          hours_since_inspection: aircraft.hoursSinceInspection + flightHours,
+          next_inspection_due: aircraft.nextInspectionDue - flightHours,
+          last_flight: new Date().toISOString().split('T')[0],
+          condition: newCondition,
+          maintenance_notes: maintenanceNotes,
+          locked_by: null,
+          current_flight: null,
+          fuel_level: newFuelLevel,
+          fuel_type: aircraft.fuelType || FUEL_TYPES.AVGAS,
+          oil_condition: newOilCondition,
+          tire_condition: newTireCondition,
+          engine_condition: newEngineCondition
         })
       ]);
     } catch (error) {
@@ -610,7 +701,86 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Add aircraft to fleet
+  // Refuel aircraft
+  const refuelAircraft = async (aircraftId, amount, cost) => {
+    try {
+      await api.refuelAircraft(aircraftId, amount, cost);
+
+      // Update local state
+      setFleet(prev => prev.map(a =>
+        a.id === aircraftId
+          ? { ...a, fuelLevel: Math.min(a.fuelCapacity, a.fuelLevel + amount) }
+          : a
+      ));
+
+      setCompany(prev => ({ ...prev, balance: prev.balance - cost }));
+    } catch (error) {
+      console.error('Failed to refuel aircraft:', error);
+      alert('REFUEL ERROR: Backend transaction failed.');
+    }
+  };
+
+  // Perform Maintenance Check
+  const performMaintenanceCheck = async (aircraftId, type, cost) => {
+    try {
+      const aircraft = fleet.find(a => a.id === aircraftId);
+      if (!aircraft) return;
+
+      const updatedAircraft = {
+        ...aircraft,
+        hoursSinceInspection: 0,
+        [`hoursAtLast${type}`]: aircraft.totalHours
+      };
+
+      // Reset condition based on check type
+      if (type === 'D') {
+        updatedAircraft.condition = 'excellent';
+        updatedAircraft.engineCondition = 100;
+        updatedAircraft.oilCondition = 100;
+        updatedAircraft.tireCondition = 100;
+      } else if (type === 'C') {
+        updatedAircraft.condition = 'excellent';
+      }
+
+      setFleet(prev => prev.map(a => a.id === aircraftId ? updatedAircraft : a));
+      setCompany(prev => ({ ...prev, balance: prev.balance - cost }));
+
+      await Promise.all([
+        api.updateAircraft(aircraftId, {
+          ...updatedAircraft,
+          total_hours: updatedAircraft.totalHours,
+          hours_since_inspection: 0,
+          next_inspection_due: 100,
+          last_flight: updatedAircraft.lastFlight,
+          condition: updatedAircraft.condition,
+          fuel_level: updatedAircraft.fuelLevel,
+          fuel_capacity: updatedAircraft.fuelCapacity,
+          fuel_type: updatedAircraft.fuelType,
+          payload_capacity: updatedAircraft.payloadCapacity,
+          oil_condition: updatedAircraft.oilCondition,
+          tire_condition: updatedAircraft.tireCondition || 100,
+          engine_condition: updatedAircraft.engineCondition || 100,
+          hours_at_last_a: updatedAircraft.hoursAtLastA || 0,
+          hours_at_last_b: updatedAircraft.hoursAtLastB || 0,
+          hours_at_last_c: updatedAircraft.hoursAtLastC || 0,
+          hours_at_last_d: updatedAircraft.hoursAtLastD || 0,
+          locked_by: null,
+          current_flight: null
+        }),
+        api.updateCompany({
+          ...company,
+          balance: company.balance - cost,
+          focus_area: company.focusArea,
+          total_flights: company.totalFlights,
+          total_earnings: company.totalEarnings,
+          flight_hours: company.flightHours
+        })
+      ]);
+    } catch (error) {
+      console.error(`Failed to perform ${type}-Check:`, error);
+    }
+  };
+
   const addAircraftToFleet = async (aircraft) => {
     // ICAO Registration Prefixes by Country
     const registrationPrefixes = {
@@ -690,7 +860,13 @@ export const AppProvider = ({ children }) => {
       lastFlight: aircraft.lastFlight || new Date().toISOString().split('T')[0],
       condition: aircraft.condition || 'good',
       conditionDetails: aircraft.conditionDetails || null,
-      melList: aircraft.melList || [],
+      fuelLevel: 100,
+      fuelCapacity: 100,
+      fuelType: CATEGORY_TO_FUEL[aircraft.category] || FUEL_TYPES.AVGAS,
+      payloadCapacity: aircraft.specs?.payload || 0,
+      oilCondition: 100,
+      tireCondition: 100,
+      engineCondition: 100,
       lockedBy: null,
       currentFlight: null,
       // Preserve marketplace data
@@ -725,9 +901,15 @@ export const AppProvider = ({ children }) => {
           last_flight: fleetAircraft.lastFlight,
           condition_details: fleetAircraft.conditionDetails,
           mel_list: fleetAircraft.melList,
-          maintenance_notes: fleetAircraft.maintenanceNotes,
-          locked_by: fleetAircraft.lockedBy,
-          current_flight: fleetAircraft.currentFlight
+          maintenance_notes: '',
+          current_flight: null,
+          fuel_level: fleetAircraft.fuelLevel,
+          fuel_capacity: fleetAircraft.fuelCapacity,
+          fuel_type: fleetAircraft.fuelType,
+          payload_capacity: fleetAircraft.payloadCapacity,
+          oil_condition: fleetAircraft.oilCondition,
+          tire_condition: fleetAircraft.tireCondition,
+          engine_condition: fleetAircraft.engineCondition
         }),
         api.updateCompany({
           ...updatedCompany,
@@ -738,7 +920,7 @@ export const AppProvider = ({ children }) => {
         })
       ]);
     } catch (error) {
-      console.error('Failed to add aircraft:', error);
+      console.error('Failed to add aircraft to fleet:', error);
     }
   };
 
@@ -837,42 +1019,15 @@ export const AppProvider = ({ children }) => {
       newAircraft.melList = newAircraft.melList.filter(i => i.item !== itemData.item);
       success = true;
 
-    } else if (type === 'COMPONENT') {
-      // Overhaul/Repair component
-      // itemData: { component: 'engine' | 'avionics' | 'interior' | 'airframe', action: 'repair' | 'overhaul' }
-
-      const prices = {
-        engine: { repair: 2000, overhaul: 15000 },
-        avionics: { repair: 1000, overhaul: 5000 },
-        interior: { repair: 500, overhaul: 2000 },
-        airframe: { repair: 1500, overhaul: 8000 } // e.g. Paint
-      };
-
-      cost = prices[itemData.component][itemData.action];
-
-      if (company.balance < cost) {
-        alert("Insufficient funds for this service!");
-        return false;
+      success = true;
+    } else if (type === 'LOGISTICS') {
+      // Existing logistics repair logic
+      if (itemData.component === 'oil') {
+        newAircraft.oilCondition = 100;
+      } else if (itemData.component === 'tires') {
+        newAircraft.tireCondition = 100;
       }
-
-      // Logic: Repair adds 20%, Overhaul resets to 100%
-      let current = newAircraft.conditionDetails[itemData.component].condition;
-      let newCondition = itemData.action === 'overhaul' ? 100 : Math.min(100, current + 20);
-
-      // Update nested state
-      newAircraft.conditionDetails = {
-        ...newAircraft.conditionDetails,
-        [itemData.component]: {
-          ...newAircraft.conditionDetails[itemData.component],
-          condition: newCondition
-        }
-      };
-
-      // If overhaul engine, reset SMOH
-      if (itemData.component === 'engine' && itemData.action === 'overhaul') {
-        newAircraft.conditionDetails.engine.smoh = 0;
-        // TBO remains same
-      }
+      cost = itemData.cost;
       success = true;
     }
 
@@ -911,7 +1066,11 @@ export const AppProvider = ({ children }) => {
             mel_list: newAircraft.melList,
             maintenance_notes: newAircraft.maintenanceNotes,
             locked_by: newAircraft.lockedBy,
-            current_flight: newAircraft.currentFlight
+            current_flight: newAircraft.currentFlight,
+            fuel_level: newAircraft.fuelLevel,
+            oil_condition: newAircraft.oilCondition,
+            tire_condition: newAircraft.tireCondition,
+            engine_condition: newAircraft.engineCondition
           }),
           api.updateCompany({
             ...updatedCompany,
@@ -923,6 +1082,26 @@ export const AppProvider = ({ children }) => {
         ]);
       } catch (error) {
         console.error('Failed to persist repair:', error);
+      }
+    } else {
+      // Special case for logistics-only repairs (Oil/Tires) from Hangar
+      if (type === 'LOGISTICS') {
+        // itemData: { component: 'oil' | 'tires', cost: number }
+        try {
+          await api.repairAircraft(aircraftId, itemData.cost, itemData.component);
+
+          setFleet(prev => prev.map(a => {
+            if (a.id !== aircraftId) return a;
+            return {
+              ...a,
+              [itemData.component + 'Condition']: 100
+            };
+          }));
+
+          setCompany(prev => ({ ...prev, balance: prev.balance - itemData.cost }));
+        } catch (error) {
+          console.error('Logistics repair failed:', error);
+        }
       }
     }
 
@@ -949,6 +1128,7 @@ export const AppProvider = ({ children }) => {
     addAircraftToFleet,
     sellAircraft,
     repairAircraft,
+    refuelAircraft,
     lockAircraft,
     marketListings,
     refreshMarket,

@@ -24,6 +24,7 @@ import {
 import { getFlightWeather, formatMETAR, formatTAF, getFlightRules, getWindInfo, getVisibility, getClouds } from '../utils/weatherAPI';
 import NotamBriefing from './NotamBriefing';
 import { calculateFlightFinance, formatCurrency } from '../utils/flightCalculations';
+import { FUEL_TYPES } from '../lib/constants';
 
 // Fix for default marker icons in Leaflet with webpack/vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -276,6 +277,18 @@ function DispatchCenter() {
   const handleAcceptFlight = (flight, aircraft) => {
     if (!aircraft) {
       alert('Please select an aircraft for this flight');
+      return;
+    }
+
+    // Logistics Check
+    const fuelNeeded = flight.distance * 0.15;
+    if (aircraft.fuelLevel < fuelNeeded) {
+      alert(`DISPATCH REJECTED: Insufficient fuel. Needed: ${fuelNeeded.toFixed(1)} gal, Available: ${aircraft.fuelLevel.toFixed(1)} gal.`);
+      return;
+    }
+
+    if (aircraft.condition < 40 || aircraft.engineCondition < 40 || aircraft.oilCondition < 20 || aircraft.tireCondition < 20) {
+      alert('DISPATCH REJECTED: Airframe condition below safety minimums. Service required.');
       return;
     }
 
@@ -697,36 +710,46 @@ function DispatchCenter() {
                         ) : (
                           <>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              {availableAircraft.map(aircraft => (
-                                <button
-                                  key={aircraft.id}
-                                  onClick={() => setSelectedAircraft(aircraft)}
-                                  className={`p-4 rounded-lg border-2 text-left transition ${selectedAircraft?.id === aircraft.id
-                                    ? 'border-blue-900 bg-blue-50'
-                                    : 'border-gray-300 hover:border-gray-400'
-                                    }`}
-                                >
-                                  <div className="flex items-start justify-between mb-2">
-                                    <div>
-                                      <p className="font-bold text-gray-900 text-lg">{aircraft.registration}</p>
-                                      <p className="text-sm text-gray-600">{aircraft.type}</p>
+                              {availableAircraft.map(aircraft => {
+                                const fuelReq = flight.distance * 0.15;
+                                const hasFuel = aircraft.fuelLevel >= fuelReq;
+                                const isSafe = aircraft.condition >= 40 && aircraft.engineCondition >= 40;
+
+                                return (
+                                  <button
+                                    key={aircraft.id}
+                                    onClick={() => setSelectedAircraft(aircraft)}
+                                    className={`p-4 rounded-lg border-2 text-left transition ${selectedAircraft?.id === aircraft.id
+                                      ? 'border-blue-900 bg-blue-50'
+                                      : 'border-gray-300 hover:border-gray-400'
+                                      } ${(!hasFuel || !isSafe) ? 'opacity-60 grayscale-[0.5]' : ''}`}
+                                  >
+                                    <div className="flex items-start justify-between mb-2">
+                                      <div>
+                                        <p className="font-bold text-gray-900 text-lg">{aircraft.registration}</p>
+                                        <p className="text-sm text-gray-600">{aircraft.type}</p>
+                                      </div>
+                                      <span className={`px-2 py-1 text-xs font-semibold rounded ${hasFuel && isSafe ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                        {hasFuel && isSafe ? 'OPERATIONAL' : 'GROUNDED'}
+                                      </span>
                                     </div>
-                                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
-                                      AVAILABLE
-                                    </span>
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <div>
-                                      <p className="text-gray-600">Location</p>
-                                      <p className="font-semibold text-gray-900">{aircraft.location}</p>
+                                    <div className="grid grid-cols-2 gap-2 text-[10px] mt-3 pt-3 border-t border-zinc-100">
+                                      <div>
+                                        <p className="text-zinc-400 uppercase font-mono">{aircraft.fuelType || 'AVGAS'}</p>
+                                        <p className={`font-black ${hasFuel ? 'text-zinc-900' : 'text-red-600'}`}>
+                                          {aircraft.fuelLevel.toFixed(1)} / {fuelReq.toFixed(1)} GAL
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-zinc-400 uppercase font-mono">CONDITION</p>
+                                        <p className={`font-black ${isSafe ? 'text-zinc-900' : 'text-red-600'}`}>
+                                          {Math.round(aircraft.condition)}% NORM
+                                        </p>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <p className="text-gray-600">Condition</p>
-                                      <p className="font-semibold text-gray-900 capitalize">{aircraft.condition}</p>
-                                    </div>
-                                  </div>
-                                </button>
-                              ))}
+                                  </button>
+                                );
+                              })}
                             </div>
 
                             <button

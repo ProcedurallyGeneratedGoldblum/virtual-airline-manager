@@ -109,6 +109,33 @@ class APIClient {
         });
     }
 
+    // Missions endpoints
+    async getMissions() {
+        return this.request('/api/missions');
+    }
+
+    async refreshMissions(missions) {
+        return this.request('/api/missions/refresh', {
+            method: 'POST',
+            body: JSON.stringify({ missions }),
+        });
+    }
+
+    // Logistics endpoints
+    async refuelAircraft(id, amount, cost) {
+        return this.request(`/api/fleet/${id}/refuel`, {
+            method: 'POST',
+            body: JSON.stringify({ amount, cost }),
+        });
+    }
+
+    async repairAircraft(id, cost, type = 'full') {
+        return this.request(`/api/fleet/${id}/repair`, {
+            method: 'POST',
+            body: JSON.stringify({ cost, type }),
+        });
+    }
+
     // Health check
     async healthCheck() {
         return this.request('/health');

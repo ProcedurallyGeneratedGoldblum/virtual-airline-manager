@@ -26,6 +26,36 @@ const db = new Database(dbPath);
 const initSQL = fs.readFileSync(path.join(__dirname, 'init-db.sql'), 'utf8');
 db.exec(initSQL);
 
+// --- DYNAMIC SCHEMA MIGRATION ---
+// Ensure new columns exist in the fleet table if the DB was created earlier
+try {
+    const columns = db.prepare('PRAGMA table_info(fleet)').all();
+    const columnNames = columns.map(c => c.name);
+
+    const logisticsColumns = [
+        { name: 'fuel_level', type: 'REAL', default: '100' },
+        { name: 'fuel_capacity', type: 'REAL', default: '100' },
+        { name: 'fuel_type', type: 'TEXT', default: '"AVGAS"' },
+        { name: 'payload_capacity', type: 'REAL', default: '0' },
+        { name: 'oil_condition', type: 'REAL', default: '100' },
+        { name: 'tire_condition', type: 'REAL', default: '100' },
+        { name: 'engine_condition', type: 'REAL', default: '100' },
+        { name: 'hours_at_last_a', type: 'REAL', default: '0' },
+        { name: 'hours_at_last_b', type: 'REAL', default: '0' },
+        { name: 'hours_at_last_c', type: 'REAL', default: '0' },
+        { name: 'hours_at_last_d', type: 'REAL', default: '0' }
+    ];
+
+    logisticsColumns.forEach(col => {
+        if (!columnNames.includes(col.name)) {
+            db.prepare(`ALTER TABLE fleet ADD COLUMN ${col.name} ${col.type} DEFAULT ${col.default}`).run();
+            console.log(`Migrated fleet table with ${col.name} column.`);
+        }
+    });
+} catch (err) {
+    console.error('Migration failed:', err.message);
+}
+
 console.log('Database initialized at:', dbPath);
 
 // ============================================================================
@@ -154,7 +184,10 @@ app.post('/api/fleet', (req, res) => {
             registration, type, status, location, total_hours,
             hours_since_inspection, next_inspection_due, last_flight,
             condition, condition_details, mel_list, maintenance_notes,
-            locked_by, current_flight, name, manufacturer, year, price, specs
+            locked_by, current_flight, name, manufacturer, year, price, specs,
+            fuel_level, fuel_capacity, fuel_type, payload_capacity,
+            oil_condition, tire_condition, engine_condition,
+            hours_at_last_a, hours_at_last_b, hours_at_last_c, hours_at_last_d
         } = req.body;
 
         const stmt = db.prepare(`
@@ -162,8 +195,11 @@ app.post('/api/fleet', (req, res) => {
         registration, type, status, location, total_hours,
         hours_since_inspection, next_inspection_due, last_flight,
         condition, condition_details, mel_list, maintenance_notes,
-        locked_by, current_flight, name, manufacturer, year, price, specs
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        locked_by, current_flight, name, manufacturer, year, price, specs,
+        fuel_level, fuel_capacity, fuel_type, payload_capacity,
+        oil_condition, tire_condition, engine_condition,
+        hours_at_last_a, hours_at_last_b, hours_at_last_c, hours_at_last_d
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
         const result = stmt.run(
@@ -174,7 +210,18 @@ app.post('/api/fleet', (req, res) => {
             mel_list ? JSON.stringify(mel_list) : null,
             maintenance_notes, locked_by, current_flight,
             name, manufacturer, year, price,
-            specs ? JSON.stringify(specs) : null
+            specs ? JSON.stringify(specs) : null,
+            fuel_level ?? 100,
+            fuel_capacity ?? 100,
+            fuel_type ?? 'AVGAS',
+            payload_capacity ?? 0,
+            oil_condition ?? 100,
+            tire_condition ?? 100,
+            engine_condition ?? 100,
+            hours_at_last_a ?? 0,
+            hours_at_last_b ?? 0,
+            hours_at_last_c ?? 0,
+            hours_at_last_d ?? 0
         );
 
         const newAircraft = db.prepare('SELECT * FROM fleet WHERE id = ?').get(result.lastInsertRowid);
@@ -198,7 +245,10 @@ app.put('/api/fleet/:id', (req, res) => {
             registration, type, status, location, total_hours,
             hours_since_inspection, next_inspection_due, last_flight,
             condition, condition_details, mel_list, maintenance_notes,
-            locked_by, current_flight, name, manufacturer, year, price, specs
+            locked_by, current_flight, name, manufacturer, year, price, specs,
+            fuel_level, fuel_capacity, fuel_type, payload_capacity,
+            oil_condition, tire_condition, engine_condition,
+            hours_at_last_a, hours_at_last_b, hours_at_last_c, hours_at_last_d
         } = req.body;
 
         const stmt = db.prepare(`
@@ -208,7 +258,10 @@ app.put('/api/fleet/:id', (req, res) => {
         next_inspection_due = ?, last_flight = ?, condition = ?,
         condition_details = ?, mel_list = ?, maintenance_notes = ?,
         locked_by = ?, current_flight = ?, name = ?, manufacturer = ?,
-        year = ?, price = ?, specs = ?
+        year = ?, price = ?, specs = ?,
+        fuel_level = ?, fuel_capacity = ?, fuel_type = ?, payload_capacity = ?,
+        oil_condition = ?, tire_condition = ?, engine_condition = ?,
+        hours_at_last_a = ?, hours_at_last_b = ?, hours_at_last_c = ?, hours_at_last_d = ?
       WHERE id = ?
     `);
 
@@ -221,6 +274,17 @@ app.put('/api/fleet/:id', (req, res) => {
             maintenance_notes, locked_by, current_flight,
             name, manufacturer, year, price,
             specs ? JSON.stringify(specs) : null,
+            fuel_level ?? 100,
+            fuel_capacity ?? 100,
+            fuel_type ?? 'AVGAS',
+            payload_capacity ?? 0,
+            oil_condition ?? 100,
+            tire_condition ?? 100,
+            engine_condition ?? 100,
+            hours_at_last_a ?? 0,
+            hours_at_last_b ?? 0,
+            hours_at_last_c ?? 0,
+            hours_at_last_d ?? 0,
             id
         );
 
@@ -247,6 +311,56 @@ app.delete('/api/fleet/:id', (req, res) => {
     } catch (error) {
         console.error('Error deleting aircraft:', error);
         res.status(500).json({ error: 'Failed to delete aircraft' });
+    }
+});
+
+// Refuel aircraft
+app.post('/api/fleet/:id/refuel', (req, res) => {
+    try {
+        const { id } = req.params;
+        const { amount, cost } = req.body;
+
+        db.transaction(() => {
+            db.prepare('UPDATE fleet SET fuel_level = MIN(fuel_capacity, fuel_level + ?) WHERE id = ?').run(amount, id);
+            db.prepare('UPDATE company SET balance = balance - ? WHERE id = 1').run(cost);
+        })();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error refueling aircraft:', error);
+        res.status(500).json({ error: 'Failed to refuel aircraft' });
+    }
+});
+
+// Repair aircraft
+app.post('/api/fleet/:id/repair', (req, res) => {
+    try {
+        const { id } = req.params;
+        const { cost, type } = req.body; // type: 'full', 'oil', 'tires'
+
+        db.transaction(() => {
+            if (type === 'full') {
+                db.prepare(`
+          UPDATE fleet SET 
+            oil_condition = 100, 
+            tire_condition = 100, 
+            engine_condition = 100,
+            condition = 'excellent',
+            status = 'available'
+          WHERE id = ?
+        `).run(id);
+            } else if (type === 'oil') {
+                db.prepare('UPDATE fleet SET oil_condition = 100 WHERE id = ?').run(id);
+            } else if (type === 'tires') {
+                db.prepare('UPDATE fleet SET tire_condition = 100 WHERE id = ?').run(id);
+            }
+            db.prepare('UPDATE company SET balance = balance - ? WHERE id = 1').run(cost);
+        })();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error repairing aircraft:', error);
+        res.status(500).json({ error: 'Failed to repair aircraft' });
     }
 });
 
@@ -381,6 +495,70 @@ app.post('/api/flights/completed', (req, res) => {
     } catch (error) {
         console.error('Error adding completed flight:', error);
         res.status(500).json({ error: 'Failed to add completed flight' });
+    }
+});
+
+// ============================================================================
+// MISSIONS ENDPOINTS
+// ============================================================================
+
+// Get all available missions
+app.get('/api/missions', (req, res) => {
+    try {
+        const missions = db.prepare('SELECT * FROM missions').all();
+        const parsed = missions.map(m => ({
+            ...m,
+            route: {
+                from: m.route_from,
+                fromCode: m.route_from_code,
+                to: m.route_to,
+                toCode: m.route_to_code
+            },
+            cargo: {
+                type: m.cargo_type,
+                passengers: m.cargo_passengers,
+                weight: m.cargo_weight
+            },
+            requirements: m.requirements ? JSON.parse(m.requirements) : null
+        }));
+        res.json(parsed);
+    } catch (error) {
+        console.error('Error fetching missions:', error);
+        res.status(500).json({ error: 'Failed to fetch missions' });
+    }
+});
+
+// Clear and replace all missions (refresh)
+app.post('/api/missions/refresh', (req, res) => {
+    try {
+        const { missions } = req.body;
+
+        db.transaction(() => {
+            db.prepare('DELETE FROM missions').run();
+            const stmt = db.prepare(`
+        INSERT INTO missions (
+          id, flight_number, type, priority, 
+          route_from, route_from_code, route_to, route_to_code,
+          distance, duration, cargo_type, cargo_passengers, cargo_weight,
+          earnings, requirements, aircraft_id, generated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+            for (const m of missions) {
+                stmt.run(
+                    m.id, m.flightNumber, m.type, m.priority,
+                    m.route.from, m.route.fromCode, m.route.to, m.route.toCode,
+                    m.distance, m.duration, m.cargo.type, m.cargo.passengers, m.cargo.weight,
+                    m.earnings, m.requirements ? JSON.stringify(m.requirements) : null,
+                    m.aircraftId, m.generatedAt || new Date().toISOString()
+                );
+            }
+        })();
+
+        res.json({ success: true, count: missions.length });
+    } catch (error) {
+        console.error('Error refreshing missions:', error);
+        res.status(500).json({ error: 'Failed to refresh missions' });
     }
 });
 
