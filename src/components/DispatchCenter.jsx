@@ -237,7 +237,7 @@ function FlightMap({ departure, arrival }) {
 }
 
 function DispatchCenter() {
-  const { availableFlights, activeFlights, fleet, acceptFlight, startPostFlightBriefing } = useAppContext();
+  const { availableFlights, activeFlights, fleet, acceptFlight, startPostFlightBriefing, refreshAvailableFlights } = useAppContext();
   const [expandedFlight, setExpandedFlight] = useState(null);
   const [selectedAircraft, setSelectedAircraft] = useState(null);
   const [showAircraftSelection, setShowAircraftSelection] = useState(null);
@@ -309,9 +309,18 @@ function DispatchCenter() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Dispatch Center</h2>
-        <p className="text-gray-600">Available flights and active operations</p>
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-1">Dispatch Center</h2>
+          <p className="text-gray-600">Available missions for your fleet</p>
+        </div>
+        <button
+          onClick={refreshAvailableFlights}
+          className="flex items-center gap-2 px-5 py-2.5 bg-blue-900 text-white rounded-xl font-bold hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20 active:scale-95"
+        >
+          <Radio className="w-4 h-4" />
+          Scan for Jobs
+        </button>
       </div>
 
       {/* Stats */}

@@ -3,6 +3,7 @@ import aircraftTypes from '../data/aircraftTypes.json';
 import { calculateFlightFinance } from '../utils/flightCalculations';
 import api from '../lib/api';
 import { generateAircraft } from '../utils/aircraftGenerator';
+import { generateMissions } from '../utils/missionGenerator';
 
 const AppContext = createContext();
 
@@ -272,198 +273,23 @@ export const AppProvider = ({ children }) => {
     loadData();
   }, []);
 
-  // Available Flights State (Dispatch Center) - Regional European routes
-  const [availableFlights, setAvailableFlights] = useState([
-    {
-      id: 'F001',
-      flightNumber: 'EUR001',
-      aircraft: 'Cessna 208 Caravan',
-      status: 'available',
-      priority: 'urgent',
-      route: {
-        from: 'Weston',
-        fromCode: 'EIWT',
-        to: 'Galway',
-        toCode: 'EICM'
-      },
-      duration: '40m',
-      distance: 95,
-      cargo: {
-        type: 'Medical supplies',
-        passengers: 2
-      },
-      weather: 'VFR',
-      notes: 'Priority delivery to West Ireland clinic'
-    },
-    {
-      id: 'F002',
-      flightNumber: 'EUR002',
-      aircraft: 'DHC-2 Beaver',
-      status: 'available',
-      priority: 'normal',
-      route: {
-        from: 'Oban',
-        fromCode: 'EGEO',
-        to: 'Barra',
-        toCode: 'EGPR'
-      },
-      duration: '35m',
-      distance: 70,
-      cargo: {
-        type: 'Island supplies',
-        passengers: 3
-      },
-      weather: 'MVFR',
-      notes: '⚠️ Beach runway - tides dependent landing'
-    },
-    {
-      id: 'F003',
-      flightNumber: 'EUR003',
-      aircraft: 'Piper PA-18 Super Cub',
-      status: 'available',
-      priority: 'normal',
-      route: {
-        from: 'Toussus-le-Noble',
-        fromCode: 'LFPN',
-        to: 'Megève',
-        toCode: 'LFHM'
-      },
-      duration: '2h 30m',
-      distance: 280,
-      cargo: {
-        type: 'VIP courier',
-        passengers: 1
-      },
-      weather: 'VFR',
-      notes: '⛷️ Alpine altiport - mountain flying experience required'
-    },
-    {
-      id: 'F004',
-      flightNumber: 'EUR004',
-      aircraft: 'Cessna 182',
-      status: 'available',
-      priority: 'urgent',
-      route: {
-        from: 'Biggin Hill',
-        fromCode: 'EGKB',
-        to: 'Islay',
-        toCode: 'EGPI'
-      },
-      duration: '2h 15m',
-      distance: 340,
-      cargo: {
-        type: 'Whisky distillery samples',
-        passengers: 0
-      },
-      weather: 'IFR',
-      notes: '🥃 Time-sensitive delivery for whisky export'
-    },
-    {
-      id: 'F005',
-      flightNumber: 'EUR005',
-      aircraft: 'Cessna 208 Caravan',
-      status: 'available',
-      priority: 'urgent',
-      route: {
-        from: 'Hamburg Finkenwerder',
-        fromCode: 'EDHI',
-        to: 'Egelsbach',
-        toCode: 'EDFE'
-      },
-      duration: '1h 45m',
-      distance: 230,
-      cargo: {
-        type: 'Aircraft Parts',
-        passengers: 0
-      },
-      weather: 'VFR',
-      notes: 'Spare parts for Aero Club maintenance'
-    },
-    {
-      id: 'F006',
-      flightNumber: 'EUR006',
-      aircraft: 'Pilatus PC-6',
-      status: 'available',
-      priority: 'normal',
-      route: {
-        from: 'Sion',
-        fromCode: 'LSGS',
-        to: 'Samedan',
-        toCode: 'LSZS'
-      },
-      duration: '45m',
-      distance: 85,
-      cargo: {
-        type: 'Ski Equipment',
-        passengers: 4
-      },
-      weather: 'VFR',
-      notes: '🏔️ High altitude operations - Check density altitude'
-    },
-    {
-      id: 'F007',
-      flightNumber: 'EUR007',
-      aircraft: 'Beechcraft Baron 58',
-      status: 'available',
-      priority: 'normal',
-      route: {
-        from: 'Cannes',
-        fromCode: 'LFMD',
-        to: 'Sabadell',
-        toCode: 'LELL'
-      },
-      duration: '1h 30m',
-      distance: 210,
-      cargo: {
-        type: 'VIP Passengers',
-        passengers: 3
-      },
-      weather: 'VFR',
-      notes: 'Coastal scenic route requested'
-    },
-    {
-      id: 'F008',
-      flightNumber: 'EUR008',
-      aircraft: 'Cessna 172',
-      status: 'available',
-      priority: 'normal',
-      route: {
-        from: 'Innsbruck',
-        fromCode: 'LOWI',
-        to: 'Zell am See',
-        toCode: 'LOWZ'
-      },
-      duration: '50m',
-      distance: 60,
-      cargo: {
-        type: 'Local Mail',
-        passengers: 0
-      },
-      weather: 'MVFR',
-      notes: 'Valley flying required due to low ceiling'
-    },
-    {
-      id: 'F009',
-      flightNumber: 'EUR009',
-      aircraft: 'Piper PA-28',
-      status: 'available',
-      priority: 'urgent',
-      route: {
-        from: 'Dundee',
-        fromCode: 'EGPN',
-        to: 'Oban',
-        toCode: 'EGEO'
-      },
-      duration: '1h 10m',
-      distance: 90,
-      cargo: {
-        type: 'Fresh Seafood',
-        passengers: 0
-      },
-      weather: 'IFR',
-      notes: 'Expected icing conditions enroute'
+  // Refresh Available Flights
+  const refreshAvailableFlights = () => {
+    if (fleet.length > 0) {
+      setAvailableFlights(generateMissions(fleet, 3));
     }
-  ]);
+  };
+
+  // Populate initial flights when fleet is ready
+  useEffect(() => {
+    if (!loading && fleet.length > 0 && availableFlights.length === 0) {
+      refreshAvailableFlights();
+    }
+  }, [loading, fleet.length]);
+
+  // Available Flights State (Dispatch Center)
+  const [availableFlights, setAvailableFlights] = useState([]);
+
 
 
   // Flight being completed (for post-flight briefing)
@@ -1123,7 +949,8 @@ export const AppProvider = ({ children }) => {
     repairAircraft,
     lockAircraft,
     marketListings,
-    refreshMarket
+    refreshMarket,
+    refreshAvailableFlights
   };
 
   if (loading) {
