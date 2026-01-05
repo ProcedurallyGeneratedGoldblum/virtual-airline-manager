@@ -468,13 +468,22 @@ function DispatchCenter() {
           <h2 className="text-2xl font-bold text-gray-900">Dispatch Center</h2>
           <p className="text-gray-500">Available missions for your fleet</p>
         </div>
-        <button
-          onClick={refreshAvailableFlights}
-          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition shadow-sm"
-        >
-          <Radio className="w-4 h-4" />
-          Scan for Jobs
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setAdHocModalOpen(true)}
+            className="flex items-center gap-2 px-6 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-900 transition shadow-sm border border-slate-700"
+          >
+            <Plane className="w-4 h-4" />
+            Custom Flight
+          </button>
+          <button
+            onClick={refreshAvailableFlights}
+            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition shadow-sm"
+          >
+            <Radio className="w-4 h-4" />
+            Scan for Jobs
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
