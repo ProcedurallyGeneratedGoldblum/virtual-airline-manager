@@ -1,6 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import aircraftTypes from '../data/aircraftTypes.json';
+import airportsData from '../data/airports.json';
+import { calculateDistance } from '../utils/distance';
 import { calculateFlightFinance } from '../utils/flightCalculations';
 import api from '../lib/api';
 import { generateAircraft } from '../utils/aircraftGenerator';
@@ -99,7 +101,7 @@ export const AppProvider = ({ children }) => {
       const promises = starterAircraft.map(aircraft => {
         const fleetAircraft = {
           ...aircraft,
-          registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000}`,
+          registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000} `,
           location: "Weston, Ireland (EIWT)", // Base at Weston
           status: 'available',
           category: aircraft.category, // Map category
@@ -244,7 +246,7 @@ export const AppProvider = ({ children }) => {
 
         const transformFleet = (data) => data.map(aircraft => ({
           id: aircraft.id,
-          registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000}`,
+          registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000} `,
           type: aircraft.type,
           category: aircraft.category, // Map category for filtering
           status: aircraft.status,
@@ -285,7 +287,7 @@ export const AppProvider = ({ children }) => {
 
         // Sync aircraft count if mismatch
         if (companyData.aircraft !== transformedFleet.length) {
-          console.log(`Syncing aircraft count: ${companyData.aircraft} -> ${transformedFleet.length}`);
+          console.log(`Syncing aircraft count: ${companyData.aircraft} -> ${transformedFleet.length} `);
           const syncedCompany = { ...transformCompany(companyData), aircraft: transformedFleet.length };
           setCompany(syncedCompany);
           // Persist the sync
@@ -403,7 +405,7 @@ export const AppProvider = ({ children }) => {
 
   // Accept a flight
   const acceptFlight = async (flight, selectedAircraft) => {
-    const flightId = `FLIGHT-${Date.now()}`;
+    const flightId = `FLIGHT - ${Date.now()} `;
 
     const newActiveFlight = {
       ...flight,
@@ -428,6 +430,82 @@ export const AppProvider = ({ children }) => {
       await api.addActiveFlight(newActiveFlight);
     } catch (error) {
       console.error('Failed to save active flight:', error);
+    }
+
+    return flightId;
+  };
+
+  // Dispatch Ad-Hoc Flight
+  const dispatchAdHocFlight = async (aircraftId, flightDetails) => {
+    // flightDetails: { destination, revenue, client, description, cargoType, pax }
+    const aircraft = fleet.find(a => a.id === aircraftId);
+    if (!aircraft) throw new Error("Aircraft not found");
+
+    // Get current location coords
+    const currentLocStr = aircraft.location;
+    const currentLocMatch = currentLocStr.match(/\(([^)]+)\)/);
+    const currentICAO = currentLocMatch ? currentLocMatch[1] : '';
+    const currentAirport = airportsData.find(a => a.icao === currentICAO);
+
+    // Get dest coords
+    const destAirport = airportsData.find(a => a.icao === flightDetails.destination);
+
+    if (!currentAirport || !destAirport) {
+      throw new Error("Invalid locations for distance calculation");
+    }
+
+    const distance = calculateDistance(
+      currentAirport.latitude, currentAirport.longitude,
+      destAirport.latitude, destAirport.longitude
+    );
+
+    // Estimate Weather (random for ad-hoc/MVP)
+    const weathers = ['VFR', 'MVFR', 'IFR'];
+    const randomWeather = weathers[Math.floor(Math.random() * weathers.length)];
+
+    // Construct Flight Object
+    const flight = {
+      flightNumber: `${aircraft.registration.replace('-', '')} `,
+      aircraft: aircraft.type,
+      priority: 'urgent', // Ad-hoc always treated as 'urgent' priority for visibility
+      route: {
+        from: currentAirport.municipality,
+        fromCode: currentAirport.icao,
+        to: destAirport.municipality,
+        toCode: destAirport.icao
+      },
+      duration: `${Math.ceil(distance / (aircraft.specs?.cruiseSpeed || 140))}h ${Math.floor(Math.random() * 59)} m`,
+      distance: Math.round(distance),
+      weather: randomWeather,
+      cargo: {
+        type: flightDetails.cargoType || 'Ad-Hoc Charter',
+        passengers: flightDetails.pax || 0
+      },
+      notes: flightDetails.description || `Ad - Hoc Charter for ${flightDetails.client}`,
+      // Override earnings since it's an ad-hoc negotiation
+      earnings: parseInt(flightDetails.revenue) || 0
+    };
+
+    // Use existing accept logic, but bypass 'availableFlights' check
+    const flightId = `FLIGHT - ADHOC - ${Date.now()} `;
+    const newActiveFlight = {
+      ...flight,
+      id: flightId,
+      aircraftId: aircraft.id,
+      aircraftRegistration: aircraft.registration,
+      acceptedAt: new Date().toISOString(),
+      status: 'in-progress'
+    };
+
+    // Update State
+    setActiveFlights(prev => [...prev, newActiveFlight]);
+    await lockAircraft(aircraft.id, flightId);
+
+    // Persist
+    try {
+      await api.addActiveFlight(newActiveFlight);
+    } catch (error) {
+      console.error('Failed to save ad-hoc flight:', error);
     }
 
     return flightId;
@@ -573,7 +651,7 @@ export const AppProvider = ({ children }) => {
       id: completedFlights.length + 1,
       flightId: flight.id,
       flightNumber: flight.aircraftRegistration,
-      route: `${flight.route.fromCode} → ${flight.route.toCode}`,
+      route: `${flight.route.fromCode} → ${flight.route.toCode} `,
       aircraft: flight.aircraftRegistration,
       type: aircraft.type,
       date: new Date().toISOString().split('T')[0],
@@ -745,7 +823,7 @@ export const AppProvider = ({ children }) => {
       const updatedAircraft = {
         ...aircraft,
         hoursSinceInspection: 0,
-        [`hoursAtLast${type}`]: aircraft.totalHours
+        [`hoursAtLast${type} `]: aircraft.totalHours
       };
 
       // Reset condition based on check type
@@ -793,7 +871,7 @@ export const AppProvider = ({ children }) => {
         })
       ]);
     } catch (error) {
-      console.error(`Failed to perform ${type}-Check:`, error);
+      console.error(`Failed to perform ${type} -Check: `, error);
     }
   };
 
@@ -907,7 +985,7 @@ export const AppProvider = ({ children }) => {
 
     // Transform marketplace aircraft to fleet format
     const fleetAircraft = {
-      id: `FLEET-${Date.now()}`, // Unique stable ID 
+      id: `FLEET - ${Date.now()} `, // Unique stable ID 
       registration: aircraft.registration || generateRegistration(),
       type: aircraft.name || aircraft.type || 'Unknown Aircraft',
       category: aircraft.category, // Crucial for filtering
@@ -1194,6 +1272,7 @@ export const AppProvider = ({ children }) => {
     cancelFlightBriefing,
     addAircraftToFleet,
     sellAircraft,
+    dispatchAdHocFlight,
     repairAircraft,
     performMaintenanceCheck, // Exposed for Fleet/Hangar components
     travelToLocation,        // Exposed for map/travel features

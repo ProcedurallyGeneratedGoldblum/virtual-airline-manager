@@ -243,13 +243,148 @@ function FlightMap({ departure, arrival }) {
   );
 }
 
+const AdHocDispatchModal = ({ fleet, onClose, onDispatch }) => {
+  const [selectedAircraft, setSelectedAircraft] = useState(null);
+  const [destination, setDestination] = useState('');
+  const [revenue, setRevenue] = useState('');
+  const [client, setClient] = useState('');
+  const [pax, setPax] = useState(0);
+
+  // Available aircraft are those sitting on the ground (status !== 'in-flight' or similar check for lockedBy)
+  const availableFleet = fleet.filter(a => !a.lockedBy);
+
+  const handleDispatch = () => {
+    if (!selectedAircraft || !destination || !revenue) return;
+
+    onDispatch(selectedAircraft.id, {
+      destination: destination.toUpperCase(),
+      revenue,
+      client,
+      pax
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-gray-200">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+          <h3 className="font-bold text-xl text-gray-900">Custom Flight Dispatch</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          {/* Step 1: Select Aircraft */}
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">1. Select Aircraft</label>
+            <select
+              className="w-full p-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
+              onChange={(e) => setSelectedAircraft(availableFleet.find(a => a.id === e.target.value))}
+              value={selectedAircraft?.id || ''}
+            >
+              <option value="">-- Choose Airframe (Location) --</option>
+              {availableFleet.map(a => (
+                <option key={a.id} value={a.id}>
+                  {a.registration} - {a.type} ({a.location})
+                </option>
+              ))}
+            </select>
+            {selectedAircraft && (
+              <div className="mt-2 text-xs text-blue-600 font-medium bg-blue-50 p-2 rounded-lg border border-blue-100 flex items-center gap-2">
+                <MapPin className="w-3 h-3" /> Currently at: {selectedAircraft.location}
+              </div>
+            )}
+          </div>
+
+          {/* Step 2: Destination */}
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">2. Destination (ICAO)</label>
+            <input
+              type="text"
+              className="w-full p-3 border border-gray-300 rounded-xl font-mono uppercase focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. EGLL"
+              maxLength={4}
+              value={destination}
+              onChange={(e) => setDestination(e.target.value.toUpperCase())}
+            />
+          </div>
+
+          {/* Step 3: Details */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Revenue ($)</label>
+              <input
+                type="number"
+                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                placeholder="5000"
+                value={revenue}
+                onChange={(e) => setRevenue(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">PAX Count</label>
+              <input
+                type="number"
+                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                placeholder="0"
+                value={pax}
+                onChange={(e) => setPax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Client / Description</label>
+            <input
+              type="text"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g. Private Charter for VIP"
+              value={client}
+              onChange={(e) => setClient(e.target.value)}
+            />
+          </div>
+
+        </div>
+
+        <div className="p-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+          <button onClick={onClose} className="px-5 py-2 text-gray-600 font-bold hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
+          <button
+            onClick={handleDispatch}
+            disabled={!selectedAircraft || !destination || !revenue}
+            className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <Plane className="w-4 h-4" /> Dispatch Flight
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function DispatchCenter() {
-  const { availableFlights, activeFlights, fleet, acceptFlight, startPostFlightBriefing, refreshAvailableFlights } = useAppContext();
+
+  const { availableFlights, activeFlights, fleet, acceptFlight, startPostFlightBriefing, refreshAvailableFlights, dispatchAdHocFlight } = useAppContext();
   const [expandedFlight, setExpandedFlight] = useState(null);
   const [selectedAircraft, setSelectedAircraft] = useState(null);
   const [showAircraftSelection, setShowAircraftSelection] = useState(null);
   const [weatherData, setWeatherData] = useState({});
   const [loadingWeather, setLoadingWeather] = useState({});
+
+  // Custom Disaptch State
+  const [adHocModalOpen, setAdHocModalOpen] = useState(false);
+
+  const handleAdHocDispatch = async (aircraftId, details) => {
+    try {
+      await dispatchAdHocFlight(aircraftId, details);
+      setAdHocModalOpen(false);
+      alert(`Successfully dispatched aircraft to ${details.destination}.`);
+    } catch (e) {
+      alert(`Failed to dispatch: ${e.message}`);
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -749,6 +884,14 @@ function DispatchCenter() {
           </div>
         )}
       </div>
+
+      {adHocModalOpen && (
+        <AdHocDispatchModal
+          fleet={fleet}
+          onClose={() => setAdHocModalOpen(false)}
+          onDispatch={handleAdHocDispatch}
+        />
+      )}
     </div >
   );
 }
