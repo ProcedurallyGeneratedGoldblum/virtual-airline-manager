@@ -132,10 +132,3 @@ CREATE TABLE IF NOT EXISTS completed_flights (
   briefing TEXT
 );
 
--- Insert default company if not exists
-INSERT OR IGNORE INTO company (id, name, callsign, founded, headquarters, description, motto, focus_area, pilots, aircraft, total_flights, total_earnings, flight_hours, balance, established)
-VALUES (1, '', '', '', '', '', '', 'bush', 1, 0, 0, 0, 0, 5000000, date('now'));
-
--- Insert default pilot if not exists
-INSERT OR IGNORE INTO pilot (id, name, callsign, rank, role, license, join_date, total_flights, total_hours, total_distance, total_earnings, rating, on_time_percentage, safety_rating, experience, next_rank_xp, current_location)
-VALUES (1, '', '', 'Junior Pilot', 'Company Owner', '', date('now'), 0, 0, 0, 0, 0, 0, 100, 0, 1000, 'Weston, Ireland (EIWT)');
