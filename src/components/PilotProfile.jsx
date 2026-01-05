@@ -31,15 +31,7 @@ function PilotProfile() {
     { name: 'Industrial Ace', description: 'Maintain 95% safety rating', icon: <Trophy className="w-5 h-5" />, earned: pilot.safetyRating >= 95 && pilot.totalFlights > 5, req: '95% SAFE' },
   ];
 
-  const handleStartEditing = () => {
-    setEditForm(pilot);
-    setIsEditing(true);
-  };
 
-  const handleCancelEditing = () => {
-    setEditForm(pilot);
-    setIsEditing(false);
-  };
 
   const handleSavePilot = () => {
     if (editForm.name && editForm.callsign && editForm.license) {
@@ -48,13 +40,6 @@ function PilotProfile() {
     } else {
       alert('REQUIRED FIELDS: Name, Callsign, License Type');
     }
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditForm({
-      ...editForm,
-      [field]: value
-    });
   };
 
   const getRankProgress = () => {

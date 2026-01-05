@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAppContext } from './AppContext';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
@@ -21,7 +21,7 @@ import {
   Loader2,
   DollarSign
 } from 'lucide-react';
-import { getFlightWeather, formatMETAR, formatTAF, getFlightRules, getWindInfo, getVisibility, getClouds } from '../utils/weatherAPI';
+import { getFlightWeather, formatMETAR, formatTAF, getFlightRules, getWindInfo, getVisibility } from '../utils/weatherAPI';
 import NotamBriefing from './NotamBriefing';
 import { calculateFlightFinance, formatCurrency } from '../utils/flightCalculations';
 import { FUEL_TYPES } from '../lib/constants';
@@ -55,7 +55,7 @@ const arrivalIcon = new L.Icon({
 });
 
 // Weather card component
-function WeatherCard({ title, icao, metar, taf, station, isLoading }) {
+function WeatherCard({ title, metar, taf, station, isLoading }) {
   const flightRules = metar ? getFlightRules(metar) : 'UNKNOWN';
 
   const getFlightRulesColor = (rules) => {
@@ -266,7 +266,7 @@ function DispatchCenter() {
     return <CheckCircle className="w-4 h-4" />;
   };
 
-  const getAvailableAircraft = (flight) => {
+  const getAvailableAircraft = () => {
     // Get aircraft that are available and suitable for the flight
     return fleet.filter(aircraft =>
       aircraft.status === 'available' &&
@@ -292,7 +292,7 @@ function DispatchCenter() {
       return;
     }
 
-    const flightId = acceptFlight(flight, aircraft);
+    acceptFlight(flight, aircraft);
     setShowAircraftSelection(null);
     setSelectedAircraft(null);
 
@@ -462,7 +462,7 @@ function DispatchCenter() {
         ) : (
           <div className="space-y-4">
             {availableFlights.map(flight => {
-              const availableAircraft = getAvailableAircraft(flight);
+              const availableAircraft = getAvailableAircraft();
               const isExpanded = expandedFlight === flight.id;
               const showingAircraftSelection = showAircraftSelection === flight.id;
               const flightWeather = weatherData[flight.id];

@@ -3,294 +3,392 @@
         "name": "Weston",
         "icao": "EIWT",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 53.3533,
+        "longitude": -6.4858
     },
     {
         "name": "Kilkenny",
         "icao": "EIKK",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 52.6500,
+        "longitude": -7.2667
     },
     {
         "name": "Galway",
         "icao": "EICM",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 53.3000,
+        "longitude": -8.9333
     },
     {
         "name": "Dublin",
         "icao": "EIDW",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 53.4214,
+        "longitude": -6.2700
     },
     {
         "name": "Cork",
         "icao": "EICK",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 51.8411,
+        "longitude": -8.4911
     },
     {
         "name": "Kerry",
         "icao": "EIKY",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 52.1808,
+        "longitude": -9.5239
     },
     {
         "name": "Waterford",
         "icao": "EIWF",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 52.1872,
+        "longitude": -7.0869
     },
     {
         "name": "Sligo",
         "icao": "EISG",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 54.2800,
+        "longitude": -8.6000
     },
     {
         "name": "Shannon",
         "icao": "EINN",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 52.7019,
+        "longitude": -8.9247
     },
     {
         "name": "Donegal",
         "icao": "EIDL",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 55.0442,
+        "longitude": -8.3411
     },
     {
         "name": "Connemara",
         "icao": "EICN",
         "country": "Ireland",
-        "region": "Ireland"
+        "region": "Ireland",
+        "latitude": 53.2300,
+        "longitude": -9.4667
     },
     {
         "name": "Belfast City",
         "icao": "EGAC",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 54.6181,
+        "longitude": -5.8725
     },
     {
         "name": "Belfast Intl",
         "icao": "EGAA",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 54.6575,
+        "longitude": -6.2158
     },
     {
         "name": "City of Derry",
         "icao": "EGAE",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 55.0428,
+        "longitude": -7.1611
     },
     {
         "name": "Caernarfon",
         "icao": "EGCK",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 53.1000,
+        "longitude": -4.3333
     },
     {
         "name": "Cardiff",
         "icao": "EGFF",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 51.3967,
+        "longitude": -3.3433
     },
     {
         "name": "Swansea",
         "icao": "EGFH",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 51.6053,
+        "longitude": -4.0678
     },
     {
         "name": "Liverpool",
         "icao": "EGGP",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 53.3336,
+        "longitude": -2.8500
     },
     {
         "name": "Manchester",
         "icao": "EGCC",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 53.3539,
+        "longitude": -2.2750
     },
     {
         "name": "Biggin Hill",
         "icao": "EGKB",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 51.3308,
+        "longitude": 0.0325
     },
     {
         "name": "Shoreham",
         "icao": "EGKA",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 50.8356,
+        "longitude": -0.2972
     },
     {
         "name": "Bristol",
         "icao": "EGGD",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 51.3828,
+        "longitude": -2.7192
     },
     {
         "name": "Dundee",
         "icao": "EGPN",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 56.4525,
+        "longitude": -3.0258
     },
     {
         "name": "Oban",
         "icao": "EGEO",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 56.4633,
+        "longitude": -5.4042
     },
     {
         "name": "Barra",
         "icao": "EGPR",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 57.0272,
+        "longitude": -7.4444
     },
     {
         "name": "Islay",
         "icao": "EGPI",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 55.6819,
+        "longitude": -6.2575
     },
     {
         "name": "Kirkwall",
         "icao": "EGPA",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 58.9578,
+        "longitude": -2.9050
     },
     {
         "name": "Sumburgh",
         "icao": "EGPB",
         "country": "UK",
-        "region": "UK"
+        "region": "UK",
+        "latitude": 59.8789,
+        "longitude": -1.2956
     },
     {
         "name": "Le Touquet",
         "icao": "LFAT",
         "country": "France",
-        "region": "North-West Europe"
+        "region": "North-West Europe",
+        "latitude": 50.5147,
+        "longitude": 1.6267
     },
     {
         "name": "Calais",
         "icao": "LFAC",
         "country": "France",
-        "region": "North-West Europe"
+        "region": "North-West Europe",
+        "latitude": 50.9622,
+        "longitude": 1.9542
     },
     {
         "name": "Lille",
         "icao": "LFQQ",
         "country": "France",
-        "region": "North-West Europe"
+        "region": "North-West Europe",
+        "latitude": 50.5700,
+        "longitude": 3.0850
     },
     {
         "name": "Toussus-le-Noble",
         "icao": "LFPN",
         "country": "France",
-        "region": "North-West Europe"
+        "region": "North-West Europe",
+        "latitude": 48.7519,
+        "longitude": 2.1067
     },
     {
         "name": "Lelystad",
         "icao": "EHLE",
         "country": "Netherlands",
-        "region": "Benelux"
+        "region": "Benelux",
+        "latitude": 52.4603,
+        "longitude": 5.5272
     },
     {
         "name": "Teuge",
         "icao": "EHTE",
         "country": "Netherlands",
-        "region": "Benelux"
+        "region": "Benelux",
+        "latitude": 52.2417,
+        "longitude": 6.0500
     },
     {
         "name": "Rotterdam",
         "icao": "EHRD",
         "country": "Netherlands",
-        "region": "Benelux"
+        "region": "Benelux",
+        "latitude": 51.9569,
+        "longitude": 4.4372
     },
     {
         "name": "Antwerp",
         "icao": "EBAW",
         "country": "Belgium",
-        "region": "Benelux"
+        "region": "Benelux",
+        "latitude": 51.1894,
+        "longitude": 4.4603
     },
     {
         "name": "Ostend",
         "icao": "EBOS",
         "country": "Belgium",
-        "region": "Benelux"
+        "region": "Benelux",
+        "latitude": 51.1989,
+        "longitude": 2.8622
     },
     {
         "name": "Spa",
         "icao": "EBSP",
         "country": "Belgium",
-        "region": "Benelux"
+        "region": "Benelux",
+        "latitude": 50.4913,
+        "longitude": 5.9127
     },
     {
         "name": "Cologne",
         "icao": "EDDK",
         "country": "Germany",
-        "region": "Germany"
+        "region": "Germany",
+        "latitude": 50.8659,
+        "longitude": 7.1427
     },
     {
         "name": "Dusseldorf",
         "icao": "EDDL",
         "country": "Germany",
-        "region": "Germany"
+        "region": "Germany",
+        "latitude": 51.2895,
+        "longitude": 6.7668
     },
     {
         "name": "Hamburg-Finkenwerder",
         "icao": "EDHI",
         "country": "Germany",
-        "region": "Germany"
+        "region": "Germany",
+        "latitude": 53.5353,
+        "longitude": 9.8356
     },
     {
         "name": "Egelsbach",
         "icao": "EDFE",
         "country": "Germany",
-        "region": "Germany"
+        "region": "Germany",
+        "latitude": 49.9606,
+        "longitude": 8.6433
     },
     {
         "name": "Innsbruck",
         "icao": "LOWI",
         "country": "Austria",
-        "region": "Central Europe"
+        "region": "Central Europe",
+        "latitude": 47.2603,
+        "longitude": 11.3440
     },
     {
         "name": "Zell am See",
         "icao": "LOWZ",
         "country": "Austria",
-        "region": "Central Europe"
+        "region": "Central Europe",
+        "latitude": 47.2917,
+        "longitude": 12.7889
     },
     {
         "name": "Salzburg",
         "icao": "LOWS",
         "country": "Austria",
-        "region": "Central Europe"
+        "region": "Central Europe",
+        "latitude": 47.7933,
+        "longitude": 13.0043
     },
     {
         "name": "Sion",
         "icao": "LSGS",
         "country": "Switzerland",
-        "region": "Central Europe"
+        "region": "Central Europe",
+        "latitude": 46.2196,
+        "longitude": 7.3267
     },
     {
         "name": "Sabadell",
         "icao": "LELL",
         "country": "Spain",
-        "region": "South Europe"
+        "region": "South Europe",
+        "latitude": 41.5208,
+        "longitude": 2.1050
     },
     {
         "name": "Cannes",
         "icao": "LFMD",
         "country": "France",
-        "region": "South Europe"
+        "region": "South Europe",
+        "latitude": 43.5419,
+        "longitude": 6.9531
     },
     {
         "name": "Thiene",
         "icao": "LIDH",
         "country": "Italy",
-        "region": "South Europe"
+        "region": "South Europe",
+        "latitude": 45.7083,
+        "longitude": 11.4972
     }
 ]

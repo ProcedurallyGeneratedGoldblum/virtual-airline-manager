@@ -154,16 +154,28 @@ function AircraftFleetCard({
   getConditionColor,
   getProgressBarColor
 }) {
-  // Safe access helpers
-  const ttaf = plane.conditionDetails?.airframe?.ttaf ?? plane.total_hours ?? plane.hours ?? 0;
-  const smoh = plane.conditionDetails?.engine?.smoh ?? 0;
-  const engineTbo = plane.conditionDetails?.engine?.tbo ?? 2000;
+  // HELPER: Robust property access for mixed camelCase/snake_case/nested data
+  const getProp = (obj, paths, fallback = 0) => {
+    for (const path of paths) {
+      const parts = path.split('.');
+      let val = obj;
+      for (const part of parts) {
+        val = val ? val[part] : undefined;
+      }
+      if (val !== undefined && val !== null) return val;
+    }
+    return fallback;
+  };
+
+  const ttaf = getProp(plane, ['conditionDetails.airframe.ttaf', 'total_hours', 'totalHours', 'hours'], 0);
+  const smoh = getProp(plane, ['conditionDetails.engine.smoh', 'engine_smoh', 'smoh'], 0);
+  const engineTbo = getProp(plane, ['conditionDetails.engine.tbo', 'engine_tbo', 'tbo'], 2000);
 
   // Component conditions
-  const engineCond = plane.conditionDetails?.engine?.condition ?? 0;
-  const airframeCond = plane.conditionDetails?.airframe?.condition ?? 0;
-  const avionicsCond = plane.conditionDetails?.avionics?.condition ?? 0;
-  const interiorCond = plane.conditionDetails?.interior?.condition ?? 0;
+  const engineCond = getProp(plane, ['conditionDetails.engine.condition', 'engine_condition', 'engineCondition'], 100);
+  const airframeCond = getProp(plane, ['conditionDetails.airframe.condition', 'condition', 'airframeCondition'], 100);
+  const avionicsCond = getProp(plane, ['conditionDetails.avionics.condition', 'avionics_condition', 'avionicsCondition'], 100);
+  const interiorCond = getProp(plane, ['conditionDetails.interior.condition', 'interior_condition', 'interiorCondition'], 100);
 
   return (
     <div className={`bg-slate-800/40 backdrop-blur-md border rounded-3xl overflow-hidden transition-all duration-300 ${isExpanded ? 'border-blue-500/50 ring-1 ring-blue-500/20 shadow-2xl' : 'border-slate-700/50 hover:border-slate-600 shadow-lg'}`}>

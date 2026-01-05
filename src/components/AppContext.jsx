@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import aircraftTypes from '../data/aircraftTypes.json';
 import { calculateFlightFinance } from '../utils/flightCalculations';
@@ -56,6 +57,7 @@ export const AppProvider = ({ children }) => {
     safety_rating: 100,
     experience: 0,
     next_rank_xp: 1000,
+    currentLocation: 'Weston, Ireland (EIWT)' // Default
   });
 
   // Fleet State
@@ -63,6 +65,9 @@ export const AppProvider = ({ children }) => {
 
   // Active Flights State
   const [activeFlights, setActiveFlights] = useState([]);
+
+  // Available Flights State (Dispatch Center)
+  const [availableFlights, setAvailableFlights] = useState([]);
 
   // Completed Flights State (Flight Log)
   const [completedFlights, setCompletedFlights] = useState([]);
@@ -78,8 +83,10 @@ export const AppProvider = ({ children }) => {
   // Initialize market if empty
   useEffect(() => {
     if (marketListings.length === 0 && !loading) {
-      refreshMarket();
+      // Defer to avoid synchronous render warning
+      setTimeout(() => refreshMarket(), 0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   // Seed starter fleet
@@ -95,6 +102,7 @@ export const AppProvider = ({ children }) => {
           registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000}`,
           location: "Weston, Ireland (EIWT)", // Base at Weston
           status: 'available',
+          category: aircraft.category, // Map category
           total_hours: aircraft.hours || aircraft.conditionDetails?.airframe?.ttaf || 0,
           hours_since_inspection: 0,
           next_inspection_due: 100,
@@ -230,13 +238,15 @@ export const AppProvider = ({ children }) => {
           onTimePercentage: data.on_time_percentage || 0,
           safetyRating: data.safety_rating || 100,
           experience: data.experience || 0,
-          nextRankXP: data.next_rank_xp || 1000
+          nextRankXP: data.next_rank_xp || 1000,
+          currentLocation: data.current_location || 'Weston, Ireland (EIWT)'
         });
 
         const transformFleet = (data) => data.map(aircraft => ({
           id: aircraft.id,
           registration: aircraft.registration || `N${Math.floor(Math.random() * 90000) + 10000}`,
           type: aircraft.type,
+          category: aircraft.category, // Map category for filtering
           status: aircraft.status,
           location: aircraft.location,
           totalHours: aircraft.total_hours,
@@ -307,6 +317,7 @@ export const AppProvider = ({ children }) => {
     };
 
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Refresh Available Flights
@@ -328,12 +339,13 @@ export const AppProvider = ({ children }) => {
   // Populate initial flights when fleet is ready
   useEffect(() => {
     if (!loading && fleet.length > 0 && availableFlights.length === 0) {
-      refreshAvailableFlights();
+      // Defer to avoid synchronous render warning
+      setTimeout(() => refreshAvailableFlights(), 0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, fleet.length]);
 
-  // Available Flights State (Dispatch Center)
-  const [availableFlights, setAvailableFlights] = useState([]);
+
 
 
 
@@ -468,7 +480,8 @@ export const AppProvider = ({ children }) => {
         totalEarnings: newTotalEarnings,
         rating: parseFloat(newRating.toFixed(1)),
         onTimePercentage: newOnTimePercentage,
-        experience: newExperience
+        experience: newExperience,
+        currentLocation: `${flight.route.to} (${flight.route.toCode})`
       };
       return newPilot;
     });
@@ -482,7 +495,8 @@ export const AppProvider = ({ children }) => {
       totalEarnings: pilot.totalEarnings + earnings,
       rating: parseFloat((pilot.totalFlights === 0 ? (briefingData.severity === 'major' ? 3.0 : 5.0) : ((pilot.rating * pilot.totalFlights) + (briefingData.severity === 'major' ? 3.0 : 5.0)) / (pilot.totalFlights + 1)).toFixed(1)),
       onTimePercentage: Math.round(((Math.round((pilot.onTimePercentage / 100) * pilot.totalFlights) + (briefingData.onTime !== false ? 1 : 0)) / (pilot.totalFlights + 1)) * 100),
-      experience: pilot.experience + xpEarned
+      experience: pilot.experience + xpEarned,
+      currentLocation: `${flight.route.to} (${flight.route.toCode})`
     };
   };
 
@@ -627,7 +641,8 @@ export const AppProvider = ({ children }) => {
           total_earnings: updatedPilot.totalEarnings,
           on_time_percentage: updatedPilot.onTimePercentage,
           safety_rating: updatedPilot.safetyRating,
-          next_rank_xp: updatedPilot.nextRankXP
+          next_rank_xp: updatedPilot.nextRankXP,
+          current_location: updatedPilot.currentLocation
         }),
         api.updateAircraft(aircraft.id, {
           ...aircraft,
@@ -694,7 +709,8 @@ export const AppProvider = ({ children }) => {
         total_earnings: newPilotData.totalEarnings,
         on_time_percentage: newPilotData.onTimePercentage,
         safety_rating: newPilotData.safetyRating,
-        next_rank_xp: newPilotData.nextRankXP
+        next_rank_xp: newPilotData.nextRankXP,
+        current_location: newPilotData.currentLocation
       });
     } catch (error) {
       console.error('Failed to update pilot:', error);
@@ -781,6 +797,48 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Travel to location (for marketplace purchase)
+  const travelToLocation = async (destination, cost) => {
+    try {
+      const updatedPilot = {
+        ...pilot,
+        currentLocation: destination
+      };
+      setPilot(updatedPilot);
+
+      const updatedCompany = {
+        ...company,
+        balance: company.balance - cost
+      };
+      setCompany(updatedCompany);
+
+      await Promise.all([
+        api.updatePilot({
+          ...updatedPilot,
+          join_date: updatedPilot.joinDate,
+          total_flights: updatedPilot.totalFlights,
+          total_hours: updatedPilot.totalHours,
+          total_distance: updatedPilot.totalDistance,
+          total_earnings: updatedPilot.totalEarnings,
+          on_time_percentage: updatedPilot.onTimePercentage,
+          safety_rating: updatedPilot.safetyRating,
+          next_rank_xp: updatedPilot.nextRankXP,
+          current_location: updatedPilot.currentLocation
+        }),
+        api.updateCompany({
+          ...updatedCompany,
+          focus_area: updatedCompany.focusArea,
+          total_flights: updatedCompany.totalFlights,
+          total_earnings: updatedCompany.totalEarnings,
+          flight_hours: updatedCompany.flightHours
+        })
+      ]);
+    } catch (error) {
+      console.error('Failed to travel to location:', error);
+      alert('TRAVEL ERROR: Backend transaction failed.');
+    }
+  };
+
   const addAircraftToFleet = async (aircraft) => {
     // ICAO Registration Prefixes by Country
     const registrationPrefixes = {
@@ -849,9 +907,10 @@ export const AppProvider = ({ children }) => {
 
     // Transform marketplace aircraft to fleet format
     const fleetAircraft = {
-      id: fleet.length + 1,
+      id: `FLEET-${Date.now()}`, // Unique stable ID 
       registration: aircraft.registration || generateRegistration(),
       type: aircraft.name || aircraft.type || 'Unknown Aircraft',
+      category: aircraft.category, // Crucial for filtering
       status: aircraft.status || 'available',
       location: aircraft.location || 'Unknown',
       totalHours: aircraft.hours || aircraft.conditionDetails?.airframe?.ttaf || 0,
@@ -1128,6 +1187,8 @@ export const AppProvider = ({ children }) => {
     addAircraftToFleet,
     sellAircraft,
     repairAircraft,
+    performMaintenanceCheck, // Exposed for Fleet/Hangar components
+    travelToLocation,        // Exposed for map/travel features
     refuelAircraft,
     lockAircraft,
     marketListings,

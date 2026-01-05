@@ -2,7 +2,7 @@
 import aircraftTemplates from '../data/aircraftTypes.json';
 import europeanLocations from '../data/airports.json';
 
-const conditions = ['Excellent', 'Very Good', 'Good', 'Fair'];
+
 
 // Random number generator with seed for consistency
 function seededRandom(seed) {

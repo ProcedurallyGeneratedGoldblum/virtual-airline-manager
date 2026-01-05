@@ -1,3 +1,4 @@
+/* global require, process, __dirname */
 const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
@@ -52,6 +53,13 @@ try {
             console.log(`Migrated fleet table with ${col.name} column.`);
         }
     });
+
+    // Check Pilot Table for current_location
+    const pilotColumns = db.prepare('PRAGMA table_info(pilot)').all().map(c => c.name);
+    if (!pilotColumns.includes('current_location')) {
+        db.prepare("ALTER TABLE pilot ADD COLUMN current_location TEXT DEFAULT 'Weston, Ireland (EIWT)'").run();
+        console.log("Migrated pilot table with current_location column.");
+    }
 } catch (err) {
     console.error('Migration failed:', err.message);
 }
@@ -126,7 +134,7 @@ app.put('/api/pilot', (req, res) => {
         const {
             name, callsign, rank, role, license, join_date,
             total_flights, total_hours, total_distance, total_earnings,
-            rating, on_time_percentage, safety_rating, experience, next_rank_xp
+            rating, on_time_percentage, safety_rating, experience, next_rank_xp, current_location
         } = req.body;
 
         const stmt = db.prepare(`
@@ -135,14 +143,14 @@ app.put('/api/pilot', (req, res) => {
         join_date = ?, total_flights = ?, total_hours = ?,
         total_distance = ?, total_earnings = ?, rating = ?,
         on_time_percentage = ?, safety_rating = ?, experience = ?,
-        next_rank_xp = ?
+        next_rank_xp = ?, current_location = ?
       WHERE id = 1
     `);
 
         stmt.run(
             name, callsign, rank, role, license, join_date,
             total_flights, total_hours, total_distance, total_earnings,
-            rating, on_time_percentage, safety_rating, experience, next_rank_xp
+            rating, on_time_percentage, safety_rating, experience, next_rank_xp, current_location
         );
 
         const updated = db.prepare('SELECT * FROM pilot WHERE id = 1').get();

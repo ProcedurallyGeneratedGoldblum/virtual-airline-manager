@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS pilot (
   on_time_percentage INTEGER DEFAULT 0,
   safety_rating INTEGER DEFAULT 100,
   experience INTEGER DEFAULT 0,
-  next_rank_xp INTEGER DEFAULT 1000
+  next_rank_xp INTEGER DEFAULT 1000,
+  current_location TEXT DEFAULT 'Weston, Ireland (EIWT)'
 );
 
 -- Fleet table
@@ -136,5 +137,5 @@ INSERT OR IGNORE INTO company (id, name, callsign, founded, headquarters, descri
 VALUES (1, '', '', '', '', '', '', 'bush', 1, 0, 0, 0, 0, 5000000, date('now'));
 
 -- Insert default pilot if not exists
-INSERT OR IGNORE INTO pilot (id, name, callsign, rank, role, license, join_date, total_flights, total_hours, total_distance, total_earnings, rating, on_time_percentage, safety_rating, experience, next_rank_xp)
-VALUES (1, '', '', 'Junior Pilot', 'Company Owner', '', date('now'), 0, 0, 0, 0, 0, 0, 100, 0, 1000);
+INSERT OR IGNORE INTO pilot (id, name, callsign, rank, role, license, join_date, total_flights, total_hours, total_distance, total_earnings, rating, on_time_percentage, safety_rating, experience, next_rank_xp, current_location)
+VALUES (1, '', '', 'Junior Pilot', 'Company Owner', '', date('now'), 0, 0, 0, 0, 0, 0, 100, 0, 1000, 'Weston, Ireland (EIWT)');

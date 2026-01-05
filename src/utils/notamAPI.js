@@ -44,7 +44,7 @@ export async function getNOTAMs(icao) {
                 }));
             }
         }
-    } catch (error) {
+    } catch {
         console.warn(`AVWX NOTAM failed for ${icao}, using mock if available.`);
     }
 
