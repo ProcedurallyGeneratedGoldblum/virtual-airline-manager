@@ -826,14 +826,50 @@ export const AppProvider = ({ children }) => {
         [`hoursAtLast${type}`]: aircraft.totalHours
       };
 
-      // Reset condition based on check type
-      if (type === 'D') {
-        updatedAircraft.condition = 'excellent';
-        updatedAircraft.engineCondition = 100;
-        updatedAircraft.oilCondition = 100;
-        updatedAircraft.tireCondition = 100;
-      } else if (type === 'C') {
-        updatedAircraft.condition = 'excellent';
+      // Determine new condition values based on check type
+      let newConditionVal = aircraft.airframeCondition || 50;
+      let newConditionStr = aircraft.condition || 'fair';
+
+      switch (type) {
+        case 'A':
+          newConditionVal = Math.max(newConditionVal, 75);
+          newConditionStr = 'good';
+          break;
+        case 'B':
+          newConditionVal = Math.max(newConditionVal, 85);
+          newConditionStr = 'good';
+          break;
+        case 'C':
+          newConditionVal = Math.max(newConditionVal, 95);
+          newConditionStr = 'excellent';
+          break;
+        case 'D':
+          newConditionVal = 100;
+          newConditionStr = 'excellent';
+          updatedAircraft.engineCondition = 100;
+          updatedAircraft.oilCondition = 100;
+          updatedAircraft.tireCondition = 100;
+          break;
+        default:
+          break;
+      }
+
+      updatedAircraft.airframeCondition = newConditionVal;
+      updatedAircraft.condition = newConditionStr;
+
+      // Update nested conditionDetails if it exists (source of truth for some views)
+      if (updatedAircraft.conditionDetails) {
+        updatedAircraft.conditionDetails = {
+          ...updatedAircraft.conditionDetails,
+          airframe: {
+            ...updatedAircraft.conditionDetails.airframe,
+            condition: newConditionVal
+          }
+        };
+        // Also update engine in conditionDetails if D check
+        if (type === 'D' && updatedAircraft.conditionDetails.engine) {
+          updatedAircraft.conditionDetails.engine.condition = 100;
+        }
       }
 
       setFleet(prev => prev.map(a => a.id === aircraftId ? updatedAircraft : a));
@@ -847,6 +883,8 @@ export const AppProvider = ({ children }) => {
           next_inspection_due: 100,
           last_flight: updatedAircraft.lastFlight,
           condition: updatedAircraft.condition,
+          airframe_condition: updatedAircraft.airframeCondition, // Ensure backend gets this
+          condition_details: updatedAircraft.conditionDetails,   // Sync nested object
           fuel_level: updatedAircraft.fuelLevel,
           fuel_capacity: updatedAircraft.fuelCapacity,
           fuel_type: updatedAircraft.fuelType,
