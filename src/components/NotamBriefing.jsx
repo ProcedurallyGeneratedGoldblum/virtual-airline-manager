@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Info, ShieldAlert, Zap, User, ClipboardList, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Info, ShieldAlert, Zap, RefreshCw, FileText } from 'lucide-react';
 import { getFlightBriefing } from '../utils/notamAPI';
 import { getBriefingSummary } from '../utils/notamDecoder';
 
