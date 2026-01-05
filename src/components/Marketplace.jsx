@@ -13,15 +13,28 @@ function Marketplace() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortOrder, setSortOrder] = useState('price-asc');
 
+  const [sellModalOpen, setSellModalOpen] = useState(false);
+  const [sellAircraftTarget, setSellAircraftTarget] = useState(null);
+
   const handleBuy = (aircraft) => {
     if (company.balance >= aircraft.price) {
       addAircraftToFleet(aircraft);
     }
   };
 
-  const handleSell = (aircraft) => {
-    sellAircraft(aircraft.id);
+  const handleSellClick = (aircraft) => {
+    setSellAircraftTarget(aircraft);
+    setSellModalOpen(true);
   };
+
+  const handleSellConfirm = (price) => {
+    if (sellAircraftTarget) {
+      sellAircraft(sellAircraftTarget.id, price);
+      setSellModalOpen(false);
+      setSellAircraftTarget(null);
+    }
+  };
+
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -206,7 +219,7 @@ function Marketplace() {
             plane={plane}
             activeTab={activeTab}
             handleBuy={handleBuy}
-            handleSell={handleSell}
+            handleSell={handleSellClick}
             refuelAircraft={refuelAircraft}
             company={company}
             formatPrice={formatPrice}
@@ -235,9 +248,189 @@ function Marketplace() {
           <p className="text-slate-500 mt-2">Try adjusting your search or filters.</p>
         </div>
       )}
+
+      {/* Sell Modal */}
+      {sellModalOpen && sellAircraftTarget && (
+        <SellOptionsModal
+          aircraft={sellAircraftTarget}
+          onClose={() => { setSellModalOpen(false); setSellAircraftTarget(null); }}
+          onSell={handleSellConfirm}
+          currentLocation={pilot.currentLocation}
+        />
+      )}
     </div>
   );
 }
+
+const SellOptionsModal = ({ aircraft, onClose, onSell, currentLocation }) => {
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Helper to extract ICAO and find coords
+  const getAirport = (locStr) => {
+    if (!locStr) return null;
+    const match = locStr.match(/\(([^)]+)\)/);
+    const icao = match ? match[1] : '';
+    return airportsData.find(a => a.icao === icao);
+  };
+
+  React.useEffect(() => {
+    // Generate 3 random offers
+    const generateOffers = () => {
+      const currentAirport = getAirport(currentLocation);
+      const newOffers = [];
+
+      for (let i = 0; i < 3; i++) {
+        // Pick random buyer location
+        const randomAirport = airportsData[Math.floor(Math.random() * airportsData.length)];
+
+        // Calculate distance
+        let distance = 0;
+        if (currentAirport && randomAirport) {
+          distance = calculateDistance(
+            currentAirport.latitude, currentAirport.longitude,
+            randomAirport.latitude, randomAirport.longitude
+          );
+        }
+
+        // Base price calculation (approximate 60-70% of original value context)
+        // We really just want to create variation around the 'scrapped' price.
+        // But here we want a somewhat realistic market offer.
+        // Let's assume the aircraft.price (if set) is the fair market value. 
+        // If not set (legacy), we assume a baseline.
+        const marketValue = aircraft.price || 50000;
+
+        // Variance: -10% to +10%
+        const variance = (Math.random() * 0.2) - 0.1;
+        const offerPrice = Math.floor(marketValue * (1 + variance));
+
+        // Check Range (Simulated)
+        const maxRange = aircraft.specs?.range || 800; // Default 800nm if unknown
+        const isOutOfRange = distance > maxRange;
+
+        // Ferry Fee Logic
+        let ferryFee = 0;
+        if (isOutOfRange) {
+          // Hefty fee: $3.50/nm + $5000 surcharge
+          ferryFee = Math.floor((distance * 3.5) + 5000);
+        } else {
+          // Normal delivery: $1.50/nm
+          ferryFee = Math.floor(distance * 1.5);
+        }
+
+        const netProfit = offerPrice - ferryFee;
+
+        newOffers.push({
+          id: i,
+          buyer: `Private Buyer`,
+          location: `${randomAirport.municipality}, ${randomAirport.iso_country} (${randomAirport.icao})`,
+          distance: Math.round(distance),
+          offerPrice,
+          ferryFee,
+          netProfit,
+          isOutOfRange
+        });
+      }
+
+      // Sort by best net profit
+      newOffers.sort((a, b) => b.netProfit - a.netProfit);
+
+      setOffers(newOffers);
+      setLoading(false);
+    };
+
+    generateOffers();
+  }, [aircraft, currentLocation]);
+
+  const formatMoney = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+        <div className="p-6 border-b border-slate-700 bg-slate-900/50 flex justify-between items-center">
+          <div>
+            <h3 className="text-xl font-bold text-white">Sell Aircraft</h3>
+            <p className="text-slate-400 text-sm">{aircraft.name} ({aircraft.registration})</p>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-6">
+          <p className="text-slate-300 mb-4 text-sm">
+            We have located interested buyers. Choosing a buyer far from your current location will incur ferry fees.
+            <br />
+            Current Location: <span className="text-blue-400 font-bold">{currentLocation}</span>
+          </p>
+
+          {loading ? (
+            <div className="py-12 flex justify-center">
+              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {offers.map((offer) => (
+                <div key={offer.id} className="bg-slate-900/50 border border-slate-700 rounded-xl p-4 hover:border-blue-500/50 transition-colors">
+                  <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <MapPin className="w-4 h-4 text-slate-500" />
+                        <span className="font-bold text-white text-sm">{offer.location}</span>
+                        <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">
+                          {offer.distance} nm
+                        </span>
+                        {offer.isOutOfRange && (
+                          <span className="text-[10px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded-full border border-rose-500/30 font-bold uppercase tracking-wider">
+                            Ferry Required
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-slate-400 pl-6">
+                        Gross Offer: {formatMoney(offer.offerPrice)}
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-xs text-rose-400 mb-1">
+                        Ferry Est: -{formatMoney(offer.ferryFee)}
+                      </div>
+                      <div className="text-lg font-bold text-emerald-400">
+                        {formatMoney(offer.netProfit)}
+                      </div>
+                      <div className="text-[10px] text-slate-500 uppercase tracking-wide font-bold">Net Profit</div>
+                    </div>
+
+                    <button
+                      onClick={() => onSell(offer.netProfit)}
+                      className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg shadow-lg shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap"
+                    >
+                      Accept Offer
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 bg-slate-900/50 border-t border-slate-700 text-center">
+          <p className="text-xs text-slate-500 italic">
+            Sales are final. Ferry fees include fuel, pilot fees, and logistics.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const AircraftCard = ({ plane, activeTab, handleBuy, handleSell, refuelAircraft, performMaintenanceCheck, travelToLocation, company, formatPrice }) => {
   const [expanded, setExpanded] = useState(false);

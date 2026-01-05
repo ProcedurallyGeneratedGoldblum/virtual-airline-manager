@@ -984,49 +984,57 @@ export const AppProvider = ({ children }) => {
   };
 
   // Sell aircraft
-  const sellAircraft = async (aircraftId) => {
+  const sellAircraft = async (aircraftId, salePriceOverride = null) => {
     const aircraft = fleet.find(a => a.id === aircraftId);
     if (!aircraft) return;
 
-    // Calculate sell price
-    // Find template for base specs
-    const template = aircraftTypes.find(t => t.name === aircraft.name) ||
-      aircraftTypes.find(t => t.category === aircraft.type) || // Fallback
-      { basePrice: 50000 };
+    let sellPrice = 0;
 
-    // Simplified depreciation for selling
-    // If it has a price proeprty from generation/purchase, use that as basis
-    // Otherwise calculate from scratch
-    let baseValue = aircraft.price || template.basePrice;
-
-    // If it was just bought, price is mostly retained minus immediate depreciation
-    // For this MVP, we'll just return 70% of current value + condition adjustments
-    // If it's a "fleet" aircraft with no price, we calculate one
-    if (!aircraft.price) {
-      // Estimate for legacy fleet
-      baseValue = template.basePrice * 0.6;
-    }
-
-    // Apply condition degradation
-    let conditionFactor = 1.0;
-    if (aircraft.conditionDetails) {
-      // Advanced logic
-      const engine = aircraft.conditionDetails.engine.condition / 100;
-      const airframe = aircraft.conditionDetails.airframe.condition / 100;
-      const avionics = aircraft.conditionDetails.avionics.condition / 100;
-      conditionFactor = (engine * 0.5) + (airframe * 0.3) + (avionics * 0.2);
+    if (salePriceOverride !== null) {
+      // Use the specific offer price accepted by the user
+      sellPrice = salePriceOverride;
     } else {
-      // Simple logic
-      conditionFactor = {
-        'excellent': 1.0,
-        'good': 0.8,
-        'fair': 0.6,
-        'poor': 0.4,
-        'maintenance': 0.3
-      }[aircraft.condition.toLowerCase()] || 0.6;
-    }
+      // Legacy / Fallback calculation
+      // Calculate sell price
+      // Find template for base specs
+      const template = aircraftTypes.find(t => t.name === aircraft.name) ||
+        aircraftTypes.find(t => t.category === aircraft.type) || // Fallback
+        { basePrice: 50000 };
 
-    const sellPrice = Math.floor(baseValue * conditionFactor * 0.8); // 20% dealer margin/fee
+      // Simplified depreciation for selling
+      // If it has a price proeprty from generation/purchase, use that as basis
+      // Otherwise calculate from scratch
+      let baseValue = aircraft.price || template.basePrice;
+
+      // If it was just bought, price is mostly retained minus immediate depreciation
+      // For this MVP, we'll just return 70% of current value + condition adjustments
+      // If it's a "fleet" aircraft with no price, we calculate one
+      if (!aircraft.price) {
+        // Estimate for legacy fleet
+        baseValue = template.basePrice * 0.6;
+      }
+
+      // Apply condition degradation
+      let conditionFactor = 1.0;
+      if (aircraft.conditionDetails) {
+        // Advanced logic
+        const engine = aircraft.conditionDetails.engine.condition / 100;
+        const airframe = aircraft.conditionDetails.airframe.condition / 100;
+        const avionics = aircraft.conditionDetails.avionics.condition / 100;
+        conditionFactor = (engine * 0.5) + (airframe * 0.3) + (avionics * 0.2);
+      } else {
+        // Simple logic
+        conditionFactor = {
+          'excellent': 1.0,
+          'good': 0.8,
+          'fair': 0.6,
+          'poor': 0.4,
+          'maintenance': 0.3
+        }[aircraft.condition.toLowerCase()] || 0.6;
+      }
+
+      sellPrice = Math.floor(baseValue * conditionFactor * 0.8); // 20% dealer margin/fee
+    }
 
     setFleet(prev => prev.filter(a => a.id !== aircraftId));
     const updatedCompany = {
