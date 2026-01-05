@@ -823,7 +823,7 @@ export const AppProvider = ({ children }) => {
       const updatedAircraft = {
         ...aircraft,
         hoursSinceInspection: 0,
-        [`hoursAtLast${type} `]: aircraft.totalHours
+        [`hoursAtLast${type}`]: aircraft.totalHours
       };
 
       // Reset condition based on check type
