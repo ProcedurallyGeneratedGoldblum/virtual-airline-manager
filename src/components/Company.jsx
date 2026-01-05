@@ -50,19 +50,19 @@ function Company() {
   if (!hasCompany && !isEditing) {
     return (
       <div className="space-y-12 py-12">
-        <div className="bg-white border-4 border-black p-16 max-w-4xl mx-auto shadow-[20px_20px_0px_0px_rgba(0,0,0,0.05)] text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5 italic font-black text-8xl select-none uppercase pointer-events-none">Start</div>
-          <Building2 className="w-24 h-24 text-black mx-auto mb-8" />
-          <h3 className="text-4xl font-black text-black uppercase tracking-tighter mb-4 italic">Commission New Airframe Entity</h3>
-          <p className="text-sm font-mono text-zinc-500 uppercase tracking-widest mb-12 max-w-xl mx-auto leading-relaxed">
-            Begin industrial aviation operations in the Northwest. Establish your identity,
-            secure your hub, and initiate fleet acquisition.
+        <div className="text-center max-w-2xl mx-auto">
+          <div className="inline-flex p-4 bg-gray-800 rounded-full mb-6">
+            <Building2 className="w-12 h-12 text-blue-500" />
+          </div>
+          <h3 className="text-3xl font-bold text-white mb-4">Initialize Airline</h3>
+          <p className="text-gray-400 mb-8 leading-relaxed">
+            Begin your aviation operations. Establish your identity, secure your hub, and initiate fleet acquisition.
           </p>
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-black text-white px-12 py-4 font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all border-b-4 border-zinc-700 active:border-b-0 active:translate-y-1"
+            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-500 transition-colors"
           >
-            Create Company Entity
+            Create Company
           </button>
         </div>
       </div>
@@ -71,44 +71,44 @@ function Company() {
 
   if (isEditing) {
     return (
-      <div className="space-y-12">
-        <div className="border-l-8 border-black pl-6 py-2">
-          <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter italic">Entity Configuration</h2>
-          <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-1">Modify core operational parameters for the airline entity.</p>
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-white">Company Configuration</h2>
+          <p className="text-gray-400 mt-1">Modify core operational parameters for your airline.</p>
         </div>
 
-        <div className="bg-white border border-zinc-200 p-12 max-w-5xl mx-auto space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Entity Name</label>
+        <div className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Airline Name</label>
               <input
                 type="text"
                 value={editForm.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="NORTHWESTERN AIRFRAMES"
-                className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 text-xs font-black uppercase tracking-widest focus:bg-white focus:border-black transition-all outline-none"
+                placeholder="My Airline"
+                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Op Callsign</label>
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Callsign</label>
               <input
                 type="text"
                 value={editForm.callsign}
                 onChange={(e) => handleInputChange('callsign', e.target.value.toUpperCase())}
-                placeholder="NORTHWEST"
-                className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 text-xs font-black uppercase tracking-widest focus:bg-white focus:border-black transition-all outline-none"
+                placeholder="AIRLINE"
+                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white uppercase focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Primary Hub (HQ)</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Primary Hub (HQ)</label>
             <select
               value={editForm.headquarters}
               onChange={(e) => handleInputChange('headquarters', e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 text-xs font-black uppercase tracking-widest focus:bg-white focus:border-black transition-all outline-none"
+              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
             >
-              <option value="">SELECT HUB...</option>
+              <option value="">Select Hub...</option>
               {europeanLocations.map(location => (
                 <option key={location} value={location}>{location}</option>
               ))}
@@ -116,36 +116,36 @@ function Company() {
           </div>
 
           <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Operational Focus</label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Operational Focus</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {focusAreas.map(focus => (
                 <button
                   key={focus.id}
                   onClick={() => handleInputChange('focusArea', focus.id)}
-                  className={`p-6 border-2 text-left transition-all ${editForm.focusArea === focus.id
-                    ? 'border-black bg-zinc-50'
-                    : 'border-zinc-100 opacity-50 hover:opacity-100 hover:border-zinc-300'
+                  className={`p-4 rounded-xl text-left border transition-all ${editForm.focusArea === focus.id
+                    ? 'bg-blue-600/20 border-blue-500 ring-1 ring-blue-500'
+                    : 'bg-gray-900 border-gray-700 hover:border-gray-500'
                     }`}
                 >
-                  <p className="text-[11px] font-black text-black uppercase tracking-widest">{focus.name}</p>
-                  <p className="text-[10px] font-mono text-zinc-400 uppercase mt-1">{focus.description}</p>
+                  <p className={`font-bold ${editForm.focusArea === focus.id ? 'text-blue-400' : 'text-gray-300'}`}>{focus.name}</p>
+                  <p className="text-xs text-gray-500 mt-1">{focus.description}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="flex gap-6 pt-10 border-t border-zinc-100">
+          <div className="flex gap-4 pt-4 border-t border-gray-700">
             <button
               onClick={handleSaveCompany}
-              className="flex-1 bg-black text-white px-8 py-4 font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all"
+              className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-500 transition-colors"
             >
-              Commit Entity Changes
+              Save Changes
             </button>
             <button
               onClick={handleCancelEditing}
-              className="px-8 py-4 border-2 border-zinc-200 text-zinc-400 font-black uppercase tracking-[0.2em] text-xs hover:text-black hover:border-black transition-all"
+              className="px-8 bg-gray-700 text-gray-300 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
             >
-              Abort
+              Cancel
             </button>
           </div>
         </div>
@@ -154,31 +154,29 @@ function Company() {
   }
 
   return (
-    <div className="space-y-12">
-      <div className="flex flex-col md:flex-row gap-8 items-start justify-between border-b border-zinc-100 pb-10">
-        <div className="flex gap-10">
+    <div className="max-w-6xl mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row gap-8 items-start justify-between border-b border-gray-700 pb-6">
+        <div className="flex gap-1">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`text-[11px] font-black uppercase tracking-[0.3em] transition-all relative pb-2 ${activeTab === 'profile' ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === 'profile' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
           >
-            Corporate Intel
-            {activeTab === 'profile' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-black"></div>}
+            Company Profile
           </button>
           <button
             onClick={() => setActiveTab('fleet')}
-            className={`text-[11px] font-black uppercase tracking-[0.3em] transition-all relative pb-2 ${activeTab === 'fleet' ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === 'fleet' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
           >
-            Fleet Status
-            {activeTab === 'fleet' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-black"></div>}
+            Fleet Management
           </button>
         </div>
         {activeTab === 'profile' && (
           <button
             onClick={handleStartEditing}
-            className="flex items-center gap-3 px-6 py-2 bg-zinc-50 border border-zinc-200 text-black hover:bg-black hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors border border-gray-700 font-medium text-sm"
           >
-            <Edit2 className="w-3 h-3" />
-            <span>Modify Ops</span>
+            <Edit2 className="w-4 h-4" />
+            <span>Edit Company</span>
           </button>
         )}
       </div>
@@ -186,101 +184,98 @@ function Company() {
       {activeTab === 'fleet' ? (
         <Fleet />
       ) : (
-        <div className="space-y-12">
-          {/* Company Header Card - Industrial */}
-          <div className="bg-black text-white p-12 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-12 opacity-10 italic font-black text-9xl select-none uppercase pointer-events-none tracking-tighter group-hover:opacity-20 transition-opacity">Entity</div>
-            <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
-              <div className="p-8 bg-white text-black border-4 border-zinc-800">
-                <Building2 className="w-16 h-16" />
+        <div className="space-y-8">
+          {/* Company Header Card */}
+          <div className="bg-gray-800 rounded-xl p-8 border border-gray-700 shadow-lg">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="p-6 bg-gray-700 rounded-full">
+                <Building2 className="w-12 h-12 text-blue-400" />
               </div>
-              <div className="text-center md:text-left">
-                <h3 className="text-5xl font-black uppercase tracking-tighter italic mb-2 leading-none">{company.name}</h3>
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-6">
-                  <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-500 uppercase border border-zinc-800 px-3 py-1">Callsign: {company.callsign}</span>
-                  <span className="text-[10px] font-mono tracking-[0.2em] text-emerald-500 uppercase bg-emerald-500/10 px-3 py-1 border border-emerald-500/20">Operational Clear</span>
+              <div className="text-center md:text-left flex-1">
+                <h3 className="text-4xl font-bold text-white mb-2">{company.name}</h3>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/50 text-blue-200 border border-blue-800">
+                    Callsign: {company.callsign}
+                  </span>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/50 text-emerald-200 border border-emerald-800">
+                    Operational
+                  </span>
                 </div>
                 {company.motto && (
-                  <p className="text-sm font-mono text-zinc-400 italic">"// {company.motto}"</p>
+                  <p className="text-gray-400 italic">"{company.motto}"</p>
                 )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-12 pt-12 border-t border-zinc-800 relative z-10">
-              <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Logistics Hub</p>
-                <p className="text-xs font-black uppercase flex items-center gap-2">
-                  <MapPin className="w-3 h-3 text-emerald-500" /> {company.headquarters}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-8 pt-8 border-t border-gray-700">
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase mb-1">Headquarters</p>
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-emerald-500" /> {company.headquarters}
                 </p>
               </div>
-              <div className="space-y-1 text-right md:text-left">
-                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">EST Registry</p>
-                <p className="text-xs font-black uppercase flex items-center justify-end md:justify-start gap-2">
-                  <Calendar className="w-3 h-3" /> {new Date(company.established).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase mb-1">Established</p>
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-blue-500" /> {new Date(company.established).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </p>
               </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Strategic Focus</p>
-                <p className="text-xs font-black uppercase">{focusAreas.find(f => f.id === company.focusArea)?.name || 'Mixed Operations'}</p>
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase mb-1">Focus</p>
+                <p className="text-sm font-bold text-white">{focusAreas.find(f => f.id === company.focusArea)?.name || 'General Operations'}</p>
               </div>
-              <div className="space-y-1 text-right md:text-left">
-                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Security Clearance</p>
-                <p className="text-xs font-black uppercase flex items-center justify-end md:justify-start gap-2">
-                  <ShieldCheck className="w-3 h-3 text-emerald-500" /> Level 4 Alpha
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase mb-1">Security Level</p>
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-purple-500" /> Level 4
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Stats Grid - Industrial */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-px bg-zinc-200 border border-zinc-200 shadow-sm overflow-hidden">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { label: 'Aircrew Pool', val: company.pilots, icon: Users, color: 'text-zinc-400' },
-              { label: 'Active Fleet', val: company.aircraft, icon: Plane, color: 'text-zinc-400' },
-              { label: 'Total Sorties', val: company.totalFlights, icon: Award, color: 'text-zinc-400' },
-              { label: 'Entity Age', val: `${Math.floor((new Date() - new Date(company.established)) / (1000 * 60 * 60 * 24))} D`, icon: Calendar, color: 'text-zinc-400' }
+              { label: 'Pilots', val: company.pilots, icon: Users, color: 'text-blue-500' },
+              { label: 'Aircraft', val: company.aircraft, icon: Plane, color: 'text-emerald-500' },
+              { label: 'Total Flights', val: company.totalFlights, icon: Award, color: 'text-yellow-500' },
+              { label: 'Days Active', val: `${Math.floor((new Date() - new Date(company.established)) / (1000 * 60 * 60 * 24))}`, icon: Calendar, color: 'text-purple-500' }
             ].map((stat, i) => (
-              <div key={i} className="bg-white p-8 group hover:bg-zinc-50 transition-colors">
-                <p className="text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase mb-4">{stat.label}</p>
-                <div className="flex items-end justify-between">
-                  <p className="text-4xl font-black text-black leading-none">{stat.val}</p>
-                  <stat.icon className={`w-8 h-8 ${stat.color} group-hover:text-black transition-colors`} />
+              <div key={i} className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                  <span className="text-sm font-medium text-gray-400">{stat.label}</span>
                 </div>
+                <p className="text-2xl font-bold text-white">{stat.val}</p>
               </div>
             ))}
           </div>
 
-          {/* About Section - Industrial */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="flex items-center gap-4">
-                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Corporate Mandate</h3>
-                <div className="flex-1 h-px bg-zinc-100"></div>
-              </div>
-              <div className="bg-white border border-zinc-100 p-8 leading-relaxed italic text-zinc-600 font-medium">
-                {company.description || "The corporate mandate for Northwestern Airframes follows strict operational guidelines for regional air logistics."}
+          {/* Info Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-4">
+              <h3 className="text-xl font-bold text-white">About</h3>
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 text-gray-300 leading-relaxed">
+                {company.description || "The corporate mandate for this airline follows strict operational guidelines for regional air logistics."}
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-slate-400">Entity Status</h3>
-                <div className="flex-1 h-px bg-zinc-100"></div>
-              </div>
-              <div className="bg-zinc-50 border border-zinc-100 p-8 space-y-6">
-                <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-zinc-400">
-                  <span>Market Index</span>
-                  <span className="text-emerald-500">+12.4%</span>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-white">Status</h3>
+              <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400">Market Index</span>
+                  <span className="text-emerald-400 font-bold">+12.4%</span>
                 </div>
-                <div className="h-0.5 bg-zinc-100"></div>
-                <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-zinc-400">
-                  <span>Risk Factor</span>
-                  <span className="text-zinc-900">Nominal 0.02</span>
+                <div className="h-px bg-gray-700"></div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400">Risk Factor</span>
+                  <span className="text-white font-bold">Low</span>
                 </div>
-                <div className="h-0.5 bg-zinc-100"></div>
-                <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-zinc-400">
-                  <span>Op Priority</span>
-                  <span className="text-zinc-900">Alpha 1</span>
+                <div className="h-px bg-gray-700"></div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-400">Priority</span>
+                  <span className="text-white font-bold">High</span>
                 </div>
               </div>
             </div>

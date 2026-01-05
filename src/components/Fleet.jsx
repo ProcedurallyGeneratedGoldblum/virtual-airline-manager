@@ -70,41 +70,39 @@ function Fleet() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-700 pb-6">
         <div>
-          <h2 className="text-3xl font-extrabold text-white tracking-tight">Fleet Management</h2>
-          <p className="text-slate-400 mt-1 font-medium">Monitor health and schedule maintenance for your assets</p>
+          <h2 className="text-3xl font-bold text-white">Fleet Management</h2>
+          <p className="text-gray-400 mt-1">Monitor aircraft health and maintenance</p>
         </div>
 
-        <div className="flex gap-4">
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 px-4 py-2 rounded-xl flex items-center gap-3">
-            <div className="bg-emerald-500/20 p-2 rounded-lg">
-              <DollarSign className="w-5 h-5 text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Balance</p>
-              <p className="text-lg font-bold text-emerald-400 leading-none">{formatCurrency(company?.balance || 0)}</p>
-            </div>
+        <div className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700 flex items-center gap-3 shadow-sm">
+          <div className="bg-emerald-900/30 p-2 rounded-md">
+            <DollarSign className="w-5 h-5 text-emerald-500" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-400 font-medium uppercase">Balance</p>
+            <p className="text-lg font-bold text-emerald-500 leading-none">{formatCurrency(company?.balance || 0)}</p>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Fleet Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Aircraft', value: fleet.length, icon: <ArrowUpCircle />, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { label: 'Available', value: fleet.filter(a => a.status === 'available').length, icon: <CheckCircle2 />, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'In Flight', value: fleet.filter(a => a.status === 'in-flight').length, icon: <ArrowUpCircle />, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
-          { label: 'Maintenance', value: fleet.filter(a => a.status === 'maintenance' || a.status === 'out-of-service').length, icon: <Settings />, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+          { label: 'Total Aircraft', value: fleet.length, icon: <ArrowUpCircle />, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Available', value: fleet.filter(a => a.status === 'available').length, icon: <CheckCircle2 />, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'In Flight', value: fleet.filter(a => a.status === 'in-flight').length, icon: <ArrowUpCircle />, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+          { label: 'Maintenance', value: fleet.filter(a => a.status === 'maintenance' || a.status === 'out-of-service').length, icon: <Settings />, color: 'text-amber-500', bg: 'bg-amber-500/10' },
         ].map((stat, i) => (
-          <div key={i} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-5 rounded-2xl shadow-sm hover:border-slate-600/50 transition-colors">
+          <div key={i} className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">{stat.label}</p>
-                <p className="text-3xl font-black text-white">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-400 mb-1">{stat.label}</p>
+                <p className="text-3xl font-bold text-white">{stat.value}</p>
               </div>
-              <div className={`${stat.bg} ${stat.color} p-3 rounded-2xl`}>
+              <div className={`${stat.bg} ${stat.color} p-3 rounded-lg`}>
                 {React.cloneElement(stat.icon, { className: 'w-6 h-6' })}
               </div>
             </div>
@@ -130,12 +128,12 @@ function Fleet() {
         ))}
 
         {fleet.length === 0 && (
-          <div className="p-12 text-center bg-slate-800/30 rounded-3xl border border-dashed border-slate-700/50">
-            <div className="bg-slate-700/30 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <ArrowUpCircle className="w-8 h-8 text-slate-500" />
+          <div className="py-12 text-center bg-gray-800 rounded-xl border border-dashed border-gray-700">
+            <div className="bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ArrowUpCircle className="w-8 h-8 text-gray-500" />
             </div>
-            <h3 className="text-xl font-bold text-slate-300">Your Fleet is Empty</h3>
-            <p className="text-slate-500 mt-2">Visit the Marketplace to acquire your first aircraft.</p>
+            <h3 className="text-xl font-bold text-white">Your Fleet is Empty</h3>
+            <p className="text-gray-500 mt-2">Visit the Marketplace to acquire your first aircraft.</p>
           </div>
         )}
       </div>
@@ -178,75 +176,64 @@ function AircraftFleetCard({
   const interiorCond = getProp(plane, ['conditionDetails.interior.condition', 'interior_condition', 'interiorCondition'], 100);
 
   return (
-    <div className={`bg-slate-800/40 backdrop-blur-md border rounded-3xl overflow-hidden transition-all duration-300 ${isExpanded ? 'border-blue-500/50 ring-1 ring-blue-500/20 shadow-2xl' : 'border-slate-700/50 hover:border-slate-600 shadow-lg'}`}>
+    <div className={`bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 border ${isExpanded ? 'border-blue-500 ring-1 ring-blue-500 shadow-lg' : 'border-gray-700 hover:border-gray-600 shadow-sm'}`}>
       <div className="p-6">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Image & Main Info Area */}
           <div className="flex-1 flex flex-col md:flex-row gap-6">
-            <div className="w-full md:w-56 h-40 bg-slate-700/50 rounded-2xl overflow-hidden relative flex-shrink-0 border border-slate-600/30">
+            <div className="w-full md:w-48 h-32 bg-gray-700 rounded-lg overflow-hidden relative flex-shrink-0 border border-gray-600">
               {plane.image && plane.image.startsWith('/') ? (
                 <img src={plane.image} alt={plane.name} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center">
-                  <span className="text-5xl drop-shadow-lg">{plane.image || '✈️'}</span>
+                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  <span className="text-4xl">{plane.image || '✈️'}</span>
                 </div>
               )}
-
-              {/* Registration Overlay */}
-              <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-lg border border-slate-700/50 shadow-xl">
-                <p className="text-sm font-black text-white tracking-widest leading-none">{plane.registration || 'N/A'}</p>
+              <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-xs font-bold text-white">
+                {plane.registration || 'N/A'}
               </div>
             </div>
 
-            <div className="flex-grow flex flex-col justify-center">
+            <div className="flex-grow">
               <div className="flex items-center gap-3 mb-2 flex-wrap">
-                <h3 className="text-2xl font-black text-white">{plane.name}</h3>
-                <span className={`px-4 py-1.5 rounded-full text-xs font-black border transition-colors flex items-center gap-2 uppercase tracking-widest ${getStatusColor(plane.status)}`}>
+                <h3 className="text-xl font-bold text-white">{plane.name}</h3>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 ${getStatusColor(plane.status)}`}>
                   {getStatusIcon(plane.status)}
                   {plane.status.replace('-', ' ')}
                 </span>
-
                 {plane.melList && plane.melList.length > 0 && (
-                  <span className="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <span className="bg-rose-900/30 text-rose-400 border border-rose-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
                     <AlertCircle className="w-3.5 h-3.5" />
-                    {plane.melList.length} DEFECTS
+                    {plane.melList.length} Issues
                   </span>
                 )}
               </div>
 
-              <p className="text-slate-400 font-bold flex items-center gap-2 mb-4">
-                <span className="bg-slate-700/50 px-2 py-0.5 rounded text-xs text-slate-300">{plane.manufacturer}</span>
-                <span className="text-slate-600">•</span>
-                <span className="text-sm">S/N: {plane.serialNumber || 'N/A'}</span>
+              <p className="text-gray-400 text-sm mb-4 flex items-center gap-2">
+                <span className="bg-gray-700 px-2 py-0.5 rounded text-gray-300">{plane.manufacturer}</span>
+                <span>•</span>
+                <span>S/N: {plane.serialNumber || 'N/A'}</span>
               </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 p-4 bg-slate-900/40 rounded-2xl border border-slate-700/50">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                    <MapPin className="w-3 h-3" /> Location
-                  </p>
-                  <p className="text-sm font-bold text-slate-200">{plane.location.split(',')[0]} <span className="text-slate-500 font-medium">({plane.location.match(/\((.*?)\)/)?.[1] || ''})</span></p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Location</p>
+                  <p className="text-sm font-medium text-gray-200">{plane.location.split(',')[0]}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                    <Clock className="w-3 h-3" /> TTAF
-                  </p>
-                  <p className="text-sm font-bold text-slate-200">{ttaf.toLocaleString()} <span className="text-slate-500 font-medium text-xs">hrs</span></p>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">TTAF</p>
+                  <p className="text-sm font-medium text-gray-200">{ttaf.toLocaleString()} hrs</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                    <Wrench className="w-3 h-3" /> Eng SMOH
-                  </p>
-                  <p className={`text-sm font-bold ${smoh > engineTbo * 0.9 ? 'text-rose-400' : 'text-slate-200'}`}>
-                    {Math.floor(smoh).toLocaleString()} <span className="text-slate-500 font-medium text-xs">hrs</span>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Eng SMOH</p>
+                  <p className={`text-sm font-medium ${smoh > engineTbo * 0.9 ? 'text-rose-400' : 'text-gray-200'}`}>
+                    {Math.floor(smoh).toLocaleString()} hrs
                   </p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                    <Calendar className="w-3 h-3" /> Next Insp
-                  </p>
-                  <p className={`text-sm font-bold ${plane.nextInspectionDue < 10 ? 'text-rose-500 animate-pulse' : plane.nextInspectionDue < 25 ? 'text-amber-400' : 'text-slate-200'}`}>
-                    {plane.nextInspectionDue?.toFixed(1) || 0} <span className="text-slate-500 font-medium text-xs">hrs</span>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Next Insp</p>
+                  <p className={`text-sm font-medium ${plane.nextInspectionDue < 10 ? 'text-rose-400' : 'text-gray-200'}`}>
+                    {plane.nextInspectionDue?.toFixed(1) || 0} hrs
                   </p>
                 </div>
               </div>
@@ -254,12 +241,9 @@ function AircraftFleetCard({
           </div>
 
           {/* Quick Health Metrics */}
-          <div className="lg:w-72 flex flex-col justify-between border-l border-slate-700/50 pl-8">
+          <div className="lg:w-64 flex flex-col justify-between lg:border-l lg:border-gray-700 lg:pl-6">
             <div className="space-y-4">
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <Info className="w-3 h-3" /> Health Status
-              </p>
-
+              <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Health Status</p>
               <HealthBar label="Engine" value={engineCond} getProgressBarColor={getProgressBarColor} getConditionColor={getConditionColor} />
               <HealthBar label="Avionics" value={avionicsCond} getProgressBarColor={getProgressBarColor} getConditionColor={getConditionColor} />
               <HealthBar label="Airframe" value={airframeCond} getProgressBarColor={getProgressBarColor} getConditionColor={getConditionColor} />
@@ -267,12 +251,12 @@ function AircraftFleetCard({
 
             <button
               onClick={onToggle}
-              className={`mt-6 w-full py-3.5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 ${isExpanded ? 'bg-slate-700 text-white shadow-inner' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-500/20 active:scale-95'}`}
+              className={`mt-6 w-full py-2.5 rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${isExpanded ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-blue-600 text-white hover:bg-blue-500'}`}
             >
               {isExpanded ? (
-                <>Close Service Center <ChevronUp className="w-4 h-4" /></>
+                <>Close Maintenance <ChevronUp className="w-4 h-4" /></>
               ) : (
-                <>Maintenance & Repairs <ChevronDown className="w-4 h-4" /></>
+                <>Maintenance <ChevronDown className="w-4 h-4" /></>
               )}
             </button>
           </div>
@@ -281,52 +265,46 @@ function AircraftFleetCard({
 
       {/* Expanded Service Center Area */}
       {isExpanded && (
-        <div className="bg-slate-900/60 border-t border-slate-700/50 p-8 space-y-8 animate-in slide-in-from-top-4 duration-500">
-          <div className="flex items-center gap-4">
-            <div className="bg-amber-500/20 p-3 rounded-2xl">
-              <Wrench className="w-6 h-6 text-amber-500" />
+        <div className="bg-gray-900/50 border-t border-gray-700 p-6 space-y-8">
+          <div className="flex items-center gap-3">
+            <div className="bg-amber-900/30 p-2 rounded-lg">
+              <Wrench className="w-5 h-5 text-amber-500" />
             </div>
             <div>
-              <h3 className="text-xl font-black text-white uppercase tracking-tight">Service Center</h3>
-              <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">Station: {plane.location.split(',')[0]}</p>
+              <h3 className="text-lg font-bold text-white">Service Center</h3>
+              <p className="text-sm text-gray-500">Station: {plane.location.split(',')[0]}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {/* DEFECT CHECKLIST */}
-            <div className="bg-slate-800/40 rounded-3xl border border-slate-700/50 p-6 shadow-xl">
-              <div className="flex items-center justify-between mb-6">
-                <h4 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-rose-500" /> Defect Checklist (MEL)
-                </h4>
-              </div>
+            <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+              <h4 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-500" /> Defect Checklist (MEL)
+              </h4>
 
               {!plane.melList || plane.melList.length === 0 ? (
-                <div className="py-12 flex flex-col items-center gap-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-700/50">
-                  <div className="bg-emerald-500/10 p-4 rounded-full">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-                  </div>
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Aircraft is clean - No defects reported</p>
+                <div className="py-8 flex flex-col items-center gap-3 bg-gray-900/30 rounded-lg border border-dashed border-gray-700">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                  <p className="text-gray-400 text-sm font-medium">No defects reported</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {plane.melList.map((mel, idx) => (
-                    <div key={idx} className="bg-slate-900/60 border border-slate-700/50 p-4 rounded-2xl flex items-center justify-between group hover:border-slate-600 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className={`p-2 rounded-xl ${mel.type === 'major' ? 'bg-rose-500/10' : 'bg-amber-500/10'}`}>
-                          <AlertCircle className={`w-5 h-5 ${mel.type === 'major' ? 'text-rose-500' : 'text-amber-500'}`} />
-                        </div>
+                    <div key={idx} className="bg-gray-900 border border-gray-700 p-4 rounded-lg flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <AlertCircle className={`w-5 h-5 ${mel.type === 'major' ? 'text-rose-500' : 'text-amber-500'}`} />
                         <div>
-                          <p className="text-slate-200 font-bold text-sm tracking-tight">{mel.item}</p>
-                          <p className={`text-[10px] font-black uppercase tracking-widest ${mel.type === 'major' ? 'text-rose-400' : 'text-amber-400'}`}>{mel.type} DEFECT</p>
+                          <p className="text-gray-200 font-medium text-sm">{mel.item}</p>
+                          <p className={`text-xs font-bold uppercase ${mel.type === 'major' ? 'text-rose-400' : 'text-amber-400'}`}>{mel.type} DEFECT</p>
                         </div>
                       </div>
                       <button
                         onClick={() => repairAircraft(plane.id, 'MEL', mel)}
-                        className="flex items-center gap-2 bg-slate-700 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-200 active:scale-95 shadow-lg shadow-black/20"
+                        className="flex items-center gap-2 bg-gray-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors"
                       >
                         <Wrench className="w-3.5 h-3.5" />
-                        Fix <span className="opacity-50">•</span> {formatCurrency(mel.type === 'major' ? 2000 : 500)}
+                        Fix • {formatCurrency(mel.type === 'major' ? 2000 : 500)}
                       </button>
                     </div>
                   ))}
@@ -335,39 +313,39 @@ function AircraftFleetCard({
             </div>
 
             {/* COMPONENT SERVICES */}
-            <div className="bg-slate-800/40 rounded-3xl border border-slate-700/50 p-6 shadow-xl">
-              <h4 className="text-sm font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                <Settings className="w-4 h-4 text-blue-400" /> Major Component Overhaul
+            <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+              <h4 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
+                <Settings className="w-4 h-4 text-blue-400" /> Major Components
               </h4>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {[
-                  { id: 'engine', label: 'Powerplant Overhaul', details: 'Reset SMOH to 0 & condition to 100%', repairCost: 2000, overhaulCost: 15000, current: engineCond },
-                  { id: 'avionics', label: 'Systems & Avionics', details: 'Full diagnostic & component replacement', repairCost: 1000, overhaulCost: 5000, current: avionicsCond },
-                  { id: 'airframe', label: 'Structural Inspection', details: 'Corrosion check & airframe cleanup', repairCost: 1500, overhaulCost: 8000, current: airframeCond },
-                  { id: 'interior', label: 'Cabin Refurbishment', details: 'Seat re-covering & panel upgrades', repairCost: 500, overhaulCost: 2000, current: interiorCond },
+                  { id: 'engine', label: 'Powerplant', details: 'Overhaul: Reset SMOH to 0', repairCost: 2000, overhaulCost: 15000, current: engineCond },
+                  { id: 'avionics', label: 'Avionics', details: 'Full diagnostic & repair', repairCost: 1000, overhaulCost: 5000, current: avionicsCond },
+                  { id: 'airframe', label: 'Airframe', details: 'Structural inspection', repairCost: 1500, overhaulCost: 8000, current: airframeCond },
+                  { id: 'interior', label: 'Interior', details: 'Cabin refurbishment', repairCost: 500, overhaulCost: 2000, current: interiorCond },
                 ].map(comp => (
-                  <div key={comp.id} className="bg-slate-900/60 border border-slate-700/50 p-5 rounded-2xl">
-                    <div className="flex justify-between items-start mb-4">
+                  <div key={comp.id} className="bg-gray-900 border border-gray-700 p-4 rounded-lg">
+                    <div className="flex justify-between items-start mb-3">
                       <div>
-                        <p className="text-slate-200 font-black text-sm tracking-tight">{comp.label}</p>
-                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">{comp.details}</p>
+                        <p className="text-gray-200 font-bold text-sm">{comp.label}</p>
+                        <p className="text-xs text-gray-500">{comp.details}</p>
                       </div>
-                      <div className={`text-sm font-black ${getConditionColor(comp.current)}`}>{comp.current}%</div>
+                      <div className={`text-sm font-bold ${getConditionColor(comp.current)}`}>{comp.current}%</div>
                     </div>
 
                     <div className="flex gap-3">
                       <button
                         onClick={() => repairAircraft(plane.id, 'COMPONENT', { component: comp.id, action: 'repair' })}
-                        className="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-2 rounded-lg text-xs font-medium border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white transition-colors"
                       >
-                        Repair {formatCurrency(comp.repairCost)} <span className="text-slate-600 text-[8px]">+20%</span>
+                        Repair {formatCurrency(comp.repairCost)} <span className="text-emerald-500 font-bold">+20%</span>
                       </button>
                       <button
                         onClick={() => repairAircraft(plane.id, 'COMPONENT', { component: comp.id, action: 'overhaul' })}
-                        className="flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 hover:border-blue-500 transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-2 rounded-lg text-xs font-medium bg-blue-900/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-800 hover:border-blue-500 transition-colors"
                       >
-                        Overhaul {formatCurrency(comp.overhaulCost)} <span className="text-blue-500/50 hover:text-white/50 text-[8px]">RESET</span>
+                        Overhaul {formatCurrency(comp.overhaulCost)}
                       </button>
                     </div>
                   </div>
@@ -383,12 +361,12 @@ function AircraftFleetCard({
 
 function HealthBar({ label, value, getProgressBarColor, getConditionColor }) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       <div className="flex justify-between items-end">
-        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</span>
-        <span className={`text-[10px] font-black ${getConditionColor(value)}`}>{value}%</span>
+        <span className="text-xs font-medium text-gray-500">{label}</span>
+        <span className={`text-xs font-bold ${getConditionColor(value)}`}>{value}%</span>
       </div>
-      <div className="w-full bg-slate-900/50 rounded-full h-1.5 border border-slate-700/30">
+      <div className="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-1000 ${getProgressBarColor(value)}`}
           style={{ width: `${value}%` }}

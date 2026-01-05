@@ -81,18 +81,18 @@ function WeatherCard({ title, metar, taf, station, isLoading }) {
   }
 
   return (
-    <div className="bg-white rounded-none border border-zinc-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100">
+    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-zinc-900 text-white rounded-sm">
+          <div className="p-2 bg-gray-100 text-gray-600 rounded-md">
             <MapPin className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400">Station Data</h4>
-            <p className="text-lg font-black text-black leading-none mt-1">{title}</p>
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-400">Station Data</h4>
+            <p className="text-lg font-bold text-gray-900 leading-none mt-1">{title}</p>
           </div>
         </div>
-        <span className={`px-4 py-1.5 rounded-sm text-[10px] font-black tracking-widest border-2 ${getFlightRulesColor(flightRules)}`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getFlightRulesColor(flightRules)}`}>
           {flightRules}
         </span>
       </div>
@@ -110,10 +110,10 @@ function WeatherCard({ title, metar, taf, station, isLoading }) {
       {/* METAR */}
       <div className="mb-3">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-2 h-2 rounded-full bg-zinc-300"></div>
-          <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">METAR / Observed</span>
+          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+          <span className="text-xs font-semibold text-gray-500 uppercase">METAR / Observed</span>
         </div>
-        <p className="text-[11px] font-mono bg-zinc-50 p-3 border border-zinc-100 italic text-zinc-600 leading-relaxed">
+        <p className="text-xs font-mono bg-gray-50 p-3 border border-gray-200 text-gray-700 leading-relaxed rounded-md">
           {formatMETAR(metar)}
         </p>
 
@@ -121,16 +121,16 @@ function WeatherCard({ title, metar, taf, station, isLoading }) {
         {metar && (
           <div className="grid grid-cols-3 gap-2 mt-2">
             <div className="flex items-center gap-1 text-xs">
-              <Wind className="w-3 h-3 text-gray-500" />
-              <span className="text-gray-700">{getWindInfo(metar)}</span>
+              <Wind className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-600">{getWindInfo(metar)}</span>
             </div>
             <div className="flex items-center gap-1 text-xs">
-              <Eye className="w-3 h-3 text-gray-500" />
-              <span className="text-gray-700">{getVisibility(metar)}</span>
+              <Eye className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-600">{getVisibility(metar)}</span>
             </div>
             <div className="flex items-center gap-1 text-xs">
-              <Thermometer className="w-3 h-3 text-gray-500" />
-              <span className="text-gray-700">
+              <Thermometer className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-600">
                 {metar.temperature?.repr || 'N/A'}°C
               </span>
             </div>
@@ -141,10 +141,10 @@ function WeatherCard({ title, metar, taf, station, isLoading }) {
       {/* TAF */}
       <div className="mb-3">
         <div className="flex items-center gap-2 mb-2 mt-4">
-          <div className="w-2 h-2 rounded-full bg-zinc-300"></div>
-          <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">TAF / Forecast</span>
+          <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+          <span className="text-xs font-semibold text-gray-500 uppercase">TAF / Forecast</span>
         </div>
-        <p className="text-[11px] font-mono bg-zinc-50 p-3 border border-zinc-100 italic text-zinc-600 leading-relaxed max-h-24 overflow-y-auto">
+        <p className="text-xs font-mono bg-gray-50 p-3 border border-gray-200 text-gray-700 leading-relaxed max-h-24 overflow-y-auto rounded-md">
           {formatTAF(taf)}
         </p>
       </div>
@@ -152,10 +152,10 @@ function WeatherCard({ title, metar, taf, station, isLoading }) {
       {/* Nowcast (simplified interpretation) */}
       <div>
         <div className="flex items-center gap-1 mb-1">
-          <AlertTriangle className="w-4 h-4 text-yellow-600" />
+          <AlertTriangle className="w-4 h-4 text-amber-500" />
           <span className="text-xs font-semibold text-gray-600 uppercase">Nowcast</span>
         </div>
-        <div className="bg-blue-50 p-2 rounded border border-blue-200">
+        <div className="bg-blue-50 p-2 rounded-md border border-blue-100">
           {metar ? (
             <p className="text-xs text-blue-800">
               {flightRules === 'VFR' && '✅ Good conditions for visual flight operations.'}
@@ -327,15 +327,15 @@ function DispatchCenter() {
   };
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Dispatch Center</h2>
-          <p className="text-gray-600">Available missions for your fleet</p>
+          <h2 className="text-2xl font-bold text-gray-900">Dispatch Center</h2>
+          <p className="text-gray-500">Available missions for your fleet</p>
         </div>
         <button
           onClick={refreshAvailableFlights}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-900 text-white rounded-xl font-bold hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/20 active:scale-95"
+          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition shadow-sm"
         >
           <Radio className="w-4 h-4" />
           Scan for Jobs
@@ -343,67 +343,73 @@ function DispatchCenter() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Available</p>
-              <p className="text-3xl font-bold text-green-600">{availableFlights.length}</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">Available</p>
+              <p className="text-3xl font-bold text-gray-900">{availableFlights.length}</p>
             </div>
-            <CheckCircle className="w-12 h-12 text-green-600" />
+            <div className="p-3 bg-green-50 rounded-full">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">In Progress</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">In Progress</p>
               <p className="text-3xl font-bold text-blue-600">{activeFlights.length}</p>
             </div>
-            <Plane className="w-12 h-12 text-blue-600" />
+            <div className="p-3 bg-blue-50 rounded-full">
+              <Plane className="w-6 h-6 text-blue-600" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Completed</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">Completed</p>
               <p className="text-3xl font-bold text-gray-900">0</p>
             </div>
-            <CheckCircle className="w-12 h-12 text-gray-400" />
+            <div className="p-3 bg-gray-50 rounded-full">
+              <CheckCircle className="w-6 h-6 text-gray-400" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Active Flights */}
       {activeFlights.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Active Flights</h3>
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold text-gray-900">Active Flights</h3>
           <div className="space-y-4">
             {activeFlights.map(flight => (
-              <div key={flight.id} className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-600">
-                <div className="flex justify-between items-start mb-4">
+              <div key={flight.id} className="bg-white rounded-lg shadow-sm border border-l-4 border-l-blue-600 border-gray-200 p-6">
+                <div className="flex justify-between items-start mb-6">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-2xl font-bold text-gray-900">{flight.flightNumber}</h3>
-                      <span className="px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 flex items-center gap-1">
-                        <Plane className="w-4 h-4" />
+                      <h3 className="text-xl font-bold text-gray-900">{flight.flightNumber}</h3>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 flex items-center gap-1">
+                        <Plane className="w-3 h-3" />
                         IN PROGRESS
                       </span>
                     </div>
-                    <p className="text-gray-600 font-medium">{flight.aircraftRegistration} - {flight.aircraft}</p>
+                    <p className="text-gray-600">{flight.aircraftRegistration} - {flight.aircraft}</p>
                   </div>
                   <button
                     onClick={() => startPostFlightBriefing(flight.id)}
-                    className="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-sm"
                   >
                     Complete Flight
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 bg-gray-50 p-4 rounded-lg">
                   <div>
-                    <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase mb-1 flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
                       Route
                     </p>
@@ -416,27 +422,27 @@ function DispatchCenter() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase mb-1 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       Duration
                     </p>
                     <p className="font-semibold text-gray-900">{flight.duration}</p>
-                    <p className="text-sm text-gray-600">{flight.distance} nm</p>
+                    <p className="text-sm text-gray-500">{flight.distance} nm</p>
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase mb-1 flex items-center gap-1">
                       <Package className="w-3 h-3" />
                       Cargo
                     </p>
                     <p className="font-semibold text-gray-900">{flight.cargo.type}</p>
                     {flight.cargo.passengers > 0 && (
-                      <p className="text-sm text-gray-600">{flight.cargo.passengers} passengers</p>
+                      <p className="text-sm text-gray-500">{flight.cargo.passengers} pax</p>
                     )}
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase mb-1 flex items-center gap-1">
                       <Cloud className="w-3 h-3" />
                       Weather
                     </p>
@@ -450,14 +456,16 @@ function DispatchCenter() {
       )}
 
       {/* Available Flights */}
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Available Flights</h3>
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold text-gray-900">Available Flights</h3>
 
         {availableFlights.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-            <Radio className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No Flights Available</h3>
-            <p className="text-gray-600">Check back later for new flight opportunities</p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Radio className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">No Flights Available</h3>
+            <p className="text-gray-500">Check back later for new mission opportunities</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -469,15 +477,15 @@ function DispatchCenter() {
               const isLoadingWeather = loadingWeather[flight.id];
 
               return (
-                <div key={flight.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div key={flight.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:border-blue-500 transition-colors">
                   <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex justify-between items-start mb-6">
                       <div>
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-2xl font-bold text-gray-900">{flight.flightNumber}</h3>
-                          <span className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${getStatusColor(flight.priority)}`}>
+                          <h3 className="text-xl font-bold text-gray-900">{flight.flightNumber}</h3>
+                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(flight.priority)}`}>
                             {getPriorityIcon(flight.priority)}
-                            {flight.priority === 'urgent' ? 'URGENT' : 'AVAILABLE'}
+                            {flight.priority === 'urgent' ? 'URGENT' : 'Available'}
                           </span>
                         </div>
                         <p className="text-gray-600 font-medium">{flight.aircraft}</p>
@@ -485,109 +493,88 @@ function DispatchCenter() {
 
                       <button
                         onClick={() => toggleFlightDetails(flight.id, flight)}
-                        className="flex items-center gap-3 px-6 py-2 bg-zinc-50 border border-zinc-200 text-black hover:bg-black hover:text-white transition-all rounded-sm uppercase text-[10px] font-black tracking-widest"
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all rounded-lg text-sm font-medium"
                       >
                         <span>
-                          {isExpanded ? 'Collapse' : 'Examine flight'}
+                          {isExpanded ? 'Hide Details' : 'View Details'}
                         </span>
                         {isExpanded ? (
-                          <ChevronUp className="w-3 h-3" />
+                          <ChevronUp className="w-4 h-4" />
                         ) : (
-                          <ChevronDown className="w-3 h-3" />
+                          <ChevronDown className="w-4 h-4" />
                         )}
                       </button>
                     </div>
 
                     {/* Basic Info */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 bg-gray-50 p-4 rounded-lg mb-4">
                       <div>
-                        <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          Route
-                        </p>
+                        <p className="text-xs text-gray-500 uppercase font-medium mb-1">Route</p>
                         <p className="font-semibold text-gray-900">
-                          {flight.route.from} ({flight.route.fromCode})
+                          {flight.route.from} <span className="text-gray-400">→</span> {flight.route.to}
                         </p>
-                        <p className="font-semibold text-gray-900">
-                          → {flight.route.to} ({flight.route.toCode})
+                        <p className="text-xs text-gray-500 mt-1">
+                          {flight.route.fromCode} - {flight.route.toCode}
                         </p>
                       </div>
 
                       <div>
-                        <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          Duration
-                        </p>
+                        <p className="text-xs text-gray-500 uppercase font-medium mb-1">Duration</p>
                         <p className="font-semibold text-gray-900">{flight.duration}</p>
-                        <p className="text-sm text-gray-600">{flight.distance} nm</p>
+                        <p className="text-xs text-gray-500 mt-1">{flight.distance} nm</p>
                       </div>
 
-                      {flight.cargo.passengers > 0 && (
-                        <p className="text-sm text-gray-600 flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          {flight.cargo.passengers} passengers
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase font-medium mb-1">Payload</p>
+                        <p className="font-semibold text-gray-900 flex items-center gap-2">
+                          {flight.cargo.passengers > 0 && <Users className="w-4 h-4 text-gray-400" />}
+                          {flight.cargo.passengers > 0 ? `${flight.cargo.passengers} Pax` : flight.cargo.type}
                         </p>
-                      )}
-                    </div>
+                      </div>
 
-                    <div>
-                      <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
-                        <DollarSign className="w-3 h-3" />
-                        Finance
-                      </p>
-                      {availableAircraft.length > 0 ? (
-                        (() => {
-                          const finance = calculateFlightFinance(flight, availableAircraft[0]);
-                          return (
-                            <div>
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase font-medium mb-1">Est. Profit</p>
+                        {availableAircraft.length > 0 ? (
+                          (() => {
+                            const finance = calculateFlightFinance(flight, availableAircraft[0]);
+                            return (
                               <p className={`font-bold ${finance?.profit > 0 ? 'text-green-600' : 'text-red-600'}`}>
                                 {finance ? formatCurrency(finance.profit) : 'N/A'}
                               </p>
-                              <p className="text-xs text-gray-500">Est. Profit</p>
-                            </div>
-                          );
-                        })()
-                      ) : (
-                        <p className="text-sm text-gray-400 italic">No Aircraft</p>
-                      )}
+                            );
+                          })()
+                        ) : (
+                          <p className="text-xs text-gray-400 italic">No Aircraft Avail</p>
+                        )}
+                      </div>
                     </div>
 
-                    <div>
-                      <p className="text-xs text-gray-600 uppercase font-semibold mb-1 flex items-center gap-1">
-                        <Cloud className="w-3 h-3" />
-                        Weather
-                      </p>
-                      <p className="font-semibold text-green-600">{flight.weather}</p>
+                    {/* Notes */}
+                    {flight.notes && (
+                      <div className={`p-4 rounded-lg text-sm ${flight.priority === 'urgent' ? 'bg-red-50 text-red-800 border-l-4 border-red-500' : 'bg-yellow-50 text-yellow-800 border-l-4 border-yellow-500'}`}>
+                        <span className="font-bold mr-2">Note:</span>
+                        {flight.notes}
+                      </div>
+                    )}
+
+                    {/* Action Bar */}
+                    <div className="mt-6 flex justify-end">
+                      <button
+                        onClick={() => toggleAircraftSelection(flight.id)}
+                        className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
+                      >
+                        <Plane className="w-4 h-4" />
+                        {showingAircraftSelection ? 'Cancel Assignment' : 'Assign Aircraft'}
+                      </button>
                     </div>
-                  </div>
 
-                  {/* Notes */}
-                  {flight.notes && (
-                    <div className={`${flight.priority === 'urgent' ? 'bg-red-50 border-red-400' : 'bg-yellow-50 border-yellow-400'} border-l-4 p-3 rounded mb-4`}>
-                      <p className="text-sm font-semibold text-gray-900">📋 Notes:</p>
-                      <p className="text-sm text-gray-800">{flight.notes}</p>
-                    </div>
-                  )}
-
-                  {/* Accept Button */}
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => toggleAircraftSelection(flight.id)}
-                      className="flex-1 bg-black text-white px-8 py-4 rounded-none font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all border-b-4 border-zinc-700 active:border-b-0 active:translate-y-1"
-                    >
-                      {showingAircraftSelection ? 'Cancel selection' : 'Assign Airframe'}
-                    </button>
-                  </div>
-
-                  {/* Expanded Flight Details */}
-                  {
-                    isExpanded && (
-                      <div className="bg-gradient-to-b from-blue-50 to-white p-6 border-t border-blue-100">
-
+                    {/* Expanded Flight Details */}
+                    {isExpanded && (
+                      <div className="mt-6 pt-6 border-t border-gray-200">
                         {/* Financial Breakdown Section */}
-                        <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                          <h4 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            <DollarSign className="w-5 h-5 text-green-600" />
+                        <div className="mb-8 bg-gray-50 rounded-lg p-6 border border-gray-200">
+                          <h4 className="text-md font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <DollarSign className="w-5 h-5 text-gray-500" />
                             Financial Estimator
                           </h4>
                           {availableAircraft.length > 0 ? (
@@ -597,40 +584,31 @@ function DispatchCenter() {
                               const finance = calculateFlightFinance(flight, refAircraft);
 
                               return finance ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                   <div>
-                                    <p className="text-sm font-semibold text-gray-500 mb-2">Estimated Revenue</p>
-                                    <div className="text-2xl font-bold text-green-700 mb-1">{formatCurrency(finance.revenue)}</div>
-                                    <p className="text-xs text-gray-400">Based on {flight.cargo.passengers > 0 ? 'ticket sales' : 'cargo fees'} & distance</p>
+                                    <p className="text-sm font-medium text-gray-500 mb-1">Projected Revenue</p>
+                                    <div className="text-2xl font-bold text-gray-900">{formatCurrency(finance.revenue)}</div>
+                                    <p className="text-xs text-gray-400 mt-1">Based on payload & distance</p>
                                   </div>
 
                                   <div>
-                                    <p className="text-sm font-semibold text-gray-500 mb-2">Projected Expenses</p>
-                                    <div className="space-y-1 text-sm">
+                                    <p className="text-sm font-medium text-gray-500 mb-2">Estimated Costs</p>
+                                    <div className="space-y-2 text-sm">
                                       <div className="flex justify-between">
                                         <span className="text-gray-600">Fuel ({refAircraft.type})</span>
                                         <span className="font-medium">{formatCurrency(finance.expenses.fuel)}</span>
                                       </div>
                                       <div className="flex justify-between">
-                                        <span className="text-gray-600">Crew & Maint.</span>
+                                        <span className="text-gray-600">Crew & Maintenance</span>
                                         <span className="font-medium">{formatCurrency(finance.expenses.pilot + finance.expenses.maintenance)}</span>
                                       </div>
-                                      <div className="flex justify-between">
-                                        <span className="text-gray-600">Fees</span>
-                                        <span className="font-medium">{formatCurrency(finance.expenses.fees)}</span>
-                                      </div>
-                                      <div className="border-t pt-1 mt-1 flex justify-between font-bold">
-                                        <span className="text-gray-800">Total Costs</span>
-                                        <span className="text-red-600">-{formatCurrency(finance.totalCost)}</span>
+                                      <div className="border-t border-gray-300 pt-2 mt-2 flex justify-between font-bold">
+                                        <span className="text-gray-800">Net Profit</span>
+                                        <span className={finance.profit > 0 ? 'text-green-600' : 'text-red-600'}>
+                                          {formatCurrency(finance.profit)}
+                                        </span>
                                       </div>
                                     </div>
-                                  </div>
-
-                                  <div className="md:col-span-2 border-t pt-3 flex justify-between items-center bg-gray-50 p-3 rounded">
-                                    <span className="font-bold text-gray-700">Estimated Net Profit</span>
-                                    <span className={`text-xl font-bold ${finance.profit > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                      {formatCurrency(finance.profit)}
-                                    </span>
                                   </div>
                                 </div>
                               ) : <p className="text-gray-500">Calculation unavailable</p>;
@@ -640,16 +618,15 @@ function DispatchCenter() {
                           )}
                         </div>
 
-                        <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                          <Cloud className="w-5 h-5 text-blue-600" />
-                          Flight Weather & Route Information
+                        <h4 className="text-md font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <Cloud className="w-5 h-5 text-gray-500" />
+                          Flight Conditions
                         </h4>
 
                         {/* Map */}
-                        <div className="mb-6">
-                          <h5 className="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Route Map</h5>
+                        <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
                           {isLoadingWeather ? (
-                            <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
+                            <div className="bg-gray-100 h-64 flex items-center justify-center">
                               <div className="flex items-center gap-2 text-gray-500">
                                 <Loader2 className="w-5 h-5 animate-spin" />
                                 <span>Loading route data...</span>
@@ -658,8 +635,8 @@ function DispatchCenter() {
                           ) : flightWeather ? (
                             <FlightMap departure={flightWeather.departure} arrival={flightWeather.arrival} />
                           ) : (
-                            <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
-                              <p className="text-gray-500">Unable to load route map</p>
+                            <div className="bg-gray-100 h-64 flex items-center justify-center">
+                              <p className="text-gray-500">Route map unavailable</p>
                             </div>
                           )}
                         </div>
@@ -692,24 +669,20 @@ function DispatchCenter() {
                           />
                         </div>
                       </div>
-                    )
-                  }
+                    )}
 
-                  {/* Aircraft Selection */}
-                  {
-                    showingAircraftSelection && (
-                      <div className="bg-gray-50 p-6 border-t">
-                        <h4 className="font-bold text-gray-900 mb-4">Select Aircraft for This Flight</h4>
+                    {/* Aircraft Selection */}
+                    {showingAircraftSelection && (
+                      <div className="mt-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 className="font-bold text-gray-900 mb-4">Select Aircraft</h4>
 
                         {availableAircraft.length === 0 ? (
                           <div className="text-center py-8">
-                            <Plane className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                            <p className="text-gray-600">No aircraft currently available</p>
-                            <p className="text-sm text-gray-500">All aircraft are either in flight or under maintenance</p>
+                            <p className="text-gray-500">No suitable aircraft available at this location.</p>
                           </div>
                         ) : (
                           <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                               {availableAircraft.map(aircraft => {
                                 const fuelReq = flight.distance * 0.15;
                                 const hasFuel = aircraft.fuelLevel >= fuelReq;
@@ -719,31 +692,31 @@ function DispatchCenter() {
                                   <button
                                     key={aircraft.id}
                                     onClick={() => setSelectedAircraft(aircraft)}
-                                    className={`p-4 rounded-lg border-2 text-left transition ${selectedAircraft?.id === aircraft.id
-                                      ? 'border-blue-900 bg-blue-50'
-                                      : 'border-gray-300 hover:border-gray-400'
-                                      } ${(!hasFuel || !isSafe) ? 'opacity-60 grayscale-[0.5]' : ''}`}
+                                    className={`p-4 rounded-lg border text-left transition-all ${selectedAircraft?.id === aircraft.id
+                                      ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
+                                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                                      } ${(!hasFuel || !isSafe) ? 'opacity-75' : ''}`}
                                   >
                                     <div className="flex items-start justify-between mb-2">
                                       <div>
-                                        <p className="font-bold text-gray-900 text-lg">{aircraft.registration}</p>
-                                        <p className="text-sm text-gray-600">{aircraft.type}</p>
+                                        <p className="font-bold text-gray-900">{aircraft.registration}</p>
+                                        <p className="text-xs text-gray-500">{aircraft.type}</p>
                                       </div>
-                                      <span className={`px-2 py-1 text-xs font-semibold rounded ${hasFuel && isSafe ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                        {hasFuel && isSafe ? 'OPERATIONAL' : 'GROUNDED'}
+                                      <span className={`px-2 py-0.5 text-xs font-semibold rounded ${hasFuel && isSafe ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                        {hasFuel && isSafe ? 'READY' : 'UNAVAILABLE'}
                                       </span>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2 text-[10px] mt-3 pt-3 border-t border-zinc-100">
+                                    <div className="grid grid-cols-2 gap-2 text-xs mt-3 pt-3 border-t border-gray-100">
                                       <div>
-                                        <p className="text-zinc-400 uppercase font-mono">{aircraft.fuelType || 'AVGAS'}</p>
-                                        <p className={`font-black ${hasFuel ? 'text-zinc-900' : 'text-red-600'}`}>
-                                          {aircraft.fuelLevel.toFixed(1)} / {fuelReq.toFixed(1)} GAL
+                                        <p className="text-gray-500 mb-0.5">Fuel</p>
+                                        <p className={`font-medium ${hasFuel ? 'text-gray-900' : 'text-red-600'}`}>
+                                          {aircraft.fuelLevel.toFixed(0)} / {fuelReq.toFixed(0)} Gal
                                         </p>
                                       </div>
                                       <div>
-                                        <p className="text-zinc-400 uppercase font-mono">CONDITION</p>
-                                        <p className={`font-black ${isSafe ? 'text-zinc-900' : 'text-red-600'}`}>
-                                          {Math.round(aircraft.condition)}% NORM
+                                        <p className="text-gray-500 mb-0.5">Condition</p>
+                                        <p className={`font-medium ${isSafe ? 'text-gray-900' : 'text-red-600'}`}>
+                                          {Math.round(aircraft.condition)}%
                                         </p>
                                       </div>
                                     </div>
@@ -755,21 +728,21 @@ function DispatchCenter() {
                             <button
                               onClick={() => handleAcceptFlight(flight, selectedAircraft)}
                               disabled={!selectedAircraft}
-                              className={`w-full px-6 py-3 rounded-lg font-semibold transition ${selectedAircraft
+                              className={`w-full px-6 py-3 rounded-lg font-bold transition-all shadow-sm ${selectedAircraft
                                 ? 'bg-green-600 text-white hover:bg-green-700'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                 }`}
                             >
                               {selectedAircraft
-                                ? `Confirm Flight with ${selectedAircraft.registration}`
-                                : 'Select an aircraft to continue'
+                                ? `Confirm Assignment: ${selectedAircraft.registration}`
+                                : 'Select Aircraft to Proceed'
                               }
                             </button>
                           </>
                         )}
                       </div>
-                    )
-                  }
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -779,5 +752,6 @@ function DispatchCenter() {
     </div >
   );
 }
+
 
 export default DispatchCenter;
